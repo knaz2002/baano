@@ -25,3 +25,53 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+# Laravel
+/vendor/
+/node_modules/
+/public/build/
+/public/hot/
+/public/storage/
+/storage/*.key
+/storage/pail/
+/storage/state/
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+
+# База данных
+/database/*.sqlite
+/database/*.sqlite-shm
+/database/*.sqlite-wal
+
+# Файлы загрузок
+/storage/app/public/*
+!/storage/app/public/.gitkeep
+
+# Логи
+/storage/logs/*.log
+/storage/logs/pail/
+
+# Кэш
+/bootstrap/cache/*
+!/bootstrap/cache/.gitkeep
+
+# ОС
+.DS_Store
+Thumbs.db
+
+# IDE
+*.swp
+*.swo
+*~
+.project
+.settings/
+.buildpath
