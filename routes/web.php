@@ -7,12 +7,13 @@ use App\Http\Controllers\User\ReviewController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Api\PushNotificationController;
 use App\Http\Controllers\Api\TelegramWebhookController;
+use App\Http\Controllers\ListingController;
 use Illuminate\Support\Facades\Route;
 
 // ============================================
-// ПУБЛИЧНЫЕ СТРАНИЦЫ (без авторизации)
+// ГЛАВНАЯ СТРАНИЦА (Vue + Inertia)
 // ============================================
-Route::get('/', [PublicListingController::class, 'index'])->name('listings.index');
+Route::get('/', [ListingController::class, 'index'])->name('listings.index');
 Route::get('/listings/{listing}', [PublicListingController::class, 'show'])->name('listings.show');
 
 // ============================================
@@ -56,6 +57,58 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // ============================================
+// ИЗБРАННОЕ
+// ============================================
+Route::middleware(['auth'])->group(function () {
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites/{listing}', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+});
+
+// ============================================
+// СОЗДАНИЕ ОБЪЯВЛЕНИЯ (только для авторизованных)
+// ============================================
+Route::middleware(['auth'])->group(function () {
+//    Route::get('/listings/create', [ListingController::class, 'create'])->name('listings.create');
+//    Route::post('/listings', [ListingController::class, 'store'])->name('listings.store');
+//    Route::get('/listings/{listing}', [ListingController::class, 'show'])->name('listings.show');
+});
+
+// ============================================
+// АДМИНКА (только для авторизованных)
+// ============================================
+Route::middleware(['auth'])->prefix('manage')->name('admin.')->group(function () {    
+    // Главная админки
+    Route::get('/', function () {
+        $stats = [
+            'users' => \App\Models\User::count(),
+            'listings' => \App\Models\Listing::count(),
+            'categories' => \App\Models\Category::count(),
+            'pending' => \App\Models\Listing::where('is_active', false)->count(),
+        ];
+        return view('admin.dashboard', compact('stats'));
+    })->name('dashboard');
+    
+    // Ресурсные маршруты
+    Route::resource('users', \App\Http\Controllers\Admin\AdminUserController::class);
+    Route::resource('listings', \App\Http\Controllers\Admin\AdminListingController::class);
+    Route::resource('categories', \App\Http\Controllers\Admin\AdminCategoryController::class);
+    
+    // Настройки
+    Route::get('/settings', function () {
+        return view('admin.settings');
+    })->name('settings');
+});
+
+// ============================================
 // АУТЕНТИФИКАЦИЯ (Breeze)
 // ============================================
+
+// ============================================
+// КАТЕГОРИИ (публичные)
+// ============================================
+Route::get('/categories/{category}', function(\App\Models\Category $category) {
+    $listings = $category->listings()->where('is_active', true)->latest()->paginate(12);
+    return view('public.categories.show', compact('category', 'listings'));
+})->name('categories.show');
+
 require __DIR__.'/auth.php';

@@ -51,6 +51,14 @@ yarn-error.log
 /database/*.sqlite
 /database/*.sqlite-shm
 /database/*.sqlite-wal
+baano_db
+
+# Бэкапы
+backup_*/
+
+# Временные файлы
+add_categories.php
+
 
 # Файлы загрузок
 /storage/app/public/*

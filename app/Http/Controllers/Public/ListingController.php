@@ -41,9 +41,11 @@ public function index(Request $request)
 
     return view('public.listings.index', compact('listings', 'categories'));
 }
+
 public function show(Listing $listing)
 {
-    if ($listing->status !== 'active') {
+    // Исправлено: проверяем is_active вместо status
+    if (!$listing->is_active) {
         abort(404);
     }
 
@@ -56,7 +58,6 @@ public function show(Listing $listing)
         $listing->is_favorited = false;
     }
 
-    // ← Показываем ТОЛЬКО одобренные отзывы
     $reviews = $listing->reviews()
         ->where('is_active', true)
         ->with('user')
@@ -65,4 +66,5 @@ public function show(Listing $listing)
 
     return view('public.listings.show', compact('listing', 'reviews'));
 }
+
 }
