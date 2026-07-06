@@ -17,8 +17,8 @@
 <body class="font-sans antialiased" style="background-color: #E8E6E1;">
 <div>
     <a href="/" class="flex items-center justify-center">
-        <img src="/images/logo.svg" alt="Baano" class="h-12 w-auto">
-    </a>
+     <img src="{{ asset('images/logo.png') }}" alt="Baano" class="h-12 w-auto">    
+   </a>
 </div>
     <div id="app">
         {{ $slot }}

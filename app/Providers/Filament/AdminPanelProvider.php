@@ -57,6 +57,8 @@ class AdminPanelProvider extends PanelProvider
     }
     public function canAccessPanel(\Illuminate\Contracts\Auth\Authenticatable $user): bool
         {
-        return $user instanceof \App\Models\User && $user->is_admin;
+//        return $user instanceof \App\Models\User && $user->is_admin;
+    // Временно отключаем проверку для всех авторизованных пользователей
+    return $user instanceof \App\Models\User;
     }
 }

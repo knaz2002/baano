@@ -7,6 +7,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     @foreach($listings as $listing)
                         <a href="{{ route('listings.show', $listing) }}" class="card p-6 block">
+                            @if($listing->hasMedia('images'))
+                            <img src="{{ $listing->getMedia('images')->first()->getUrl() }}" 
+                                 alt="{{ $listing->title }}" 
+                                 class="w-full h-48 object-cover rounded-lg mb-4">
+                            @endif
                             <h3 class="text-xl font-semibold">{{ $listing->title }}</h3>
                             <p class="text-gray-600 mt-2">{{ Str::limit($listing->description, 100) }}</p>
                             <p class="text-2xl font-bold text-blue-600 mt-4">{{ number_format($listing->price) }} ₽</p>

@@ -5,8 +5,17 @@
                 <div class="p-6">
                     <h1 class="text-3xl font-bold mb-4">{{ $listing->title }}</h1>
                     
-                    @if($listing->image)
-                        <img src="{{ $listing->image }}" alt="{{ $listing->title }}" class="w-full h-96 object-cover rounded-lg mb-6">
+                    <!-- Галерея фото -->
+                    @if($listing->hasMedia('images'))
+                        <div class="mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @foreach($listing->getMedia('images') as $media)
+                                    <img src="{{ $media->getUrl() }}" 
+                                         alt="{{ $listing->title }}" 
+                                         class="w-full h-64 object-cover rounded-lg">
+                                @endforeach
+                            </div>
+                        </div>
                     @endif
                     
                     <div class="mb-6">

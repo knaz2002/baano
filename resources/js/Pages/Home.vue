@@ -15,8 +15,7 @@
                                     style="border-radius: 12px; transition: all 0.2s;"
                                     @mouseenter="showSubcategories(category.id)"
                                     @mouseleave="hideSubcategories(category.id)"
-                                    @click="selectCategory(category)"
-                                >
+				    @click="goToListing(item.listing)"   >                               
                                     {{ category.name }}
                                 </div>
 
@@ -127,7 +126,7 @@
                         v-for="(item, index) in categoryCards.slice(0, 8)" 
                         :key="item.category.id"
                         class="card overflow-hidden cursor-pointer hover:-translate-y-1 transition-all"
-                        @click="goToCategory(item.category)"
+                          @click="goToListing(item.listing)"
                     >
                         <img 
                             v-if="item.listing?.image"
@@ -186,6 +185,11 @@ const props = defineProps({
     allParentCategories: Array,
 });
 
+const goToListing = (listing) => {
+    if (listing) {
+        router.get(`/listings/${listing.id}`);
+    }
+};
 const showCatalog = ref(false);
 const showFilters = ref(false);
 const selectedCategory = ref(null);
