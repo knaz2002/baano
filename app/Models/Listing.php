@@ -15,15 +15,16 @@ class Listing extends Model implements HasMedia
     use InteractsWithMedia;
 
     protected $fillable = [
-        'title',
-        'description',
-        'price',
-        'user_id',
-        'category_id',
-        'is_active',
-        'status',
-    ];
-
+    'user_id',
+    'category_id',
+    'title',
+    'description',
+    'price',
+    'price_type',
+    'location',  
+    'status',
+    'is_active',
+];
     protected $casts = [
         'is_active' => 'boolean',
         'price' => 'decimal:2',
@@ -49,11 +50,15 @@ class Listing extends Model implements HasMedia
         return $this->hasMany(Review::class);
     }
 
-    public function favorites(): MorphMany
-    {
-        return $this->morphMany(Favorite::class, 'favoritable');
-    }
+public function favorites()
+{
+    return $this->morphMany(Favorite::class, 'favoritable');
+}
 
+public function isFavoritedBy($user)
+{
+    return $this->favorites()->where('user_id', $user->id)->exists();
+}
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')

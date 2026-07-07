@@ -21,6 +21,8 @@
         "@heroicons/vue": "^2.2.0",
         "@inertiajs/vue3": "^3.5.0",
         "@vitejs/plugin-vue": "^6.0.7",
+        "jquery": "^4.0.0",
+        "suggestions-jquery": "^22.6.0",
         "vue": "^3.5.39"
     }
 }

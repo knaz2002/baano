@@ -8,14 +8,10 @@
                         <img src="/images/logo.png" alt="Baano" class="h-12 w-auto">
                     </Link>
 
-                    <!-- Каталог -->
-                    <button 
-                        @click="toggleCatalog"
-                        class="btn-gradient flex-shrink-0"
-                    >
-                        Каталог
-                    </button>
-                    
+			     <!-- Каталог -->
+				<button @click="handleCatalog" class="btn-gradient flex-shrink-0">
+				    Каталог
+				</button>
                     <!-- Поисковая строка (занимает всё доступное пространство) -->
                     <div class="relative flex-1">
                         <input 
@@ -63,16 +59,16 @@
                         </svg>
                     </Link>
 
-                    <Link href="/favorites" class="icon-glass group relative flex-shrink-0" title="Избранное">
-                        <svg class="w-6 h-6 transition-all group-hover:scale-110" 
-                             style="stroke: #6B7F8C;" 
-                             fill="none" 
-                             stroke="currentColor" 
-                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                        </svg>
-                    </Link>
+<Link href="/user/favorites" class="icon-glass group relative flex-shrink-0" title="Избранное">
+    <svg class="w-6 h-6 transition-all group-hover:scale-110" 
+         style="stroke: #6B7F8C;" 
+         fill="none" 
+         stroke="currentColor" 
+         viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+    </svg>
+</Link>
 
                     <Link v-if="!$page.props.auth.user" href="/login" class="icon-glass group relative flex-shrink-0" title="Войти">
                         <svg class="w-6 h-6 transition-all group-hover:scale-110" 
@@ -111,12 +107,23 @@
 
 <script setup>
 import { ref } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 
 const emit = defineEmits(['toggle-catalog']);
 
 const showCatalog = ref(false);
 const searchQuery = ref('');
+
+const handleCatalog = () => {
+    // Если мы на главной странице - toggling каталога
+    if (window.location.pathname === '/') {
+        showCatalog.value = !showCatalog.value;
+        emit('toggle-catalog', showCatalog.value);
+    } else {
+        // Иначе переходим на главную
+        router.get('/');
+    }
+};
 
 const toggleCatalog = () => {
     showCatalog.value = !showCatalog.value;

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Review;
 use App\Models\Listing;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,36 +12,29 @@ class ReviewController extends Controller
 {
     public function store(Request $request, Listing $listing)
     {
-        // ✅ Проверка: оставлял ли пользователь уже отзыв
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        // Проверка: пользователь может оставить только один комментарий
         $existingReview = Review::where('listing_id', $listing->id)
             ->where('user_id', Auth::id())
             ->first();
 
         if ($existingReview) {
-            return redirect()->back()
-                ->with('error', 'Вы уже оставили отзыв на это объявление');
+            return back()->with('error', 'Вы уже оставили комментарий к этому объявлению');
         }
-
-        // ✅ Проверка: не является ли пользователь автором объявления
-        if ($listing->user_id === Auth::id()) {
-            return redirect()->back()
-                ->with('error', 'Вы не можете оставить отзыв на своё объявление');
-        }
-
-        $validated = $request->validate([
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string|max:1000',
-        ]);
 
         Review::create([
             'listing_id' => $listing->id,
             'user_id' => Auth::id(),
-            'rating' => $validated['rating'],
-            'comment' => $validated['comment'] ?? null,
-            'is_active' => false, // ← ОТЗЫВ НА МОДЕРИРАЦИИ
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+            'is_active' => false, // На модерации
         ]);
 
-        return redirect()->back()->with('success', 'Отзыв отправлен на модерацию');
+        return back()->with('success', 'Комментарий отправлен на модерацию');
     }
 
     public function update(Request $request, Review $review)
@@ -50,18 +43,18 @@ class ReviewController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
+        $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string|max:1000',
+            'comment' => 'required|string|max:1000',
         ]);
 
         $review->update([
-            'rating' => $validated['rating'],
-            'comment' => $validated['comment'] ?? null,
-            'is_active' => false, // ← Снова на модерацию после редактирования
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+            'is_active' => false, // Снова на модерацию
         ]);
 
-        return redirect()->back()->with('success', 'Отзыв обновлён и отправлен на модерацию');
+        return back()->with('success', 'Комментарий обновлен и отправлен на модерацию');
     }
 
     public function destroy(Review $review)
@@ -72,6 +65,6 @@ class ReviewController extends Controller
 
         $review->delete();
 
-        return redirect()->back()->with('success', 'Отзыв удалён');
+        return back()->with('success', 'Комментарий удален');
     }
 }
