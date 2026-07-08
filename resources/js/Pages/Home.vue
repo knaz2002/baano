@@ -2,7 +2,7 @@
     <AppLayout :categories="allParentCategories" @toggle-catalog="handleToggleCatalog">
         <div class="flex gap-6 items-start min-h-screen">
             <!-- Левый сайдбар -->
-            <div v-if="showCatalog || showFilters" class="w-64 flex-shrink-0 sticky top-24 z-50">
+         <div v-if="showCatalog || showFilters" class="w-64 flex-shrink-0 sticky top-24 z-50 mt-16">
                 <!-- Каталог -->
                 <div v-if="showCatalog" class="glass p-6" style="border-radius: 16px;">
                     <div class="flex justify-between items-center mb-4">
@@ -116,16 +116,20 @@
                 </div>
             </div>
 
-            <!-- Основной контент -->
-            <div class="flex-1">
-                <div class="text-center mb-8 pt-8">
-                    <h1 class="text-4xl font-bold" style="color: #3D4449;">
-                        Услуги и аренда в одном месте
-                    </h1>
-                </div>
+<!-- Основной контент -->
+<div class="flex-1">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold" style="color: #3D4449;">
+            Услуги и аренда в одном месте
+        </h1>
+    </div>
 
-                <!-- 4 карточки в ряду -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Каталог и карточки в одной строке -->
+    <div class="flex gap-6 items-start">
+        <!-- Каталог здесь, если нужен -->
+        
+        <!-- 4 карточки в ряду -->
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div 
                         v-for="listing in featuredListings" 
                         :key="listing.id"
@@ -174,6 +178,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </AppLayout>
 </template>
 
