@@ -11,7 +11,7 @@ class AdminUserController extends Controller
 {
     public function index()
     {
-        $users = User::latest()->get();
+        $users = User::latest()->paginate(20);
         return view('admin.users.index', compact('users'));
     }
 
@@ -22,19 +22,34 @@ class AdminUserController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
+            'phone' => 'required|string|unique:users,phone',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'role' => 'nullable|in:user,admin',
+        ], [
+            'email.unique' => 'Этот email уже используется',
+            'phone.unique' => 'Этот телефон уже используется',
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+        $user = User::create([
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => $validated['role'] ?? 'user',
+            'email_verified_at' => now(),
+            'phone_verified_at' => now(),
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'Пользователь создан');
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Пользователь создан');
+    }
+
+    public function show(User $user)
+    {
+        return view('admin.users.show', compact('user'));
     }
 
     public function edit(User $user)
@@ -44,29 +59,43 @@ class AdminUserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:8',
+            'phone' => 'required|string|unique:users,phone,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8',
+            'role' => 'nullable|in:user,admin',
+        ], [
+            'email.unique' => 'Этот email уже используется',
+            'phone.unique' => 'Этот телефон уже используется',
         ]);
 
         $data = [
-            'name' => $request->name,
-            'email' => $request->email,
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'email' => $validated['email'],
+            'role' => $validated['role'] ?? 'user',
         ];
 
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+        if (!empty($validated['password'])) {
+            $data['password'] = Hash::make($validated['password']);
         }
 
         $user->update($data);
 
-        return redirect()->route('admin.users.index')->with('success', 'Пользователь обновлён');
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Пользователь обновлен');
     }
 
     public function destroy(User $user)
     {
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Нельзя удалить себя');
+        }
+
         $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'Пользователь удалён');
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Пользователь удален');
     }
 }

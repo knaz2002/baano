@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
 ->withMiddleware(function (Middleware $middleware) {
+    $middleware->alias([
+        'phone.verified' => \App\Http\Middleware\EnsurePhoneVerified::class,
+        'email.verified' => \App\Http\Middleware\EnsureEmailVerified::class,
+    ]);
     $middleware->append(\App\Http\Middleware\CorsHeaders::class);
          })
     ->withExceptions(function (Exceptions $exceptions): void {

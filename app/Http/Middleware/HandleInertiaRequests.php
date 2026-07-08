@@ -23,7 +23,9 @@ class HandleInertiaRequests extends Middleware
      */
     public function version(Request $request): ?string
     {
-        return parent::version($request);
+        return $request->config->get('app.asset_url')
+            ? md5($request->config->get('app.asset_url'))
+            : null;
     }
 
     /**
@@ -34,11 +36,15 @@ class HandleInertiaRequests extends Middleware
      * @return array<string, mixed>
      */
     public function share(Request $request): array
-{
-    return array_merge(parent::share($request), [
-        'auth' => [
-            'user' => $request->user(),
-        ],
-    ]);
-}
+    {
+        return array_merge(parent::share($request), [
+            'auth' => [
+                'user' => $request->user(),
+            ],
+            'flash' => [
+                'success' => $request->session()->get('success'),
+                'error' => $request->session()->get('error'),
+            ],
+        ]);
+    }
 }
