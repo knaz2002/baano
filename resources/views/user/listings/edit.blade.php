@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Редактировать объявление - Baano</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50">
     <!-- Навигация -->
@@ -79,6 +79,24 @@
                     @enderror
                 </div>
 
+                <!-- Адрес -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Адрес</label>
+                    <input 
+                        type="text" 
+                        name="location" 
+                        id="address-input"
+                        value="{{ old('location', $listing->location) }}" 
+                        placeholder="Начните вводить адрес..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                        autocomplete="off"
+                    >
+                    <p class="mt-1 text-sm text-gray-500">Начните вводить адрес — подсказки появятся автоматически</p>
+                    @error('location')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Цена и тип -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -136,4 +154,12 @@
                 <button type="submit" class="flex-1 bg-orange-600 text-white px-6 py-3 rounded-md hover:bg-orange-700 font-semibold">
                     Сохранить изменения
                 </button>
-                <a href="{{ route('user.list
+                <a href="{{ route('user.listings.index') }}" class="px-6 py-3 border border-gray-300 rounded-md hover:bg-gray-50 text-center">
+                    Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

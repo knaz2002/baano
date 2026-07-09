@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Создать объявление - Baano</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+
+
 <body class="bg-gray-50">
     <!-- Навигация -->
     <nav class="bg-white shadow-sm">
@@ -45,29 +48,29 @@
                 <!-- Категория -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Категория</label>
-<select name="category_id" class="w-full px-4 py-2 border rounded-lg" required>
-    <option value="">Выберите категорию</option>
-    
-    @foreach($categories as $category)
-        <optgroup label="{{ $category->name }}">
-            @foreach($category->children as $child)
-                @if($child->children->count() > 0)
-                    <optgroup label="&nbsp;&nbsp;{{ $child->name }}">
-                        @foreach($child->children as $subchild)
-                            <option value="{{ $subchild->id }}">
-                                &nbsp;&nbsp;&nbsp;&nbsp;{{ $subchild->name }}
-                            </option>
+                    <select name="category_id" class="w-full px-4 py-2 border rounded-lg" required>
+                        <option value="">Выберите категорию</option>
+                        
+                        @foreach($categories as $category)
+                            <optgroup label="{{ $category->name }}">
+                                @foreach($category->children as $child)
+                                    @if($child->children->count() > 0)
+                                        <optgroup label="&nbsp;&nbsp;{{ $child->name }}">
+                                            @foreach($child->children as $subchild)
+                                                <option value="{{ $subchild->id }}">
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;{{ $subchild->name }}
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
+                                    @else
+                                        <option value="{{ $child->id }}">
+                                            &nbsp;&nbsp;{{ $child->name }}
+                                        </option>
+                                    @endif
+                                @endforeach
+                            </optgroup>
                         @endforeach
-                    </optgroup>
-                @else
-                    <option value="{{ $child->id }}">
-                        &nbsp;&nbsp;{{ $child->name }}
-                    </option>
-                @endif
-            @endforeach
-        </optgroup>
-    @endforeach
-</select>
+                    </select>
                     @error('category_id')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -89,6 +92,24 @@
                     <textarea name="description" rows="6" required
                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500">{{ old('description') }}</textarea>
                     @error('description')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Адрес -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Адрес</label>
+                    <input 
+                        type="text" 
+                        name="location" 
+                        id="address-input"
+                        value="{{ old('location') }}" 
+                        placeholder="Начните вводить адрес (город, улица, дом)..."
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                        autocomplete="off"
+                    >
+                    <p class="mt-1 text-sm text-gray-500">Начните вводить адрес — подсказки появятся автоматически</p>
+                    @error('location')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
@@ -141,5 +162,7 @@
             </div>
         </form>
     </div>
+
+
 </body>
 </html>
