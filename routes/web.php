@@ -10,6 +10,16 @@ use App\Models\Favorite;
 use App\Models\User;
 use App\Models\Review;
 
+// Сообщения
+Route::prefix('messages')->name('messages.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\MessageController::class, 'index'])->name('index');
+    Route::get('/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->name('show');
+    Route::post('/{conversation}', [\App\Http\Controllers\MessageController::class, 'store'])->name('store');
+});
+
+Route::post('/message-user/{user}', [\App\Http\Controllers\MessageController::class, 'messageUser'])->name('message-user');
+
+
 Route::get('/', function () {
     $parentCategories = Category::with('children.children')->whereNull('parent_id')->get();
     
