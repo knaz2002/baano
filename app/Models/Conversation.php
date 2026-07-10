@@ -39,27 +39,13 @@ class Conversation extends Model
         return $this->belongsTo(Message::class, 'last_message_id');
     }
 
-    public function getOtherUser(int $userId): ?User
+    public static function getOrCreate(int $userId1, int $userId2): self
     {
-        if ($this->user_one_id === $userId) {
-            return $this->userTwo;
-        }
-        if ($this->user_two_id === $userId) {
-            return $this->userOne;
-        }
-        return null;
-    }
-
-    public static function getOrCreate(int $userOneId, int $userTwoId): self
-    {
-        $ids = [$userOneId, $userTwoId];
+        $ids = [$userId1, $userId2];
         sort($ids);
-        
+
         return self::firstOrCreate(
-            [
-                'user_one_id' => $ids[0],
-                'user_two_id' => $ids[1],
-            ]
+            ['user_one_id' => $ids[0], 'user_two_id' => $ids[1]]
         );
     }
 }

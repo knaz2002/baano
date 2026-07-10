@@ -1,5 +1,8 @@
 <?php
 
+// Подавляем warning от устаревших пакетов на PHP 8.4
+error_reporting(E_ALL & ~E_WARNING & ~E_DEPRECATED);
+
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,13 +14,17 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-->withMiddleware(function (Middleware $middleware) {
-    $middleware->alias([
-        'phone.verified' => \App\Http\Middleware\EnsurePhoneVerified::class,
-        'email.verified' => \App\Http\Middleware\EnsureEmailVerified::class,
-    ]);
-    $middleware->append(\App\Http\Middleware\CorsHeaders::class);
-         })
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->web(append: [
+            \App\Http\Middleware\HandleInertiaRequests::class,
+        ]);
+        
+        $middleware->alias([
+            'phone.verified' => \App\Http\Middleware\EnsurePhoneVerified::class,
+            'email.verified' => \App\Http\Middleware\EnsureEmailVerified::class,
+        ]);
+        $middleware->append(\App\Http\Middleware\CorsHeaders::class);
+})
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),

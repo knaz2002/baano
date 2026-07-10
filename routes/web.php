@@ -9,15 +9,18 @@ use App\Models\Category;
 use App\Models\Favorite;
 use App\Models\User;
 use App\Models\Review;
+use App\Http\Controllers\MessageController;
 
 // Сообщения
-Route::prefix('messages')->name('messages.')->group(function () {
+Route::prefix('messages')->name('messages.')->middleware('auth')->group(function () {
     Route::get('/', [\App\Http\Controllers\MessageController::class, 'index'])->name('index');
     Route::get('/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->name('show');
     Route::post('/{conversation}', [\App\Http\Controllers\MessageController::class, 'store'])->name('store');
 });
 
-Route::post('/message-user/{user}', [\App\Http\Controllers\MessageController::class, 'messageUser'])->name('message-user');
+Route::post('/message-user/{user}', [MessageController::class, 'messageUser'])
+    ->middleware('auth')
+    ->name('message-user');
 
 
 Route::get('/', function () {
@@ -68,6 +71,7 @@ Route::get('/listings/{listing}', function (Listing $listing) {
             'location' => $listing->location,
             'images' => $listing->getMedia('images')->map(fn($m) => $m->getUrl()),
             'category' => $listing->category ? ['id' => $listing->category->id, 'name' => $listing->category->name] : null,
+            'user_id' => $listing->user_id,
             'user' => $listing->user ? ['id' => $listing->user->id, 'name' => $listing->user->name] : null,
         ],
         'reviews' => $reviews->map(fn($r) => [
@@ -100,77 +104,70 @@ Route::middleware('guest')->group(function () {
         
         return back()->withErrors(['email' => 'Неверные учетные данные']);
     });
-//очистка формы решистрации--------------------------------------------------//
-Route::get('/register', function () {
-    // Очищаем сессию от старых ошибок
-    session()->forget('errors');
-    return Inertia::render('Auth/Register');
-})->name('register');
 
+    //очистка формы регистрации--------------------------------------------------//
+    Route::get('/register', function () {
+        session()->forget('errors');
+        return Inertia::render('Auth/Register');
+    })->name('register');
 
-//--------------------------------------------------------------------------//
+    //--------------------------------------------------------------------------//
 
-
-//РЕГИСТРАЦИЯ--------------------------------------------------------------//
-
-Route::post('/register', function (Request $request) {
-    try {
-        $phone = preg_replace('/\D/', '', $request->phone);
-        $formattedPhone = '+' . $phone;
-        
-        // Явная проверка уникальности
-        if (User::where('phone', $formattedPhone)->exists()) {
+    //РЕГИСТРАЦИЯ--------------------------------------------------------------//
+    Route::post('/register', function (Request $request) {
+        try {
+            $phone = preg_replace('/\D/', '', $request->phone);
+            $formattedPhone = '+' . $phone;
+            
+            if (User::where('phone', $formattedPhone)->exists()) {
+                return Inertia::render('Auth/Register', [
+                    'errors' => ['phone' => 'Этот телефон уже зарегистрирован'],
+                ])->toResponse($request)->setStatusCode(422);
+            }
+            
+            if (User::where('email', $request->email)->exists()) {
+                return Inertia::render('Auth/Register', [
+                    'errors' => ['email' => 'Этот email уже зарегистрирован'],
+                ])->toResponse($request)->setStatusCode(422);
+            }
+            
+            if ($request->password !== $request->password_confirmation) {
+                return Inertia::render('Auth/Register', [
+                    'errors' => ['password' => 'Пароли не совпадают'],
+                ])->toResponse($request)->setStatusCode(422);
+            }
+            
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255',
+                'password' => 'required|string|min:8',
+            ]);
+            
+            $user = User::create([
+                'name' => $validated['name'],
+                'phone' => $formattedPhone,
+                'email' => $validated['email'],
+                'password' => bcrypt($validated['password']),
+            ]);
+            
+            Auth::login($user);
+            
+            $user->sendEmailVerificationNotification();
+            
+            return redirect('/verify-email');
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return Inertia::render('Auth/Register', [
-                'errors' => ['phone' => 'Этот телефон уже зарегистрирован'],
+                'errors' => $e->errors(),
+            ])->toResponse($request)->setStatusCode(422);
+        } catch (\Exception $e) {
+            \Log::error('Registration error: ' . $e->getMessage());
+            return Inertia::render('Auth/Register', [
+                'errors' => ['error' => 'Ошибка регистрации'],
             ])->toResponse($request)->setStatusCode(422);
         }
-        
-        if (User::where('email', $request->email)->exists()) {
-            return Inertia::render('Auth/Register', [
-                'errors' => ['email' => 'Этот email уже зарегистрирован'],
-            ])->toResponse($request)->setStatusCode(422);
-        }
-        
-        // Проверка паролей
-        if ($request->password !== $request->password_confirmation) {
-            return Inertia::render('Auth/Register', [
-                'errors' => ['password' => 'Пароли не совпадают'],
-            ])->toResponse($request)->setStatusCode(422);
-        }
-        
-        // Валидация остальных полей
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255',
-            'password' => 'required|string|min:8',
-        ]);
-        
-        $user = User::create([
-            'name' => $validated['name'],
-            'phone' => $formattedPhone,
-            'email' => $validated['email'],
-            'password' => bcrypt($validated['password']),
-        ]);
-        
-        Auth::login($user);
-        
-        $user->sendEmailVerificationNotification();
-        
-        return redirect('/verify-email');
-        
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        return Inertia::render('Auth/Register', [
-            'errors' => $e->errors(),
-        ])->toResponse($request)->setStatusCode(422);
-    } catch (\Exception $e) {
-        \Log::error('Registration error: ' . $e->getMessage());
-        return Inertia::render('Auth/Register', [
-            'errors' => ['error' => 'Ошибка регистрации'],
-        ])->toResponse($request)->setStatusCode(422);
-    }
-});
-//----------------------------------------------------------------------------------------------------//
-
+    });
+    //----------------------------------------------------------------------------------------------------//
 });
 
 Route::post('/logout', function (Request $request) {
@@ -362,4 +359,87 @@ Route::middleware(['auth'])->prefix('manage')->name('admin.')->group(function ()
     Route::resource('categories', \App\Http\Controllers\Admin\AdminCategoryController::class);
     
     Route::get('/settings', function () { return view('admin.settings'); })->name('settings');
+});
+
+Route::get('/listings/{listing}', function (Listing $listing) {
+    $listing->load(['user', 'category']);
+    
+    $isFavorited = Auth::check() ? Favorite::where('user_id', Auth::id())
+        ->where('favoritable_type', 'App\\Models\\Listing')
+        ->where('favoritable_id', $listing->id)->exists() : false;
+    
+    $reviews = Review::where('listing_id', $listing->id)
+        ->where('is_active', true)->with('user')->latest()->get();
+    
+    // Данные для чата
+$conversation = null;
+$chatMessages = [];
+
+if (Auth::check() && $listing->user_id !== Auth::id()) {
+    $userId = Auth::id();
+    
+    $conversation = \App\Models\Conversation::where(function($q) use ($listing, $userId) {
+        $q->where('user_one_id', $userId)
+          ->where('user_two_id', $listing->user_id);
+    })->orWhere(function($q) use ($listing, $userId) {
+        $q->where('user_one_id', $listing->user_id)
+          ->where('user_two_id', $userId);
+    })->first();
+    
+    if ($conversation) {
+        $chatMessages = $conversation->messages()
+            ->with('sender:id,name')
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(fn($m) => [
+                'id' => $m->id,
+                'body' => $m->body,
+                'sender_id' => $m->sender_id,
+                'sender_name' => $m->sender->name,
+                'is_mine' => $m->sender_id === Auth::id(),
+                'created_at' => $m->created_at->format('H:i'),
+            ]);
+    }
+}
+    
+    return Inertia::render('Listing/Show', [
+        'listing' => [
+            'id' => $listing->id,
+            'title' => $listing->title,
+            'description' => $listing->description,
+            'price' => $listing->price,
+            'price_type' => $listing->price_type,
+            'location' => $listing->location,
+            'images' => $listing->getMedia('images')->map(fn($m) => $m->getUrl()),
+            'category' => $listing->category ? ['id' => $listing->category->id, 'name' => $listing->category->name] : null,
+            'user_id' => $listing->user_id,
+            'user' => $listing->user ? ['id' => $listing->user->id, 'name' => $listing->user->name] : null,
+        ],
+        'reviews' => $reviews->map(fn($r) => [
+            'id' => $r->id, 'rating' => $r->rating, 'comment' => $r->comment,
+            'created_at' => $r->created_at,
+            'user' => $r->user ? ['id' => $r->user->id, 'name' => $r->user->name] : null,
+        ]),
+        'isFavorited' => $isFavorited,
+        'auth' => ['user' => Auth::user()],
+        'conversation' => $conversation ? [
+            'id' => $conversation->id,
+        ] : null,
+        'chatMessages' => $chatMessages,
+    ]);
+})->name('listings.show');
+// Личный кабинет
+Route::middleware(['auth'])->prefix('dashboard')->name('dashboard.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('index');
+    Route::get('/listings', [\App\Http\Controllers\DashboardController::class, 'listings'])->name('listings');
+    Route::get('/favorites', [\App\Http\Controllers\DashboardController::class, 'favorites'])->name('favorites');
+    Route::get('/messages', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages');
+    Route::get('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'showMessage'])->name('messages.show');
+    Route::post('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'sendMessage'])->name('messages.send');
+    Route::get('/reviews', [\App\Http\Controllers\DashboardController::class, 'reviews'])->name('reviews');
+});
+// Профиль
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/edit', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });

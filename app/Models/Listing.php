@@ -22,6 +22,7 @@ class Listing extends Model implements HasMedia
     'price',
     'price_type',
     'location',  
+    'images',
     'status',
     'is_active',
 ];
