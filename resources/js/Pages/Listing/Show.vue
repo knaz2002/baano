@@ -78,7 +78,7 @@
                             </div>
 
                             <!-- Заголовок -->
-                            <h1 class="text-2xl font-bold mb-3" style="color: #1D1B20;">{{ listing.title }}</h1>
+                            <h1 class="text-lg sm:text-xl font-bold mb-3" style="color: #1D1B20;">{{ listing.title }}</h1>
 
                             <!-- Рейтинг -->
                             <div class="flex items-center gap-4 mb-4">
@@ -163,7 +163,7 @@
                                     </svg>
                                     <div>
                                         <p class="font-medium text-sm" style="color: #2E7D32;">Безопасная сделка</p>
-                                        <p class="text-xs mt-1" style="color: #1B5E20;">Оплачивайте услуги только после выполнения</p>
+                                        <p class="text-xs sm:text-sm mt-1" style="color: #1B5E20;">Оплачивайте услуги только после выполнения</p>
                                     </div>
                                 </div>
                             </div>
@@ -192,13 +192,13 @@
                     <div class="p-6">
                         <!-- Описание -->
                         <div v-if="activeTab === 'description'">
-                            <h2 class="text-2xl font-bold mb-4" style="color: #1D1B20;">Описание</h2>
+                            <h2 class="text-lg sm:text-xl font-bold mb-4" style="color: #1D1B20;">Описание</h2>
                             <p class="leading-relaxed" style="color: #49454F;">{{ listing.description }}</p>
                         </div>
 
                         <!-- Характеристики -->
                         <div v-if="activeTab === 'specs'">
-                            <h2 class="text-2xl font-bold mb-4" style="color: #1D1B20;">Характеристики</h2>
+                            <h2 class="text-lg sm:text-xl font-bold mb-4" style="color: #1D1B20;">Характеристики</h2>
                             <div class="space-y-3">
                                 <div class="flex justify-between py-3 border-b" style="border-color: #E7E0EC;">
                                     <span style="color: #49454F;">Тип</span>
@@ -226,7 +226,7 @@
                         <!-- Отзывы -->
                         <div v-if="activeTab === 'reviews'">
                             <div class="flex items-center justify-between mb-6">
-                                <h2 class="text-2xl font-bold" style="color: #1D1B20;">Отзывы</h2>
+                                <h2 class="text-lg sm:text-xl font-bold" style="color: #1D1B20;">Отзывы</h2>
                                 <div class="flex items-center gap-2">
                                     <span class="text-3xl font-bold" style="color: #6750A4;">4.8</span>
                                     <div class="flex flex-col">
@@ -277,7 +277,7 @@
                                         <h3 class="font-bold text-lg text-gray-900 mb-2 line-clamp-1" :title="listing.title">{{ listing.title }}</h3>
                                         <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ listing.description }}</p>
                                         <div class="mb-2">
-                                            <span class="text-2xl font-bold" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</span>
+                                            <span class="text-lg sm:text-xl font-bold" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</span>
                                         </div>
                                         <div class="flex items-center gap-1 text-gray-600">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

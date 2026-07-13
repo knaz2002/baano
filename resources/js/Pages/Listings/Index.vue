@@ -141,7 +141,7 @@
                                 <img 
                                     :src="listing.image || '/images/placeholder.jpg'" 
                                     :alt="listing.title"
-                                    class="w-full h-40 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                                    class="w-full h-32 sm:h-40 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                                 >
                                 <button 
                                     @click.prevent="toggleFavorite(listing.id)"
@@ -159,9 +159,9 @@
                                 </button>
                             </div>
 
-                            <div class="p-4 md:p-5">
+                            <div class="p-3">
                                 <div class="flex items-start justify-between mb-2">
-                                    <h3 class="font-bold text-base md:text-lg text-gray-900 line-clamp-1" :title="listing.title">{{ listing.title }}</h3>
+                                    <h3 class="font-bold text-sm sm:text-base text-gray-900 line-clamp-1" :title="listing.title">{{ listing.title }}</h3>
                                     <div class="flex items-center gap-1 flex-shrink-0 ml-2">
                                         <span class="text-yellow-400 text-sm">★</span>
                                         <span class="text-xs md:text-sm text-gray-600 font-medium">{{ listing.rating }}</span>
@@ -171,7 +171,7 @@
                                 <p class="text-xs md:text-sm text-gray-600 mb-2 md:mb-3 line-clamp-2">{{ listing.description }}</p>
 
                                 <div class="mb-3 md:mb-4">
-                                    <span class="text-xl md:text-2xl font-bold" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</span>
+                                    <span class="text-base sm:text-lg md:text-xl font-bold" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</span>
                                 </div>
 
                                 <div class="flex items-center gap-1 text-gray-600">

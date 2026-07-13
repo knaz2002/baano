@@ -2,24 +2,25 @@
     <div class="min-h-screen" style="background-color: #E8E6E1;">
         <!-- Шапка -->
         <header class="bg-white shadow-md sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex items-center justify-between h-24 gap-2 md:gap-4">
+            <div class="max-w-7xl mx-auto px-3 md:px-4">
+                <!-- Верхняя строка -->
+                <div class="flex items-center justify-between h-14 md:h-24 gap-1 md:gap-4">
                     <!-- Логотип -->
-                    <Link href="/" class="flex items-center gap-2 flex-shrink-0">
-                        <img src="/images/logo.png" alt="Baano" class="h-20 w-auto">
+                    <Link href="/" class="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                        <img src="/images/logo.png" alt="Baano" class="h-8 md:h-20 w-auto">
                     </Link>
 
-                    <!-- Каталог -->
+                    <!-- Каталог - скрыт на очень маленьких экранах -->
                     <button 
                         @click="handleCatalog"
-                        class="px-4 py-2 rounded-xl text-white font-medium transition-all hover:shadow-lg flex-shrink-0"
+                        class="hidden md:block px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-white font-medium text-sm transition-all hover:shadow-lg flex-shrink-0"
                         style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
                     >
                         Каталог
                     </button>
 
-                    <!-- Поиск -->
-                    <div class="flex-1 max-w-xl">
+                    <!-- Поиск - на мобильных ниже -->
+                    <div class="hidden md:block flex-1 max-w-xl">
                         <div class="relative w-full">
                             <input 
                                 v-model="searchQuery"
@@ -41,32 +42,32 @@
                     </div>
 
                     <!-- Правая часть -->
-                    <div class="flex items-center gap-2 md:gap-4 flex-shrink-0">
-                        <!-- Разместить объявление -->
+                    <div class="flex items-center gap-1 md:gap-4 flex-shrink-0">
+                        <!-- Разместить объявление - скрыто на мобильных -->
                         <Link 
                             href="/user/listings/create"
-                            class="hidden sm:block px-4 py-2 rounded-xl text-white font-medium transition-all hover:shadow-lg"
+                            class="hidden lg:block px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-white font-medium text-xs md:text-sm transition-all hover:shadow-lg"
                             style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
                         >
-                            Разместить объявление
+                            Разместить
                         </Link>
 
                         <!-- Сообщения -->
-                        <Link href="/dashboard/messages" class="p-2 rounded-lg hover:bg-gray-100">
+                        <Link href="/dashboard/messages" class="p-1.5 md:p-2 rounded-lg hover:bg-gray-100">
                             <svg class="w-5 h-5 md:w-6 md:h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                             </svg>
                         </Link>
 
                         <!-- Профиль -->
-                        <Link href="/dashboard" class="p-2 rounded-lg hover:bg-gray-100">
+                        <Link href="/dashboard" class="p-1.5 md:p-2 rounded-lg hover:bg-gray-100">
                             <svg class="w-5 h-5 md:w-6 md:h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </Link>
 
                         <!-- Мобильное меню -->
-                        <button @click="showMobileMenu = !showMobileMenu" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+                        <button @click="showMobileMenu = !showMobileMenu" class="md:hidden p-1.5 rounded-lg hover:bg-gray-100">
                             <svg class="w-6 h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                             </svg>
@@ -74,14 +75,14 @@
                     </div>
                 </div>
 
-                <!-- Мобильный поиск -->
-                <div class="md:hidden pb-4">
+                <!-- Поиск на мобильных - отдельная строка -->
+                <div class="md:hidden py-2">
                     <div class="relative w-full">
                         <input 
                             v-model="searchQuery"
                             type="text" 
                             placeholder="Поиск объявлений..."
-                            class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none"
+                            class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none text-sm"
                             style="border-color: #E7E0EC;"
                             @keyup.enter="performSearch"
                         >
@@ -109,7 +110,7 @@
                 </button>
                 <Link 
                     href="/user/listings/create"
-                    class="block px-4 py-3 rounded-xl text-white text-center font-medium"
+                    class="block px-4 py-3 rounded-xl text-white text-center font-medium text-sm"
                     style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
                     @click="showMobileMenu = false"
                 >
