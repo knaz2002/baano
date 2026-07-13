@@ -22,34 +22,8 @@ Route::post('/message-user/{user}', [MessageController::class, 'messageUser'])
     ->middleware('auth')
     ->name('message-user');
 
-
-Route::get('/', function () {
-    $parentCategories = Category::with('children.children')->whereNull('parent_id')->get();
-    
-    $activeListings = Listing::with(['user', 'category'])
-        ->where('is_active', true)
-        ->latest()
-        ->limit(12)
-        ->get();
-    
-    $featuredListings = $activeListings->map(fn($listing) => [
-        'id' => $listing->id,
-        'title' => $listing->title,
-        'description' => $listing->description,
-        'price' => $listing->price,
-        'price_type' => $listing->price_type,
-        'location' => $listing->location,
-        'image' => $listing->getFirstMediaUrl('images', 'thumb'),
-        'category' => $listing->category ? ['id' => $listing->category->id, 'name' => $listing->category->name] : null,
-        'user' => $listing->user ? ['id' => $listing->user->id, 'name' => $listing->user->name] : null,
-    ]);
-
-    return Inertia::render('Home', [
-        'featuredListings' => $featuredListings,
-        'allParentCategories' => $parentCategories,
-        'auth' => ['user' => Auth::user()],
-    ]);
-})->name('home');
+// Главная страница - используем HomeController
+Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/listings/{listing}', function (Listing $listing) {
     $listing->load(['user', 'category']);
