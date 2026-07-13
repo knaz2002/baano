@@ -1,346 +1,371 @@
 <template>
     <AppLayout>
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <div class="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-6">
-                <!-- Основная часть -->
-                <div class="min-w-0">
-                    <h1 class="text-4xl font-bold mb-4" style="color: #3D4449;">{{ listing.title }}</h1>
-                    
-                    <!-- Галерея -->
-                    <div v-if="listing.images && listing.images.length > 0" class="mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <img v-for="(image, index) in listing.images" 
-                                 :key="index"
-                                 :src="image" 
-                                 :alt="listing.title"
-                                 class="w-full h-64 object-cover rounded-lg">
-                        </div>
-                    </div>
-                    
-                    <!-- Цена -->
-                    <div class="mb-6">
-                        <p class="text-4xl font-bold" style="color: #B8949E;">{{ formatPrice(listing.price) }} ₽</p>
-                    </div>
-                    
-                    <!-- Кнопка избранного -->
-                    <div class="mb-6">
-                        <button 
-                            v-if="$page.props.auth.user && listing.user && listing.user.id !== $page.props.auth.user.id"
-                            @click="toggleFavorite"
-                            class="flex items-center gap-2 px-6 py-3 rounded-lg transition"
-                            :class="isFavorited ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'"
-                        >
-                            <svg class="w-6 h-6" :fill="isFavorited ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                            </svg>
-                            {{ isFavorited ? 'В избранном' : 'Добавить в избранное' }}
-                        </button>
-                    </div>
-                    
-                    <!-- Описание -->
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold mb-2" style="color: #3D4449;">Описание</h2>
-                        <p style="color: #5A6268;">{{ listing.description }}</p>
-                    </div>
-                    
-                    <!-- Категория -->
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold mb-2" style="color: #3D4449;">Категория</h2>
-                        <p style="color: #5A6268;">{{ listing.category?.name }}</p>
-                    </div>
-                    
-                    <!-- Адрес -->
-                    <div v-if="listing.location" class="mb-6">
-                        <h2 class="text-xl font-semibold mb-2" style="color: #3D4449;">Адрес</h2>
-                        <p style="color: #5A6268;">{{ listing.location }}</p>
-                    </div>
-                    
-                    <!-- Продавец -->
-                    <div class="mb-6">
-                        <h2 class="text-xl font-semibold mb-2" style="color: #3D4449;">Продавец</h2>
-                        <p style="color: #5A6268;">{{ listing.user?.name }}</p>
-                        
-                        <!-- Кнопки действий -->
-                        <div v-if="$page.props.auth.user && listing.user && listing.user.id !== $page.props.auth.user.id" class="flex gap-3 mt-4">
-                            <!-- Кнопка "Продолжить диалог" - скрыта когда чат открыт -->
-                            <button 
-                                v-if="!showChatSidebar"
-                                @click="openChat"
-                                class="flex-1 btn-gradient py-2 px-4 rounded-lg text-sm font-medium flex items-center justify-center gap-2"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                                {{ hasConversation ? 'Продолжить диалог' : 'Написать сообщение' }}
-                            </button>
-                            
-                            <!-- Кнопка "Оставить комментарий" - единый стиль btn-gradient -->
-                            <button 
-                                @click="showCommentModal = true"
-                                class="flex-1 btn-gradient py-2 px-4 rounded-lg text-sm font-medium flex items-center justify-center gap-2"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-                                </svg>
-                                Оставить комментарий
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Комментарии (список) -->
-                    <div class="mt-8">
-                        <h2 class="text-2xl font-bold mb-4" style="color: #3D4449;">Комментарии</h2>
-                        
-                        <div class="space-y-4">
-                            <div 
-                                v-for="review in reviews" 
-                                :key="review.id"
-                                class="glass p-4 rounded-lg"
-                            >
-                                <div class="flex justify-between items-start mb-2">
-                                    <div>
-                                        <p class="font-semibold" style="color: #3D4449;">{{ review.user?.name }}</p>
-                                        <div class="flex text-yellow-400">
-                                            <span v-for="star in review.rating" :key="star">★</span>
-                                        </div>
+        <div class="min-h-screen" style="background-color: #E8E6E1;">
+            <div class="max-w-7xl mx-auto px-4 py-6">
+                <!-- Хлебные крошки -->
+                <nav class="mb-4 text-sm" style="color: #49454F;">
+                    <Link href="/" class="hover:underline" style="color: #6750A4;">Главная</Link>
+                    <span class="mx-2">›</span>
+                    <span v-if="listing.category">{{ listing.category.name }}</span>
+                </nav>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Галерея (6 колонок) -->
+                    <div class="lg:col-span-6">
+                        <div class="flex gap-4">
+                            <!-- Вертикальные миниатюры -->
+                            <div class="flex flex-col gap-2 relative">
+                                <!-- Стрелка вверх -->
+                                <button 
+                                    v-if="listing.images.length > 4"
+                                    @click="scrollThumbnails(-1)"
+                                    class="absolute -top-8 left-1/2 -translate-x-1/2 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-50"
+                                >
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                    </svg>
+                                </button>
+
+                                <div class="flex flex-col gap-2 overflow-hidden" style="max-height: 480px;">
+                                    <div 
+                                        v-for="(img, index) in visibleImages" 
+                                        :key="index"
+                                        @click="currentImageIndex = thumbnailStart + index"
+                                        class="w-16 h-16 rounded-lg overflow-hidden cursor-pointer border-2 transition-all flex-shrink-0"
+                                        :class="currentImageIndex === thumbnailStart + index ? 'border-purple-600' : 'border-gray-200 hover:border-gray-400'"
+                                    >
+                                        <img :src="img" class="w-full h-full object-cover">
                                     </div>
                                 </div>
-                                <p style="color: #5A6268;">{{ review.comment }}</p>
-                            </div>
 
-                            <div v-if="!reviews || reviews.length === 0" class="text-center py-8">
-                                <p style="color: #8B9A9E;">Комментариев пока нет</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <Link href="/" class="inline-block px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 mt-6">
-                        ← Назад к объявлениям
-                    </Link>
-                </div>
-
-                <!-- Правый сайдбар с чатом (внутри контейнера) -->
-                <div v-if="showChatSidebar" class="xl:sticky xl:top-24 xl:self-start">
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col" style="height: calc(100vh - 150px); max-height: 700px;">
-                        <!-- Шапка чата -->
-                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 flex items-center justify-between flex-shrink-0">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-white bg-opacity-30 flex items-center justify-center font-bold">
-                                    {{ listing.user?.name.charAt(0).toUpperCase() }}
-                                </div>
-                                <div class="min-w-0">
-                                    <h3 class="font-semibold truncate">{{ listing.user?.name }}</h3>
-                                    <p class="text-xs opacity-75">Продавец</p>
-                                </div>
-                            </div>
-                            <button @click="showChatSidebar = false" class="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition flex-shrink-0">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <!-- Сообщения -->
-                        <div ref="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
-                            <div
-                                v-for="msg in chatMessages"
-                                :key="msg.id"
-                                class="flex"
-                                :class="msg.is_mine ? 'justify-end' : 'justify-start'"
-                            >
-                                <div
-                                    class="max-w-[85%] px-3 py-2 rounded-2xl text-sm"
-                                    :class="msg.is_mine
-                                        ? 'bg-blue-500 text-white rounded-br-sm'
-                                        : 'bg-white text-gray-900 rounded-bl-sm shadow-sm'"
+                                <!-- Стрелка вниз -->
+                                <button 
+                                    v-if="listing.images.length > 4 && thumbnailStart + 4 < listing.images.length"
+                                    @click="scrollThumbnails(1)"
+                                    class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-50"
                                 >
-                                    <p class="whitespace-pre-wrap break-words">{{ msg.body }}</p>
-                                    <p class="text-xs mt-1 opacity-75">{{ msg.created_at }}</p>
-                                </div>
-                            </div>
-
-                            <div v-if="chatMessages.length === 0" class="text-center text-gray-500 py-8">
-                                <p>Начните диалог</p>
-                                <p class="text-sm mt-2">Напишите первое сообщение</p>
-                            </div>
-                        </div>
-
-                        <!-- Форма отправки -->
-                        <form @submit.prevent="sendMessage" class="p-4 border-t bg-white flex-shrink-0">
-                            <div class="flex gap-2">
-                                <input
-                                    v-model="messageText"
-                                    type="text"
-                                    placeholder="Напишите сообщение..."
-                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-full focus:outline-none focus:border-purple-500 text-sm min-w-0"
-                                    required
-                                    maxlength="1000"
-                                >
-                                <button
-                                    type="submit"
-                                    class="btn-gradient px-4 py-2 rounded-full flex-shrink-0"
-                                    :disabled="sendingMessage"
-                                >
-                                    <svg v-if="!sendingMessage" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                                    </svg>
-                                    <svg v-else class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                 </button>
                             </div>
-                        </form>
+
+                            <!-- Главное изображение -->
+                            <div class="flex-1 relative">
+                                <img 
+                                    :src="currentImageSrc" 
+                                    :alt="listing.title"
+                                    class="w-full h-[480px] object-cover rounded-xl"
+                                >
+                                <div v-if="listing.images.length > 1" class="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                                    {{ currentImageIndex + 1 }} / {{ listing.images.length }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Правая панель с информацией (6 колонок) -->
+                    <div class="lg:col-span-6">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-6">
+                            <!-- Артикул -->
+                            <div class="flex items-center gap-2 mb-3 text-sm" style="color: #49454F;">
+                                <span>№ {{ listing.id }}</span>
+                                <button class="hover:text-purple-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Заголовок -->
+                            <h1 class="text-2xl font-bold mb-3" style="color: #1D1B20;">{{ listing.title }}</h1>
+
+                            <!-- Рейтинг -->
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="flex items-center gap-1">
+                                    <div class="flex text-yellow-400">
+                                        <span v-for="i in 5" :key="i">{{ i <= 4 ? '★' : '☆' }}</span>
+                                    </div>
+                                    <span class="font-medium ml-1" style="color: #1D1B20;">4.8</span>
+                                    <span style="color: #49454F;">· 156 отзывов</span>
+                                </div>
+                            </div>
+
+                            <!-- Действия -->
+                            <div class="flex items-center gap-4 mb-6 text-sm">
+                                <button @click="toggleFavorite" class="flex items-center gap-2 hover:text-purple-600 transition-colors" :class="isFavorited ? 'text-red-500' : 'text-gray-600'">
+                                    <svg class="w-5 h-5" :fill="isFavorited ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                    {{ isFavorited ? 'В избранном' : 'В избранное' }}
+                                </button>
+                                <button class="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                                    </svg>
+                                    В сравнение
+                                </button>
+                            </div>
+
+                            <!-- Цена -->
+                            <div class="mb-6 pb-6 border-b" style="border-color: #E7E0EC;">
+                                <div class="flex items-baseline gap-3">
+                                    <span class="text-4xl font-bold" style="color: #B3261E;">{{ formatPrice(listing.price) }}</span>
+                                    <span class="text-xl" style="color: #49454F;">₽</span>
+                                </div>
+                                <p class="text-sm mt-1" style="color: #49454F;">{{ getPriceType(listing.price_type) }}</p>
+                            </div>
+
+                            <!-- Кнопка действия -->
+                            <button 
+                                @click="openChat"
+                                class="w-full py-4 rounded-xl text-white font-semibold text-lg transition-all hover:shadow-lg active:scale-95 mb-6"
+                                style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
+                            >
+                                Написать сообщение
+                            </button>
+
+                            <!-- Исполнитель -->
+                            <div class="mb-6 pb-6 border-b" style="border-color: #E7E0EC;">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold" style="background: linear-gradient(135deg, #6750A4 0%, #7D5260 100%);">
+                                        {{ listing.user?.name?.charAt(0) || '?' }}
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="font-bold" style="color: #1D1B20;">{{ listing.user?.name || 'Аноним' }}</h3>
+                                        <p class="text-sm" style="color: #49454F;">Исполнитель</p>
+                                    </div>
+                                </div>
+                                <div v-if="listing.user?.phone" class="flex items-center gap-2 text-sm" style="color: #49454F;">
+                                    <svg class="w-4 h-4" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                    </svg>
+                                    <span>{{ listing.user.phone }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Локация -->
+                            <div class="mb-6 pb-6 border-b" style="border-color: #E7E0EC;">
+                                <div class="flex items-center gap-2" style="color: #49454F;">
+                                    <svg class="w-5 h-5" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    <span>{{ listing.location || 'Адрес не указан' }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Безопасная сделка -->
+                            <div class="p-4 rounded-xl" style="background-color: #E8F5E9;">
+                                <div class="flex items-start gap-3">
+                                    <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: #2E7D32;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                    <div>
+                                        <p class="font-medium text-sm" style="color: #2E7D32;">Безопасная сделка</p>
+                                        <p class="text-xs mt-1" style="color: #1B5E20;">Оплачивайте услуги только после выполнения</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Модальное окно для комментария -->
-        <div v-if="showCommentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" @click.self="showCommentModal = false">
-            <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl" @click.stop>
-                <h3 class="text-xl font-bold mb-4" style="color: #2C3E50;">Оставить комментарий</h3>
-                <form @submit.prevent="submitReview">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-2" style="color: #3D4449;">Оценка</label>
-                        <div class="flex gap-2">
+                <!-- Табы -->
+                <div class="mt-8 bg-white rounded-2xl shadow-lg">
+                    <div class="border-b" style="border-color: #E7E0EC;">
+                        <div class="flex gap-6 px-6">
                             <button 
-                                v-for="star in 5" 
-                                :key="star"
-                                type="button"
-                                @click="reviewForm.rating = star"
-                                class="text-2xl transition-colors"
-                                :class="star <= reviewForm.rating ? 'text-yellow-400' : 'text-gray-300'"
+                                v-for="tab in tabs" 
+                                :key="tab.id"
+                                @click="activeTab = tab.id"
+                                class="py-4 px-2 font-medium transition-all border-b-2"
+                                :class="activeTab === tab.id ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-600 hover:text-gray-900'"
                             >
-                                ★
+                                {{ tab.name }}
+                                <span v-if="tab.count" class="ml-1 text-sm" style="color: #49454F;">({{ tab.count }})</span>
                             </button>
                         </div>
                     </div>
-                    
-                    <textarea 
-                        v-model="reviewForm.comment"
-                        placeholder="Ваш комментарий..."
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 mb-4"
-                        rows="4"
-                        required
-                        maxlength="1000"
-                    ></textarea>
-                    
-                    <div class="flex gap-3">
-                        <button 
-                            type="button"
-                            @click="showCommentModal = false"
-                            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                        >
-                            Отмена
-                        </button>
-                        <button 
-                            type="submit"
-                            class="flex-1 btn-gradient py-2 px-4 rounded-lg"
-                            :disabled="reviewForm.processing"
-                        >
-                            {{ reviewForm.processing ? 'Отправка...' : 'Отправить' }}
-                        </button>
+
+                    <!-- Содержимое табов -->
+                    <div class="p-6">
+                        <!-- Описание -->
+                        <div v-if="activeTab === 'description'">
+                            <h2 class="text-2xl font-bold mb-4" style="color: #1D1B20;">Описание</h2>
+                            <p class="leading-relaxed" style="color: #49454F;">{{ listing.description }}</p>
+                        </div>
+
+                        <!-- Характеристики -->
+                        <div v-if="activeTab === 'specs'">
+                            <h2 class="text-2xl font-bold mb-4" style="color: #1D1B20;">Характеристики</h2>
+                            <div class="space-y-3">
+                                <div class="flex justify-between py-3 border-b" style="border-color: #E7E0EC;">
+                                    <span style="color: #49454F;">Тип</span>
+                                    <span class="font-medium" style="color: #1D1B20;">{{ listing.category?.name }}</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b" style="border-color: #E7E0EC;">
+                                    <span style="color: #49454F;">Тип цены</span>
+                                    <span class="font-medium" style="color: #1D1B20;">{{ getPriceType(listing.price_type) }}</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b" style="border-color: #E7E0EC;">
+                                    <span style="color: #49454F;">Статус</span>
+                                    <span class="px-3 py-1 rounded-full text-sm font-medium" style="background-color: #E8F5E9; color: #2E7D32;">Активно</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b" style="border-color: #E7E0EC;">
+                                    <span style="color: #49454F;">Дата размещения</span>
+                                    <span class="font-medium" style="color: #1D1B20;">{{ formatDate(listing.created_at) }}</span>
+                                </div>
+                                <div class="flex justify-between py-3">
+                                    <span style="color: #49454F;">Просмотры</span>
+                                    <span class="font-medium" style="color: #1D1B20;">{{ listing.views || 1234 }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Отзывы -->
+                        <div v-if="activeTab === 'reviews'">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 class="text-2xl font-bold" style="color: #1D1B20;">Отзывы</h2>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-3xl font-bold" style="color: #6750A4;">4.8</span>
+                                    <div class="flex flex-col">
+                                        <div class="flex text-yellow-400">
+                                            <span v-for="i in 5" :key="i">★</span>
+                                        </div>
+                                        <span class="text-sm" style="color: #49454F;">156 отзывов</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div v-for="review in reviews" :key="review.id" class="border-b last:border-0 pb-4 last:pb-0" style="border-color: #E7E0EC;">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style="background-color: #6750A4;">
+                                            {{ review.user?.name?.charAt(0) || '?' }}
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-semibold" style="color: #1D1B20;">{{ review.user?.name }}</p>
+                                            <div class="flex text-yellow-400 text-sm">
+                                                <span v-for="i in 5" :key="i">{{ i <= review.rating ? '★' : '☆' }}</span>
+                                            </div>
+                                        </div>
+                                        <span class="text-sm" style="color: #49454F;">{{ formatDate(review.created_at) }}</span>
+                                    </div>
+                                    <p style="color: #49454F;">{{ review.comment }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Похожие -->
+                        <div v-if="activeTab === 'similar'">
+                            <div v-if="similarListings.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <Link
+                                    v-for="listing in similarListings"
+                                    :key="listing.id"
+                                    :href="`/listings/${listing.id}`"
+                                    class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group"
+                                >
+                                    <div class="relative overflow-hidden">
+                                        <img
+                                            :src="listing.image || '/images/placeholder.jpg'"
+                                            :alt="listing.title"
+                                            class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                                        >
+                                    </div>
+                                    <div class="p-5">
+                                        <h3 class="font-bold text-lg text-gray-900 mb-2 line-clamp-1" :title="listing.title">{{ listing.title }}</h3>
+                                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ listing.description }}</p>
+                                        <div class="mb-2">
+                                            <span class="text-2xl font-bold" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span class="text-sm">{{ listing.location || 'Адрес не указан' }}</span>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                            <div v-else class="text-center py-8">
+                                <p class="text-lg" style="color: #49454F;">Похожих объявлений не найдено</p>
+                            </div>
+                        </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
+import { router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
-    listing: Object,
-    isFavorited: Boolean,
-    reviews: Array,
-    conversation: Object,
-    chatMessages: Array,
+    similarListings: { type: Array, default: () => [] },
+    listing: { type: Object, required: true },
+    reviews: { type: Array, default: () => [] },
+    isFavorited: { type: Boolean, default: false },
+    similarListings: { type: Array, default: () => [] }
 });
 
-const reviewForm = useForm({
-    rating: 5,
-    comment: '',
+const currentImageIndex = ref(0);
+const thumbnailStart = ref(0);
+const activeTab = ref('description');
+
+const tabs = computed(() => [
+    { id: 'description', name: 'Описание' },
+    { id: 'specs', name: 'Характеристики' },
+    { id: 'similar', name: 'Похожие' },
+    { id: 'reviews', name: 'Отзывы', count: props.reviews.length }
+]);
+
+const visibleImages = computed(() => {
+    if (!props.listing.images) return [];
+    return props.listing.images.slice(thumbnailStart.value, thumbnailStart.value + 4);
 });
 
-const showChatSidebar = ref(false);
-const showCommentModal = ref(false);
-const messageText = ref('');
-const sendingMessage = ref(false);
-const messagesContainer = ref(null);
-const hasConversation = ref(!!props.conversation);
+const currentImageSrc = computed(() => {
+    if (props.listing.images && props.listing.images.length > 0) {
+        return props.listing.images[currentImageIndex.value] || '/images/placeholder.jpg';
+    }
+    return '/images/placeholder.jpg';
+});
 
-const scrollToBottom = () => {
-    nextTick(() => {
-        if (messagesContainer.value) {
-            messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
-        }
-    });
+const scrollThumbnails = (direction) => {
+    const newStart = thumbnailStart.value + direction;
+    if (newStart >= 0 && newStart + 4 <= props.listing.images.length) {
+        thumbnailStart.value = newStart;
+    }
 };
 
-watch(() => props.chatMessages, () => {
-    if (showChatSidebar.value) {
-        scrollToBottom();
-    }
-}, { deep: true });
+const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price || 0);
 
-const openChat = () => {
-    showChatSidebar.value = true;
-    nextTick(() => {
-        scrollToBottom();
-    });
+const formatDate = (date) => {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+};
+
+const getPriceType = (type) => {
+    const types = {
+        'fixed': 'Фиксированная цена',
+        'hourly': 'За час',
+        'daily': 'За день',
+        'monthly': 'За месяц',
+        'negotiable': 'Договорная'
+    };
+    return types[type] || '';
 };
 
 const toggleFavorite = () => {
-    router.post('/user/favorites/toggle', {
-        listing_id: props.listing.id
-    }, {
-        preserveScroll: true,
-    });
+    router.post('/user/favorites/toggle', { listing_id: props.listing.id }, { preserveScroll: true });
 };
 
-const sendMessage = () => {
-    if (!messageText.value.trim() || sendingMessage.value) return;
-    
-    sendingMessage.value = true;
-    
-    router.post(`/message-user/${props.listing.user_id}`, {
-        body: messageText.value,
-    }, {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: (page) => {
-            messageText.value = '';
-            hasConversation.value = true;
-            if (page.props.chatMessages) {
-                props.chatMessages = page.props.chatMessages;
-            }
-            scrollToBottom();
-        },
-        onError: (errors) => {
-            console.error('Ошибка:', errors);
-        },
-        onFinish: () => {
-            sendingMessage.value = false;
-        },
-    });
-};
-
-const submitReview = () => {
-    reviewForm.post(`/listings/${props.listing.id}/reviews`, {
-        preserveScroll: true,
-        onSuccess: () => {
-            showCommentModal.value = false;
-            reviewForm.reset();
-            reviewForm.rating = 5;
-        }
-    });
-};
-
-const formatPrice = (price) => {
-    return new Intl.NumberFormat('ru-RU').format(price || 0);
+const openChat = () => {
+    router.post('/message-user/' + props.listing.user_id, {}, { preserveScroll: true });
 };
 </script>

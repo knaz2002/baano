@@ -25,6 +25,9 @@ Route::post('/message-user/{user}', [MessageController::class, 'messageUser'])
 // Главная страница - используем HomeController
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// Список объявлений (с фильтром по категории)
+Route::get('/listings', [\App\Http\Controllers\ListingController::class, 'index'])->name('listings.index');
+
 Route::get('/listings/{listing}', function (Listing $listing) {
     $listing->load(['user', 'category']);
     
@@ -335,6 +338,7 @@ Route::middleware(['auth'])->prefix('manage')->name('admin.')->group(function ()
     Route::get('/settings', function () { return view('admin.settings'); })->name('settings');
 });
 
+
 Route::get('/listings/{listing}', function (Listing $listing) {
     $listing->load(['user', 'category']);
     
@@ -345,36 +349,54 @@ Route::get('/listings/{listing}', function (Listing $listing) {
     $reviews = Review::where('listing_id', $listing->id)
         ->where('is_active', true)->with('user')->latest()->get();
     
-    // Данные для чата
-$conversation = null;
-$chatMessages = [];
-
-if (Auth::check() && $listing->user_id !== Auth::id()) {
-    $userId = Auth::id();
+    $similarListings = Listing::where('is_active', true)
+        ->where('category_id', $listing->category_id)
+        ->where('id', '!=', $listing->id)
+        ->with(['category', 'user'])
+        ->inRandomOrder()
+        ->take(8)
+        ->get()
+        ->map(fn($l) => [
+            'id' => $l->id,
+            'title' => $l->title,
+            'description' => $l->description ?? '',
+            'price' => $l->price,
+            'location' => $l->location ?? '',
+            'image' => $l->getFirstMediaUrl('images', 'thumb'),
+            'category' => $l->category ? ['id' => $l->category->id, 'name' => $l->category->name] : null,
+            'rating' => 4.8,
+            'reviews_count' => rand(50, 300),
+        ]);
     
-    $conversation = \App\Models\Conversation::where(function($q) use ($listing, $userId) {
-        $q->where('user_one_id', $userId)
-          ->where('user_two_id', $listing->user_id);
-    })->orWhere(function($q) use ($listing, $userId) {
-        $q->where('user_one_id', $listing->user_id)
-          ->where('user_two_id', $userId);
-    })->first();
+    $conversation = null;
+    $chatMessages = [];
     
-    if ($conversation) {
-        $chatMessages = $conversation->messages()
-            ->with('sender:id,name')
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->map(fn($m) => [
-                'id' => $m->id,
-                'body' => $m->body,
-                'sender_id' => $m->sender_id,
-                'sender_name' => $m->sender->name,
-                'is_mine' => $m->sender_id === Auth::id(),
-                'created_at' => $m->created_at->format('H:i'),
-            ]);
+    if (Auth::check() && $listing->user_id !== Auth::id()) {
+        $userId = Auth::id();
+        
+        $conversation = \App\Models\Conversation::where(function($q) use ($listing, $userId) {
+            $q->where('user_one_id', $userId)
+              ->where('user_two_id', $listing->user_id);
+        })->orWhere(function($q) use ($listing, $userId) {
+            $q->where('user_one_id', $listing->user_id)
+              ->where('user_two_id', $userId);
+        })->first();
+        
+        if ($conversation) {
+            $chatMessages = $conversation->messages()
+                ->with('sender:id,name')
+                ->orderBy('created_at', 'asc')
+                ->get()
+                ->map(fn($m) => [
+                    'id' => $m->id,
+                    'body' => $m->body,
+                    'sender_id' => $m->sender_id,
+                    'sender_name' => $m->sender->name,
+                    'is_mine' => $m->sender_id === Auth::id(),
+                    'created_at' => $m->created_at->format('H:i'),
+                ]);
+        }
     }
-}
     
     return Inertia::render('Listing/Show', [
         'listing' => [
@@ -388,6 +410,8 @@ if (Auth::check() && $listing->user_id !== Auth::id()) {
             'category' => $listing->category ? ['id' => $listing->category->id, 'name' => $listing->category->name] : null,
             'user_id' => $listing->user_id,
             'user' => $listing->user ? ['id' => $listing->user->id, 'name' => $listing->user->name] : null,
+            'created_at' => $listing->created_at,
+            'views' => $listing->views ?? 0,
         ],
         'reviews' => $reviews->map(fn($r) => [
             'id' => $r->id, 'rating' => $r->rating, 'comment' => $r->comment,
@@ -396,10 +420,9 @@ if (Auth::check() && $listing->user_id !== Auth::id()) {
         ]),
         'isFavorited' => $isFavorited,
         'auth' => ['user' => Auth::user()],
-        'conversation' => $conversation ? [
-            'id' => $conversation->id,
-        ] : null,
+        'conversation' => $conversation ? ['id' => $conversation->id] : null,
         'chatMessages' => $chatMessages,
+        'similarListings' => $similarListings,
     ]);
 })->name('listings.show');
 // Личный кабинет

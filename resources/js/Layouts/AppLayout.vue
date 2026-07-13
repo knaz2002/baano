@@ -198,13 +198,7 @@ const showToast = (message, type = 'success') => {
 };
 
 const handleCatalog = () => {
-    if (window.location.pathname === '/') {
-        showCatalog.value = !showCatalog.value;
-        showMobileMenu.value = false;
-        emit('toggle-catalog', showCatalog.value);
-    } else {
-        router.get('/');
-    }
+    router.get('/');
 };
 
 const toggleCatalog = () => {
