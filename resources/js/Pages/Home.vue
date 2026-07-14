@@ -6,40 +6,42 @@
                 <div 
                     v-for="cat in parentCategories" 
                     :key="cat.id"
-                    class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow flex flex-col"
+                    class="bg-white rounded-2xl shadow-lg p-4 md:p-6 hover:shadow-xl transition-shadow flex flex-col relative"
                 >
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 flex items-center justify-center flex-shrink-0" :class="getCategoryIconColor(cat.color)">
-                                <svg v-if="cat.icon === 'services'" class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                                </svg>
-                                <svg v-else-if="cat.icon === 'residential'" class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                                    <polyline points="9 22 9 12 15 12 15 22"/>
-                                </svg>
-                                <svg v-else-if="cat.icon === 'commercial'" class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
-                                    <path d="M9 22v-4h6v4"/>
-                                </svg>
-                                <svg v-else-if="cat.icon === 'transport'" class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="1" y="3" width="15" height="13"/>
-                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-                                    <circle cx="5.5" cy="18.5" r="2.5"/>
-                                    <circle cx="18.5" cy="18.5" r="2.5"/>
-                                </svg>
-                                <svg v-else-if="cat.icon === 'equipment'" class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                    <path d="M2 17l10 5 10-5"/>
-                                    <path d="M2 12l10 5 10-5"/>
-                                </svg>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <h3 class="font-bold text-xs sm:text-sm md:text-lg leading-tight mb-1 break-words" style="color: #1D1B20;">{{ cat.name }}</h3>
-                                <p class="text-sm" style="color: #49454F;">{{ cat.listings_count }} предложений</p>
-                            </div>
+                    <!-- Иконка в верхнем левом углу -->
+                    <div class="absolute top-3 left-3 w-6 h-6 md:w-12 md:h-12 flex items-center justify-center flex-shrink-0" :class="getCategoryIconColor(cat.color)">
+                        <svg v-if="cat.icon === 'services'" class="w-5 h-5 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                        <svg v-else-if="cat.icon === 'residential'" class="w-5 h-5 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                        <svg v-else-if="cat.icon === 'commercial'" class="w-5 h-5 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+                            <path d="M9 22v-4h6v4"/>
+                        </svg>
+                        <svg v-else-if="cat.icon === 'transport'" class="w-5 h-5 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="3" width="15" height="13"/>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                            <circle cx="5.5" cy="18.5" r="2.5"/>
+                            <circle cx="18.5" cy="18.5" r="2.5"/>
+                        </svg>
+                        <svg v-else-if="cat.icon === 'equipment'" class="w-5 h-5 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+
+                    <!-- Контент с отступом сверху -->
+                    <div class="flex-1 mt-10 md:mt-16">
+                        <div class="mb-3">
+                            <h3 class="font-bold text-xs sm:text-sm md:text-lg leading-tight mb-1" style="color: #1D1B20;">{{ cat.name }}</h3>
+                            <p class="text-xs sm:text-sm" style="color: #49454F;">{{ cat.listings_count }} предложений</p>
                         </div>
                     </div>
+                    
                     <div class="mt-4">
                         <Link 
                             :href="`/listings?category=${cat.id}`"
@@ -68,9 +70,9 @@
                     <!-- Кнопка влево -->
                     <button 
                         @click="prevSlide"
-                        class="absolute -left-2 sm:-left-4 md:left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all"
+                        class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all"
                     >
-                        <svg class="w-5 h-5 md:w-6 md:h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
                     </button>
@@ -135,9 +137,9 @@
                     <!-- Кнопка вправо -->
                     <button 
                         @click="nextSlide"
-                        class="absolute -right-2 sm:-right-4 md:right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all"
+                        class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all"
                     >
-                        <svg class="w-5 h-5 md:w-6 md:h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </button>
