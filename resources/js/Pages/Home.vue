@@ -35,7 +35,7 @@
                                 </svg>
                             </div>
                             <div class="min-w-0 flex-1">
-                                <h3 class="font-bold text-sm sm:text-base md:text-lg leading-tight mb-1" style="color: #1D1B20;">{{ cat.name }}</h3>
+                                <h3 class="font-bold text-xs sm:text-sm md:text-lg leading-tight mb-1 break-words" style="color: #1D1B20;">{{ cat.name }}</h3>
                                 <p class="text-sm" style="color: #49454F;">{{ cat.listings_count }} предложений</p>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <!-- Слайдер объявлений - непрерывный -->
+            <!-- Слайдер объявлений -->
             <div class="mb-12">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-lg sm:text-xl md:text-2xl font-bold" style="color: #1D1B20;">Рекомендуем для вас</h2>
@@ -68,9 +68,9 @@
                     <!-- Кнопка влево -->
                     <button 
                         @click="prevSlide"
-                        class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all"
+                        class="absolute -left-2 sm:-left-4 md:left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all"
                     >
-                        <svg class="w-6 h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
                     </button>
@@ -99,10 +99,10 @@
                                         >
                                         <button 
                                             @click.prevent="toggleFavorite(listing.id)"
-                                            class="absolute top-3 left-3 bg-white p-2 rounded-full shadow-lg hover:scale-110 transition-transform"
+                                            class="absolute top-2 md:top-3 left-2 md:left-3 bg-white p-1.5 md:p-2 rounded-full shadow-lg hover:scale-110 transition-transform"
                                         >
                                             <svg 
-                                                class="w-5 h-5" 
+                                                class="w-4 h-4 md:w-5 md:h-5" 
                                                 :class="listing.is_favorited ? 'text-red-500' : 'text-gray-400'"
                                                 :fill="listing.is_favorited ? 'currentColor' : 'none'"
                                                 stroke="currentColor" 
@@ -115,16 +115,16 @@
 
                                     <div class="p-3 sm:p-4">
                                         <h3 class="font-bold text-sm sm:text-base md:text-lg text-gray-900 mb-2 line-clamp-1" :title="listing.title">{{ listing.title }}</h3>
-                                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ listing.description }}</p>
-                                        <div class="mb-4">
-                                            <span class="text-lg sm:text-xl md:text-2xl font-bold" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</span>
+                                        <p class="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">{{ listing.description }}</p>
+                                        <div class="mb-2 md:mb-4">
+                                            <span class="text-base sm:text-lg md:text-2xl font-bold" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</span>
                                         </div>
                                         <div class="flex items-center gap-1 text-gray-600">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                             </svg>
-                                            <span class="text-sm">{{ listing.location || 'Адрес не указан' }}</span>
+                                            <span class="text-xs sm:text-sm">{{ listing.location || 'Адрес не указан' }}</span>
                                         </div>
                                     </div>
                                 </Link>
@@ -135,9 +135,9 @@
                     <!-- Кнопка вправо -->
                     <button 
                         @click="nextSlide"
-                        class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all"
+                        class="absolute -right-2 sm:-right-4 md:right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all"
                     >
-                        <svg class="w-6 h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </button>
@@ -159,7 +159,7 @@
             <!-- VIP объявления -->
             <div class="mb-12">
                 <div class="flex items-center gap-3 mb-6">
-                    <svg class="w-8 h-8 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 md:w-8 md:h-8 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
                     </svg>
                     <h2 class="text-lg sm:text-xl md:text-2xl font-bold" style="color: #1D1B20;">VIP объявления</h2>
@@ -173,7 +173,7 @@
                         class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all border-2 group relative"
                         style="border-color: #FFD8E4;"
                     >
-                        <div class="absolute top-3 right-3 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);">
+                        <div class="absolute top-2 md:top-3 right-2 md:right-3 text-white px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-bold shadow-lg z-10" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);">
                             VIP
                         </div>
 
@@ -185,12 +185,12 @@
                             >
                         </div>
                         
-                        <div class="p-3 sm:p-4">
-                            <h3 class="font-bold text-sm sm:text-base md:text-lg text-gray-900 mb-2 line-clamp-2">{{ listing.title }}</h3>
-                            <p class="text-lg sm:text-xl md:text-base sm:text-lg md:text-2xl font-bold mb-1 sm:mb-2" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</p>
+                        <div class="p-2 sm:p-3 md:p-5">
+                            <h3 class="font-bold text-xs sm:text-sm md:text-lg text-gray-900 mb-1 md:mb-2 line-clamp-2">{{ listing.title }}</h3>
+                            <p class="text-sm sm:text-base md:text-2xl font-bold mb-1 md:mb-2" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</p>
                             <div class="flex items-center gap-1">
-                                <span class="text-yellow-400">★</span>
-                                <span class="text-sm text-gray-600">{{ listing.rating || '4.9' }}</span>
+                                <span class="text-yellow-400 text-xs md:text-sm">★</span>
+                                <span class="text-xs md:text-sm text-gray-600">{{ listing.rating || '4.9' }}</span>
                             </div>
                         </div>
                     </Link>
@@ -212,11 +212,17 @@ const props = defineProps({
 });
 
 const currentSlide = ref(0);
-const itemsPerView = 5;
+const itemsPerView = computed(() => {
+    if (typeof window !== 'undefined') {
+        if (window.innerWidth < 768) return 2;
+        if (window.innerWidth < 1024) return 3;
+    }
+    return 5;
+});
 let autoSlideInterval = null;
 
 const totalPages = computed(() => {
-    return Math.ceil(props.sliderListings.length / itemsPerView);
+    return Math.ceil(props.sliderListings.length / itemsPerView.value);
 });
 
 const nextSlide = () => {
@@ -255,7 +261,6 @@ const getCategoryIconColor = (color) => {
 };
 
 const toggleFavorite = (listingId) => {
-    // Находим объявление в слайдере
     const listing = props.sliderListings.find(l => l.id === listingId);
     if (listing) {
         listing.is_favorited = !listing.is_favorited;
@@ -264,7 +269,6 @@ const toggleFavorite = (listingId) => {
     router.post('/user/favorites/toggle', { listing_id: listingId }, {
         preserveScroll: true,
         onError: () => {
-            // Откатываем состояние при ошибке
             if (listing) {
                 listing.is_favorited = !listing.is_favorited;
             }
