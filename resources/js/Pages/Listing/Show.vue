@@ -203,12 +203,12 @@
                 <!-- Табы -->
                 <div class="mt-6 md:mt-8 bg-white rounded-2xl shadow-lg">
                     <div class="border-b overflow-x-auto scrollbar-hide" style="border-color: #E7E0EC;">
-                        <div class="flex gap-2 md:gap-6 px-3 md:px-6 min-w-max">
+                        <div class="flex gap-1 md:gap-6 px-2 md:px-6 min-w-max">
                             <button 
                                 v-for="tab in tabs" 
                                 :key="tab.id"
                                 @click="activeTab = tab.id"
-                                class="py-3 md:py-4 px-2 md:px-4 font-medium text-xs md:text-sm whitespace-nowrap transition-all border-b-2"
+                                class="py-3 md:py-4 px-1 md:px-4 font-medium text-xs md:text-sm whitespace-nowrap transition-all border-b-2"
                                 :class="activeTab === tab.id ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-600 hover:text-gray-900'"
                             >
                                 {{ tab.name }}
