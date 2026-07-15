@@ -14,48 +14,44 @@ class MessageController extends Controller
     public function index()
     {
         $userId = Auth::id();
-        
+
         $conversations = Conversation::where('user_one_id', $userId)
             ->orWhere('user_two_id', $userId)
-            ->with(['userOne', 'userTwo', 'lastMessage.sender'])
+            ->with(['userOne:id,name', 'userTwo:id,name', 'lastMessage:id,conversation_id,body,sender_id,created_at'])
             ->orderByDesc('last_message_at')
             ->get()
-            ->map(function ($conversation) use ($userId) {
-                $otherUser = $conversation->user_one_id === $userId 
-                    ? $conversation->userTwo 
-                    : $conversation->userOne;
-                
-                $unreadCount = Message::where('conversation_id', $conversation->id)
+            ->map(function ($conv) use ($userId) {
+                $otherUser = $conv->user_one_id === $userId ? $conv->userTwo : $conv->userOne;
+
+                $unreadCount = Message::where('conversation_id', $conv->id)
                     ->where('sender_id', '!=', $userId)
                     ->where('is_read', false)
                     ->count();
-                
+
                 return [
-                    'id' => $conversation->id,
+                    'id' => $conv->id,
                     'other_user' => [
                         'id' => $otherUser->id,
                         'name' => $otherUser->name,
                     ],
-                    'last_message' => $conversation->lastMessage ? [
-                        'body' => $conversation->lastMessage->body,
-                        'sender_id' => $conversation->lastMessage->sender_id,
-                        'created_at' => $conversation->lastMessage->created_at,
+                    'last_message' => $conv->lastMessage ? [
+                        'body' => $conv->lastMessage->body,
+                        'sender_id' => $conv->lastMessage->sender_id,
+                        'created_at' => $conv->lastMessage->created_at->toIso8601String(),
                     ] : null,
                     'unread_count' => $unreadCount,
-                    'updated_at' => $conversation->last_message_at ?? $conversation->created_at,
                 ];
             });
 
         return Inertia::render('Messages/Index', [
             'conversations' => $conversations,
-            'auth' => ['user' => Auth::user()],
         ]);
     }
 
     public function show(Conversation $conversation)
     {
         $userId = Auth::id();
-        
+
         if ($conversation->user_one_id !== $userId && $conversation->user_two_id !== $userId) {
             abort(403);
         }
@@ -65,8 +61,8 @@ class MessageController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        $otherUser = $conversation->user_one_id === $userId 
-            ? $conversation->userTwo 
+        $otherUser = $conversation->user_one_id === $userId
+            ? $conversation->userTwo
             : $conversation->userOne;
 
         $messages = Message::where('conversation_id', $conversation->id)
@@ -91,14 +87,13 @@ class MessageController extends Controller
                 ],
             ],
             'messages' => $messages,
-            'auth' => ['user' => Auth::user()],
         ]);
     }
 
     public function store(Request $request, Conversation $conversation)
     {
         $userId = Auth::id();
-        
+
         if ($conversation->user_one_id !== $userId && $conversation->user_two_id !== $userId) {
             abort(403);
         }
@@ -122,16 +117,50 @@ class MessageController extends Controller
         return back();
     }
 
-    public function messageUser(User $user)
+    public function messageUser(Request $request, User $user)
     {
         $userId = Auth::id();
-        
+
         if ($user->id === $userId) {
             return back()->with('error', 'Нельзя написать себе');
         }
 
+        $validated = $request->validate([
+            'body' => 'required|string|max:1000',
+        ]);
+
         $conversation = Conversation::getOrCreate($userId, $user->id);
 
-        return redirect()->route('messages.show', $conversation->id);
+        $message = Message::create([
+            'conversation_id' => $conversation->id,
+            'sender_id' => $userId,
+            'body' => $validated['body'],
+            'is_read' => false,
+        ]);
+
+        $conversation->update([
+            'last_message_id' => $message->id,
+            'last_message_at' => now(),
+        ]);
+
+        $chatMessages = $conversation->messages()
+            ->with('sender:id,name')
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(fn($m) => [
+                'id' => $m->id,
+                'body' => $m->body,
+                'sender_id' => $m->sender_id,
+                'sender_name' => $m->sender->name,
+                'is_mine' => $m->sender_id === $userId,
+                'created_at' => $m->created_at->format('H:i'),
+            ]);
+
+        return back()->with([
+            'showChatSidebar' => true,
+        ])->merge([
+            'conversation' => ['id' => $conversation->id],
+            'chatMessages' => $chatMessages,
+        ]);
     }
 }
