@@ -140,24 +140,25 @@
                             <p class="text-sm mt-2" style="color: #79747E;">Максимум 10 фотографий</p>
                         </div>
 
-                        <!-- Кнопки -->
-                        <div class="flex gap-4">
-                            <button 
-                                type="submit"
-                                class="px-8 py-3 rounded-xl text-white font-medium transition-all hover:shadow-lg"
-                                style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
-                                :disabled="form.processing"
-                            >
-                                {{ form.processing ? 'Создание...' : 'Создать объявление' }}
-                            </button>
-                            <Link 
-                                href="/user/listings"
-                                class="px-8 py-3 rounded-xl font-medium border-2 transition-all hover:shadow-md"
-                                style="border-color: #6750A4; color: #6750A4;"
-                            >
-                                Отмена
-                            </Link>
-                        </div>
+<!-- Кнопки -->
+<div class="flex gap-4">
+    <button 
+        type="submit"
+        class="flex-1 px-4 py-2 rounded-xl text-white font-medium text-sm transition-all hover:shadow-lg"
+        style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
+        :disabled="form.processing"
+    >
+        {{ form.processing ? 'Создание...' : 'Создать' }}
+    </button>
+    <Link 
+        href="/user/listings"
+        class="flex-1 px-4 py-2 rounded-xl font-medium text-sm border-2 transition-all hover:shadow-md text-center"
+        style="border-color: #6750A4; color: #6750A4;"
+    >
+        Отмена
+    </Link>
+</div>
+
                     </div>
                 </form>
             </div>

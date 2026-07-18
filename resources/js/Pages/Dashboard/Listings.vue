@@ -8,7 +8,7 @@
                     class="px-4 md:px-6 py-2 md:py-3 rounded-xl text-white font-medium text-sm md:text-base transition-all hover:shadow-lg"
                     style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
                 >
-                    + Создать объявление
+                    Создать новое
                 </Link>
             </div>
 

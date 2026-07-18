@@ -117,50 +117,33 @@ class MessageController extends Controller
         return back();
     }
 
-    public function messageUser(Request $request, User $user)
-    {
-        $userId = Auth::id();
+public function messageUser(Request $request, User $user)
+{
+    $userId = Auth::id();
 
-        if ($user->id === $userId) {
-            return back()->with('error', 'Нельзя написать себе');
-        }
+    if ($user->id === $userId) {
+        return back()->with('error', 'Нельзя написать себе');
+    }
 
+    // Создаем или получаем диалог
+    $conversation = Conversation::getOrCreate($userId, $user->id);
+
+    // Если есть текст сообщения — создаем его
+    if ($request->filled('body')) {
         $validated = $request->validate([
             'body' => 'required|string|max:1000',
         ]);
 
-        $conversation = Conversation::getOrCreate($userId, $user->id);
-
-        $message = Message::create([
+        Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $userId,
             'body' => $validated['body'],
             'is_read' => false,
         ]);
-
-        $conversation->update([
-            'last_message_id' => $message->id,
-            'last_message_at' => now(),
-        ]);
-
-        $chatMessages = $conversation->messages()
-            ->with('sender:id,name')
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->map(fn($m) => [
-                'id' => $m->id,
-                'body' => $m->body,
-                'sender_id' => $m->sender_id,
-                'sender_name' => $m->sender->name,
-                'is_mine' => $m->sender_id === $userId,
-                'created_at' => $m->created_at->format('H:i'),
-            ]);
-
-        return back()->with([
-            'showChatSidebar' => true,
-        ])->merge([
-            'conversation' => ['id' => $conversation->id],
-            'chatMessages' => $chatMessages,
-        ]);
     }
+
+    // Перенаправляем на страницу сообщений с этим диалогом
+    return redirect()->route('messages.show', ['conversation' => $conversation->id]);
+}
+
 }
