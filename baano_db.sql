@@ -153,7 +153,7 @@ CREATE TABLE `conversations` (
   CONSTRAINT `conversations_last_message_id_foreign` FOREIGN KEY (`last_message_id`) REFERENCES `messages` (`id`) ON DELETE SET NULL,
   CONSTRAINT `conversations_user_one_id_foreign` FOREIGN KEY (`user_one_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `conversations_user_two_id_foreign` FOREIGN KEY (`user_two_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,6 +162,7 @@ CREATE TABLE `conversations` (
 
 LOCK TABLES `conversations` WRITE;
 /*!40000 ALTER TABLE `conversations` DISABLE KEYS */;
+INSERT INTO `conversations` VALUES (1,2,3,8,'2026-07-17 01:36:43','2026-07-17 01:27:06','2026-07-17 01:36:43'),(2,1,3,NULL,'2026-07-17 02:44:52','2026-07-17 02:24:30','2026-07-17 02:44:52');
 /*!40000 ALTER TABLE `conversations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -212,7 +213,7 @@ CREATE TABLE `favorites` (
   UNIQUE KEY `favorites_user_id_favoritable_type_favoritable_id_unique` (`user_id`,`favoritable_type`,`favoritable_id`),
   KEY `favorites_favoritable_type_favoritable_id_index` (`favoritable_type`,`favoritable_id`),
   CONSTRAINT `favorites_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -221,6 +222,7 @@ CREATE TABLE `favorites` (
 
 LOCK TABLES `favorites` WRITE;
 /*!40000 ALTER TABLE `favorites` DISABLE KEYS */;
+INSERT INTO `favorites` VALUES (1,2,'App\\Models\\Listing',11,'2026-07-16 05:33:09','2026-07-16 05:33:09'),(2,1,'App\\Models\\Listing',13,'2026-07-17 02:47:26','2026-07-17 02:47:26'),(3,12,'App\\Models\\Listing',11,'2026-07-18 08:38:38','2026-07-18 08:38:38'),(4,12,'App\\Models\\Listing',9,'2026-07-18 08:38:53','2026-07-18 08:38:53'),(5,12,'App\\Models\\Listing',8,'2026-07-18 08:38:55','2026-07-18 08:38:55');
 /*!40000 ALTER TABLE `favorites` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -298,6 +300,7 @@ CREATE TABLE `listings` (
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` decimal(10,2) DEFAULT NULL,
+  `price_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'fixed',
   `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `images` json DEFAULT NULL,
   `status` enum('draft','active','sold','inactive','pending') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
@@ -309,7 +312,7 @@ CREATE TABLE `listings` (
   KEY `listings_category_id_foreign` (`category_id`),
   CONSTRAINT `listings_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
   CONSTRAINT `listings_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -318,7 +321,7 @@ CREATE TABLE `listings` (
 
 LOCK TABLES `listings` WRITE;
 /*!40000 ALTER TABLE `listings` DISABLE KEYS */;
-INSERT INTO `listings` VALUES (3,1,22,'дизельный генератор на 5000 кВт','сдам на длительный срок, доставка и пуско-наладка за доп. плату',60000.00,NULL,NULL,'active',1,'2026-06-30 22:36:17','2026-06-30 23:46:33'),(4,1,8,'складское помещение на 10 000м2','6 подъездных ворот, охрана 24/7',3000000.00,NULL,NULL,'active',1,'2026-06-30 22:40:34','2026-06-30 23:46:36'),(5,1,7,'свободного назначения 35 м2','под ногтевой сервис, салон массажа или парикмахерскую, есть все оборудование',75000.00,NULL,NULL,'active',1,'2026-07-01 01:11:47','2026-07-01 01:20:19'),(6,1,25,'бригада плиточников','укладка плитки, керамогранита, мраморные лестницы и фасады под ключ. цена 1 за м2',5000.00,NULL,NULL,'active',1,'2026-07-01 01:13:19','2026-07-01 01:20:20'),(7,1,4,'загородный дом для большой компании','сдается коттедж, до 15 человек, есть вся мебель и посуда',35000.00,NULL,NULL,'active',1,'2026-07-01 01:14:34','2026-07-01 01:20:22'),(8,1,3,'2-х комнатная квартира в центре города','сдам 2-х комнатную квартиру в центре города, транспортная развязка, рядом магазины, школа и дет. сад. есть паркинг за доп. плату',60000.00,NULL,NULL,'active',1,'2026-07-01 01:15:59','2026-07-01 01:20:23'),(9,1,27,'услуги переезда','поможем вам с переездом, всегда опрятные грузчики, в удобное для вас время',2000.00,NULL,NULL,'active',1,'2026-07-01 01:17:17','2026-07-01 01:20:25'),(10,1,26,'клиринг за копейки','услуги клиринга, уберем, помоем, постираем, погладим!',7500.00,NULL,NULL,'active',1,'2026-07-01 01:18:20','2026-07-01 01:20:27'),(11,1,20,'спецтехника для обустройства участков','эксковаторы, самосвалы, манипуляторы, есть  все',0.00,NULL,NULL,'active',1,'2026-07-01 01:20:03','2026-07-01 01:20:29');
+INSERT INTO `listings` VALUES (3,1,22,'дизельный генератор на 5000 кВт','сдам на длительный срок, доставка и пуско-наладка за доп. плату',60000.00,'fixed',NULL,NULL,'active',1,'2026-06-30 22:36:17','2026-06-30 23:46:33'),(4,1,8,'складское помещение на 10 000м2','6 подъездных ворот, охрана 24/7',3000000.00,'fixed',NULL,NULL,'active',1,'2026-06-30 22:40:34','2026-06-30 23:46:36'),(5,1,7,'свободного назначения 35 м2','под ногтевой сервис, салон массажа или парикмахерскую, есть все оборудование',75000.00,'fixed',NULL,NULL,'active',1,'2026-07-01 01:11:47','2026-07-01 01:20:19'),(6,1,25,'бригада плиточников','укладка плитки, керамогранита, мраморные лестницы и фасады под ключ. цена 1 за м2',5000.00,'fixed',NULL,NULL,'active',1,'2026-07-01 01:13:19','2026-07-01 01:20:20'),(7,1,4,'загородный дом для большой компании','сдается коттедж, до 15 человек, есть вся мебель и посуда',35000.00,'fixed',NULL,NULL,'active',1,'2026-07-01 01:14:34','2026-07-01 01:20:22'),(8,1,3,'2-х комнатная квартира в центре города','сдам 2-х комнатную квартиру в центре города, транспортная развязка, рядом магазины, школа и дет. сад. есть паркинг за доп. плату',60000.00,'fixed',NULL,NULL,'active',1,'2026-07-01 01:15:59','2026-07-01 01:20:23'),(9,1,27,'услуги переезда','поможем вам с переездом, всегда опрятные грузчики, в удобное для вас время',2000.00,'fixed',NULL,NULL,'active',1,'2026-07-01 01:17:17','2026-07-01 01:20:25'),(10,1,26,'клиринг за копейки','услуги клиринга, уберем, помоем, постираем, погладим!',7500.00,'fixed',NULL,NULL,'active',1,'2026-07-01 01:18:20','2026-07-01 01:20:27'),(11,1,20,'спецтехника для обустройства участков','эксковаторы, самосвалы, манипуляторы, есть  все',0.00,'fixed',NULL,NULL,'active',1,'2026-07-01 01:20:03','2026-07-01 01:20:29'),(12,2,16,'мопеды в аренду','права не нужны',2000.00,'daily',NULL,NULL,'pending',1,'2026-07-16 06:19:41','2026-07-16 06:19:57'),(13,3,25,'Ремонт стиральных машин','Ремонтирую)',1000.00,'fixed',NULL,NULL,'pending',1,'2026-07-16 23:46:54','2026-07-17 01:09:38');
 /*!40000 ALTER TABLE `listings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -352,7 +355,7 @@ CREATE TABLE `media` (
   UNIQUE KEY `media_uuid_unique` (`uuid`),
   KEY `media_model_type_model_id_index` (`model_type`,`model_id`),
   KEY `media_order_column_index` (`order_column`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -361,7 +364,7 @@ CREATE TABLE `media` (
 
 LOCK TABLES `media` WRITE;
 /*!40000 ALTER TABLE `media` DISABLE KEYS */;
-INSERT INTO `media` VALUES (3,'App\\Models\\Listing',3,'88cb0369-88c6-4c43-90d5-310099c2d018','images','5ofnRzrGy9aCQWhTqTP7XYGXf2lJyPGTefxHnU4kgx5e4V7hPZ_Am_uroFpBy1-x3c--Pvz6mBc1vqIT7iJLlbGTi945FaFtkaoEP4JUXfbqukrKttiA4Nwgk-jSFnzHOUqCQ8DBWxu0yV1zP1UQkr5mcS9Bc22z8LzyJDD9UDs','5ofnRzrGy9aCQWhTqTP7XYGXf2lJyPGTefxHnU4kgx5e4V7hPZ_Am_uroFpBy1-x3c--Pvz6mBc1vqIT7iJLlbGTi945FaFtkaoEP4JUXfbqukrKttiA4Nwgk-jSFnzHOUqCQ8DBWxu0yV1zP1UQkr5mcS9Bc22z8LzyJDD9UDs.jpg','image/jpeg','public','public',92365,'[]','[]','{\"thumb\": true}','[]',1,'2026-06-30 22:36:17','2026-07-01 01:09:04'),(4,'App\\Models\\Listing',4,'dbafc0ba-7e5a-41c8-8fe0-27f6dffaa594','images','ChatGPT_Image_25_мар._2026_г.__20_35_44','ChatGPT_Image_25_мар._2026_г.__20_35_44.png','image/png','public','public',1618508,'[]','[]','{\"thumb\": true}','[]',1,'2026-06-30 22:40:34','2026-07-01 01:08:41'),(5,'App\\Models\\Listing',5,'bce6e710-ba4e-40c8-b6f3-7fd43bd70e8e','images','Без названия','Без-названия.jpg','image/jpeg','public','public',9371,'[]','[]','{\"thumb\": true}','[]',1,'2026-07-01 01:11:47','2026-07-01 01:11:47'),(6,'App\\Models\\Listing',6,'350d9b63-c66b-4ef3-a55f-2cc211760e54','images','IutH29QrXNt6xPPiNy_zwfjnRWM1mSqxOY1HmAjLMR8wXnAkeCis_9gg3GS33hhtjsr5WvsHu9_1WSvzogLQQOHDkkDz1b_DQeDHJEI-Y7WtR_mnt6JlK531myq9vzYaqKEymRU02ZwM7cR4LpMC0p6x3BE0o7eI2CvPecXryXocRqA3hMu3wB9YptDBmGGS','IutH29QrXNt6xPPiNy_zwfjnRWM1mSqxOY1HmAjLMR8wXnAkeCis_9gg3GS33hhtjsr5WvsHu9_1WSvzogLQQOHDkkDz1b_DQeDHJEI-Y7WtR_mnt6JlK531myq9vzYaqKEymRU02ZwM7cR4LpMC0p6x3BE0o7eI2CvPecXryXocRqA3hMu3wB9YptDBmGGS.jpg','image/jpeg','public','public',100939,'[]','[]','{\"thumb\": true}','[]',1,'2026-07-01 01:13:19','2026-07-01 01:13:19'),(7,'App\\Models\\Listing',7,'56e6418f-2c4c-428a-a8e3-a3c444f7ce2e','images','N11K9MUmSbiNavA1l9Y_1BoDaLECs1rxSzY6MZSmg79Llw0Z7t7Nb_fb3UfswSCoUKSYQIA6jFMloVaEfwuf85bCnQus1TzYuGSApDqqAKE5ZewP0wjKrGTFov9domWooqLyp-qKYM8DyDqlW93887sc5u9DG2VPyqu-OKqecvk','N11K9MUmSbiNavA1l9Y_1BoDaLECs1rxSzY6MZSmg79Llw0Z7t7Nb_fb3UfswSCoUKSYQIA6jFMloVaEfwuf85bCnQus1TzYuGSApDqqAKE5ZewP0wjKrGTFov9domWooqLyp-qKYM8DyDqlW93887sc5u9DG2VPyqu-OKqecvk.jpg','image/jpeg','public','public',25246,'[]','[]','{\"thumb\": true}','[]',1,'2026-07-01 01:14:34','2026-07-01 01:14:34'),(8,'App\\Models\\Listing',8,'3a6be958-1fa7-4e17-9ab5-1f24beae4ff4','images','756281448063005','756281448063005.jpg','image/jpeg','public','public',1935767,'[]','[]','{\"thumb\": true}','[]',1,'2026-07-01 01:15:59','2026-07-01 01:15:59'),(9,'App\\Models\\Listing',8,'7ea1d273-dc80-4ea0-bb53-e18f1b191169','images','unnamed (1)','unnamed-(1).jpg','image/jpeg','public','public',217824,'[]','[]','{\"thumb\": true}','[]',2,'2026-07-01 01:15:59','2026-07-01 01:15:59'),(10,'App\\Models\\Listing',8,'6c7a642f-3ee8-4242-a655-f782da975ed8','images','unnamed','unnamed.jpg','image/jpeg','public','public',273767,'[]','[]','{\"thumb\": true}','[]',3,'2026-07-01 01:15:59','2026-07-01 01:15:59'),(11,'App\\Models\\Listing',9,'c9ff9bfd-09e8-425a-a05a-10aad2464a55','images','VCTNK7wR_kV6jBEEyZhyjzjOJMY30c-5rTeJiIiGiYniHxSc1HUGmEZB0PgsPOwt-pFrVOnKMl9ghs540iCww2cRlzN0nqRarsp0O9w1sbtIEAetlYCaNyQmkXwzrSrXF6Ti_yHjTkR4ahAq9EUkcW-CS1m7N7kanhOWJ1x78-k','VCTNK7wR_kV6jBEEyZhyjzjOJMY30c-5rTeJiIiGiYniHxSc1HUGmEZB0PgsPOwt-pFrVOnKMl9ghs540iCww2cRlzN0nqRarsp0O9w1sbtIEAetlYCaNyQmkXwzrSrXF6Ti_yHjTkR4ahAq9EUkcW-CS1m7N7kanhOWJ1x78-k.jpg','image/jpeg','public','public',136597,'[]','[]','{\"thumb\": true}','[]',1,'2026-07-01 01:17:17','2026-07-01 01:17:17'),(12,'App\\Models\\Listing',10,'8bcead2f-1c85-4f0c-a216-cfef7d262013','images','qp1qcgE7WwTbhmRDFlhPCGnjnJ5YfWJcn2D8rmI6LXjqP7ZLK056lohg7zNo5UM0IeTk6b1QU4BCIGzEYCyjwdgxmpcTJLM5s9qZIT6KkI5GJriaqJBgd-qWuwK70IO3QGh9bl0ilrp6C7j6ojKN9HixGlMK1xzmxwAgZb3yDL8','qp1qcgE7WwTbhmRDFlhPCGnjnJ5YfWJcn2D8rmI6LXjqP7ZLK056lohg7zNo5UM0IeTk6b1QU4BCIGzEYCyjwdgxmpcTJLM5s9qZIT6KkI5GJriaqJBgd-qWuwK70IO3QGh9bl0ilrp6C7j6ojKN9HixGlMK1xzmxwAgZb3yDL8.jpg','image/jpeg','public','public',47903,'[]','[]','{\"thumb\": true}','[]',1,'2026-07-01 01:18:20','2026-07-01 01:18:20'),(13,'App\\Models\\Listing',10,'b321e7f1-c94e-4397-bff9-f724dfe8e236','images','service','service.jpg','image/jpeg','public','public',80775,'[]','[]','{\"thumb\": true}','[]',2,'2026-07-01 01:18:20','2026-07-01 01:18:20'),(14,'App\\Models\\Listing',11,'88d31aa7-9079-48e8-8d90-efc8bdc53cf9','images','TU567fL8cAuRHUO8jm5wmOBHtP787K1JSceMBncgfkF80tAdUgPt0c_yrm3D2kQIxCW8B2jvDMfVqWExaHn7SFD5a3qeUdHb99_B7KvI89dvdGdokj7a5HWJubSLsO-S694jW3u8XJp3y9BNH_dPuFcQgtHyNSZmRl-ZFyrB7hc','TU567fL8cAuRHUO8jm5wmOBHtP787K1JSceMBncgfkF80tAdUgPt0c_yrm3D2kQIxCW8B2jvDMfVqWExaHn7SFD5a3qeUdHb99_B7KvI89dvdGdokj7a5HWJubSLsO-S694jW3u8XJp3y9BNH_dPuFcQgtHyNSZmRl-ZFyrB7hc.jpg','image/jpeg','public','public',60559,'[]','[]','{\"thumb\": true}','[]',1,'2026-07-01 01:20:03','2026-07-01 01:20:03');
+INSERT INTO `media` VALUES (15,'App\\Models\\Listing',12,'bcb7b9fb-ccc3-4c06-8058-11d65aaa779e','images','cau43nwNIjxcqifvPqJHduVr-cQNmxj3I_pzv1vik6NJtSuEX9Ci-48WpzDV6dZzVpCupSg7pYs9LlNiclmlnI3Fjsl9HTEApco6mNYyUyJp5-uZc24Xffx6QUO5TAFO47fT13wBYO1L4Mb3mIn4vWXeQB24q-J_Fiz-HcERALQ','cau43nwNIjxcqifvPqJHduVr-cQNmxj3I_pzv1vik6NJtSuEX9Ci-48WpzDV6dZzVpCupSg7pYs9LlNiclmlnI3Fjsl9HTEApco6mNYyUyJp5-uZc24Xffx6QUO5TAFO47fT13wBYO1L4Mb3mIn4vWXeQB24q-J_Fiz-HcERALQ.jpg','image/jpeg','public','public',68327,'[]','[]','{\"thumb\": true}','[]',1,'2026-07-16 06:19:41','2026-07-16 22:23:49'),(16,'App\\Models\\Listing',12,'e621ebf7-ad23-42ba-bca4-77c01110f10f','images','kak-arendovat-skuter-v-tailande','kak-arendovat-skuter-v-tailande.webp','image/webp','public','public',78014,'[]','[]','{\"thumb\": true}','[]',2,'2026-07-16 06:19:41','2026-07-16 22:23:49'),(17,'App\\Models\\Listing',3,'691cd2a0-1c28-403d-b307-fd7067f4c97e','images','5ofnRzrGy9aCQWhTqTP7XYGXf2lJyPGTefxHnU4kgx5e4V7hPZ_Am_uroFpBy1-x3c--Pvz6mBc1vqIT7iJLlbGTi945FaFtkaoEP4JUXfbqukrKttiA4Nwgk-jSFnzHOUqCQ8DBWxu0yV1zP1UQkr5mcS9Bc22z8LzyJDD9UDs','01KXNC8HJRJGYADDSHB1QP66JS.jpg','image/jpeg','public','public',92365,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',2,'2026-07-16 06:51:15','2026-07-16 22:23:49'),(18,'App\\Models\\Listing',3,'40bc0c8f-0bd1-4c25-be1a-ac7103fe461e','images','7Zt-GAMXLlzztY_WTjCDpCVKVlUqBsfuZSfBIvygTRJD0Dy91BmWXDtppCNiNWpUJPLFEnmi7JcTpziqh7eaSqEmRHaLD7hKq7dNkc_b2Z1I_i_AV2mQqxDRLvi0ygyPp6Rw5HzGbWfxDLzSFWrrg0RHIs09vo2enEbyZWZJHpM','01KXNC8HM2AMSXTJFM6010CTEV.jpg','image/jpeg','public','public',178924,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',3,'2026-07-16 06:51:15','2026-07-16 22:23:49'),(19,'App\\Models\\Listing',4,'e374e9db-dfa5-4d89-aa8c-e091daf17d4c','images','9','01KXNCB7CPJR2SC3QG99SPKB6C.jpg','image/jpeg','public','public',156481,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',2,'2026-07-16 06:52:43','2026-07-16 22:23:49'),(20,'App\\Models\\Listing',4,'6af456b8-bafb-4b6b-a860-a1c46229dd30','images','ChatGPT_Image_25_мар._2026_г.__20_35_44','01KXNCB7F0TA6DTS5458THE3NQ.png','image/png','public','public',1618508,'[]','{\"custom_headers\": {\"ContentType\": \"image/png\"}}','{\"thumb\": true}','[]',3,'2026-07-16 06:52:43','2026-07-16 22:23:49'),(22,'App\\Models\\Listing',5,'52ac71bb-ac86-46bd-9d86-a8afd2432d09','images','Без названия','01KXQ07C3EXGMWWBYNK65HSQE7.jpg','image/jpeg','public','public',9371,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',1,'2026-07-16 21:59:23','2026-07-16 22:23:49'),(24,'App\\Models\\Listing',6,'f7d2d7c4-5e25-440c-9e49-c88b0a5e2493','images','IutH29QrXNt6xPPiNy_zwfjnRWM1mSqxOY1HmAjLMR8wXnAkeCis_9gg3GS33hhtjsr5WvsHu9_1WSvzogLQQOHDkkDz1b_DQeDHJEI-Y7WtR_mnt6JlK531myq9vzYaqKEymRU02ZwM7cR4LpMC0p6x3BE0o7eI2CvPecXryXocRqA3hMu3wB9YptDBmGGS','01KXQ09123ME0AMJCE6NPEGJHM.jpg','image/jpeg','public','public',100939,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',1,'2026-07-16 22:00:17','2026-07-16 22:23:49'),(25,'App\\Models\\Listing',7,'9b54dd1f-9c82-4d3f-a2a3-b96455ac093a','images','unnamed-thumb','01KXQ0EW7HVN2AE1D9R1EDTYMR.jpg','image/jpeg','public','public',12451,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',1,'2026-07-16 22:03:29','2026-07-16 22:23:49'),(26,'App\\Models\\Listing',8,'8b76337b-c172-446e-bd46-6f5fbb94239e','images','3b1395e687fc3a32d9dd8c535e29d8527fbebe40','01KXQ2MMRV4PSZNSAM9TW83X0W.avif','image/avif','public','public',115792,'[]','{\"custom_headers\": {\"ContentType\": \"image/avif\"}}','{\"thumb\": true}','[]',1,'2026-07-16 22:41:35','2026-07-16 22:41:35'),(27,'App\\Models\\Listing',8,'c22ede33-3021-4ce9-9777-8fb6f7a77574','images','4b55621226408a0b30b18c50adc68f84983bf3a9','01KXQ2MMVMBHJNHDC7JBXFM16Q.avif','image/avif','public','public',58677,'[]','{\"custom_headers\": {\"ContentType\": \"image/avif\"}}','{\"thumb\": true}','[]',2,'2026-07-16 22:41:35','2026-07-16 22:41:35'),(28,'App\\Models\\Listing',8,'15b7050d-dbcd-4bd6-9c67-df97e5955fa0','images','4e36c6e1bbf63fff9947a10b856bde4ab38f7322','01KXQ2MMYDQ4ZH1ZPZ57XA0XXC.avif','image/avif','public','public',187022,'[]','{\"custom_headers\": {\"ContentType\": \"image/avif\"}}','{\"thumb\": true}','[]',3,'2026-07-16 22:41:35','2026-07-16 22:41:35'),(29,'App\\Models\\Listing',8,'2ed940ae-50c9-48f3-84e3-dfbfebca3bfd','images','41841a202dc760e48af79bdb5a30e9e74ed3df3e','01KXQ2MN1DAQ310JWA9R9PD27C.avif','image/avif','public','public',109493,'[]','{\"custom_headers\": {\"ContentType\": \"image/avif\"}}','{\"thumb\": true}','[]',4,'2026-07-16 22:41:35','2026-07-16 22:41:35'),(30,'App\\Models\\Listing',8,'d1d137d3-6015-45a1-89a8-0b1fe9a472c8','images','600070d9d140890565800c7d3ddb206679c1743d','01KXQ2MN4G209XB607A8BKDPN2.avif','image/avif','public','public',61937,'[]','{\"custom_headers\": {\"ContentType\": \"image/avif\"}}','{\"thumb\": true}','[]',5,'2026-07-16 22:41:35','2026-07-16 22:41:35'),(31,'App\\Models\\Listing',8,'07c85d62-f8e6-4123-af74-673c5ce00054','images','ba8ce7378b9967a1396b8e7e428868d3d26c0b8f','01KXQ2MN78XZYGH1XKR2D5FCMC.avif','image/avif','public','public',115126,'[]','{\"custom_headers\": {\"ContentType\": \"image/avif\"}}','{\"thumb\": true}','[]',6,'2026-07-16 22:41:35','2026-07-16 22:41:35'),(32,'App\\Models\\Listing',8,'96ad741d-a03b-481d-8259-eb9b23dbaeed','images','f2ca9e01d1e2416edf3109f520292a592be44174','01KXQ2MNACT7JN1MNNF3461PZS.avif','image/avif','public','public',78264,'[]','{\"custom_headers\": {\"ContentType\": \"image/avif\"}}','{\"thumb\": true}','[]',7,'2026-07-16 22:41:35','2026-07-16 22:41:36'),(33,'App\\Models\\Listing',9,'8afbcefe-c444-4d83-bf06-a9bf7dc5e4af','images','VCTNK7wR_kV6jBEEyZhyjzjOJMY30c-5rTeJiIiGiYniHxSc1HUGmEZB0PgsPOwt-pFrVOnKMl9ghs540iCww2cRlzN0nqRarsp0O9w1sbtIEAetlYCaNyQmkXwzrSrXF6Ti_yHjTkR4ahAq9EUkcW-CS1m7N7kanhOWJ1x78-k','01KXQ2N7ZB3RVJ4YB0Z43KFF3C.jpg','image/jpeg','public','public',136597,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',1,'2026-07-16 22:41:55','2026-07-16 22:41:55'),(34,'App\\Models\\Listing',10,'c3a783aa-5f7e-4c5b-b2eb-1246d8df6942','images','xnS8bLky8sL1m03j64ODJw5vVMBI5hnvI6QtgadDFeXGs5CS3bn9WQjEphzf8ZwaaWiUvmx6FDYSSq7s3fBSTmnZu8ky6e36-gGXSuVwCmEvb4smySnoQUWXViJ9gE97pxEtsSgtkPv47SzCQl3eLvYyFpLY0wYP8qWyX8YHn9g','01KXQ2NTZNSJQ78FNZ8HAK8T2R.jpg','image/jpeg','public','public',80775,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',1,'2026-07-16 22:42:14','2026-07-16 22:42:14'),(35,'App\\Models\\Listing',10,'cee5457d-e23d-4f60-9a95-d872021d2294','images','qp1qcgE7WwTbhmRDFlhPCGnjnJ5YfWJcn2D8rmI6LXjqP7ZLK056lohg7zNo5UM0IeTk6b1QU4BCIGzEYCyjwdgxmpcTJLM5s9qZIT6KkI5GJriaqJBgd-qWuwK70IO3QGh9bl0ilrp6C7j6ojKN9HixGlMK1xzmxwAgZb3yDL8','01KXQ2NV0ZHMVFNCNW6BVCSB6E.jpg','image/jpeg','public','public',47903,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',2,'2026-07-16 22:42:14','2026-07-16 22:42:14'),(36,'App\\Models\\Listing',11,'ce275247-6c77-47b8-ac71-3f0a7bb1bca6','images','TU567fL8cAuRHUO8jm5wmOBHtP787K1JSceMBncgfkF80tAdUgPt0c_yrm3D2kQIxCW8B2jvDMfVqWExaHn7SFD5a3qeUdHb99_B7KvI89dvdGdokj7a5HWJubSLsO-S694jW3u8XJp3y9BNH_dPuFcQgtHyNSZmRl-ZFyrB7hc','01KXQ2PJ8NSR310QYGD58AYF0K.jpg','image/jpeg','public','public',60559,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',1,'2026-07-16 22:42:38','2026-07-16 22:42:38'),(37,'App\\Models\\Listing',11,'c923317e-bda9-4a9b-9b1c-c19f98244736','images','ZqxRw9niR9NI5LoQcq53Kmj3tPoHy_n35pTWJXfYQoCZMRvuAH2jflxxgBB-5D0FTK7filVcUyLEV4XSTmBtKL_rrO_yItfbopIaD5ry4iLn0t3gyzDvW7AHnvA6Jwhc-FPLQW4lUSe4ghfe08kAlPBPLnHmpeUtciLSZa9Rx3g','01KXQ2PJ9K01CSVYYQR1HMQJN9.jpg','image/jpeg','public','public',80862,'[]','{\"custom_headers\": {\"ContentType\": \"image/jpeg\"}}','{\"thumb\": true}','[]',2,'2026-07-16 22:42:38','2026-07-16 22:42:38'),(39,'App\\Models\\Listing',13,'1691bf43-5997-421d-85bd-2814baa22453','images','IMG_2495','IMG_2495.webp','image/webp','public','public',81638,'[]','[]','{\"thumb\": true}','[]',1,'2026-07-17 01:51:17','2026-07-17 01:51:17');
 /*!40000 ALTER TABLE `media` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -385,7 +388,7 @@ CREATE TABLE `messages` (
   KEY `messages_sender_id_is_read_index` (`sender_id`,`is_read`),
   CONSTRAINT `messages_conversation_id_foreign` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`) ON DELETE CASCADE,
   CONSTRAINT `messages_sender_id_foreign` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -394,6 +397,7 @@ CREATE TABLE `messages` (
 
 LOCK TABLES `messages` WRITE;
 /*!40000 ALTER TABLE `messages` DISABLE KEYS */;
+INSERT INTO `messages` VALUES (1,1,2,'собачка красивая..машина где?',1,'2026-07-17 01:27:26','2026-07-17 01:29:24'),(2,1,3,'Привет бро. Купи собачку)',1,'2026-07-17 01:29:47','2026-07-17 01:32:33'),(3,1,3,'Не удаляется фотка и новая не добавляется',1,'2026-07-17 01:31:04','2026-07-17 01:32:33'),(4,1,2,'j!',0,'2026-07-17 01:32:36','2026-07-17 01:32:36'),(5,1,2,'cjj,otybz hf,jnf.n',0,'2026-07-17 01:32:42','2026-07-17 01:32:42'),(6,1,2,'соообщения работают!',0,'2026-07-17 01:32:48','2026-07-17 01:32:48'),(7,1,2,'заебца',0,'2026-07-17 01:32:52','2026-07-17 01:32:52'),(8,1,2,'пробуй фотку менять',0,'2026-07-17 01:36:43','2026-07-17 01:36:43'),(9,2,1,'ты тут?',0,'2026-07-17 02:44:52','2026-07-17 02:44:52');
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -409,7 +413,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -418,8 +422,98 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'2026_06_29_000001_create_users_table',1),(2,'2026_06_29_000002_create_password_reset_tokens_table',1),(3,'2026_06_29_000003_create_sessions_table',1),(4,'2026_06_29_000004_create_cache_table',1),(5,'2026_06_29_000005_create_jobs_table',1),(6,'2026_06_29_000006_create_categories_table',1),(7,'2026_06_29_000007_create_listings_table',1),(8,'2026_06_29_000008_create_bookings_table',1),(9,'2026_06_29_000009_create_reviews_table',1),(10,'2026_06_29_000010_create_favorites_table',1),(11,'2026_06_30_051948_create_media_table',1),(12,'2026_06_30_072030_add_is_active_to_reviews_table',1),(13,'2026_07_06_050619_add_location_to_listings_table',2),(14,'2026_07_06_081627_add_price_type_to_listings_table',2),(15,'2026_07_08_052236_add_role_to_users_table',2),(16,'2026_07_09_072558_create_conversations_table',3),(17,'2026_07_09_072604_create_messages_table',3),(18,'2026_07_09_093005_add_foreign_key_to_conversations_last_message',3);
+INSERT INTO `migrations` VALUES (1,'2026_06_29_000001_create_users_table',1),(2,'2026_06_29_000002_create_password_reset_tokens_table',1),(3,'2026_06_29_000003_create_sessions_table',1),(4,'2026_06_29_000004_create_cache_table',1),(5,'2026_06_29_000005_create_jobs_table',1),(6,'2026_06_29_000006_create_categories_table',1),(7,'2026_06_29_000007_create_listings_table',1),(8,'2026_06_29_000008_create_bookings_table',1),(9,'2026_06_29_000009_create_reviews_table',1),(10,'2026_06_29_000010_create_favorites_table',1),(11,'2026_06_30_051948_create_media_table',1),(12,'2026_06_30_072030_add_is_active_to_reviews_table',1),(13,'2026_07_06_050619_add_location_to_listings_table',2),(14,'2026_07_06_081627_add_price_type_to_listings_table',2),(15,'2026_07_08_052236_add_role_to_users_table',2),(16,'2026_07_09_072558_create_conversations_table',3),(17,'2026_07_09_072604_create_messages_table',3),(18,'2026_07_09_093005_add_foreign_key_to_conversations_last_message',3),(19,'2020_10_04_115514_create_moonshine_roles_table',4),(20,'2020_10_05_173148_create_moonshine_tables',4),(21,'2026_07_15_111438_create_notifications_table',4),(22,'2026_07_16_000000_add_price_type_to_listings_table',5),(23,'2026_07_16_111843_add_price_type_to_listings_table',5);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `moonshine_user_roles`
+--
+
+DROP TABLE IF EXISTS `moonshine_user_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `moonshine_user_roles` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `moonshine_user_roles`
+--
+
+LOCK TABLES `moonshine_user_roles` WRITE;
+/*!40000 ALTER TABLE `moonshine_user_roles` DISABLE KEYS */;
+INSERT INTO `moonshine_user_roles` VALUES (1,'Admin','2026-07-15 06:14:46','2026-07-15 06:14:46');
+/*!40000 ALTER TABLE `moonshine_user_roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `moonshine_users`
+--
+
+DROP TABLE IF EXISTS `moonshine_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `moonshine_users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `moonshine_user_role_id` bigint unsigned NOT NULL DEFAULT '1',
+  `email` varchar(190) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `avatar` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `moonshine_users_email_unique` (`email`),
+  KEY `moonshine_users_moonshine_user_role_id_foreign` (`moonshine_user_role_id`),
+  CONSTRAINT `moonshine_users_moonshine_user_role_id_foreign` FOREIGN KEY (`moonshine_user_role_id`) REFERENCES `moonshine_user_roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `moonshine_users`
+--
+
+LOCK TABLES `moonshine_users` WRITE;
+/*!40000 ALTER TABLE `moonshine_users` DISABLE KEYS */;
+INSERT INTO `moonshine_users` VALUES (1,1,'admin','$2y$12$xk1lmaAb.QBPbX19LEqk3OMWVQ.cuNtuM5IVPUUG2GfC51Duyj.Xy','admin',NULL,NULL,'2026-07-15 06:15:04','2026-07-15 06:15:04'),(2,1,'admin@baano.ru','$2y$12$TVyH2SVCkmpeTqndNj1vueH40qI9X2kqFbE/Sa5tMKto81HLL/wva','admin',NULL,NULL,'2026-07-15 06:15:44','2026-07-15 06:15:44');
+/*!40000 ALTER TABLE `moonshine_users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `notifications`
+--
+
+DROP TABLE IF EXISTS `notifications`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notifications` (
+  `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notifiable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `notifiable_id` bigint unsigned NOT NULL,
+  `data` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `read_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `notifications_notifiable_type_notifiable_id_index` (`notifiable_type`,`notifiable_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notifications`
+--
+
+LOCK TABLES `notifications` WRITE;
+/*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -542,7 +636,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`),
   UNIQUE KEY `users_phone_unique` (`phone`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -551,7 +645,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Admin','admin@baano.local','user','+79000000000','2026-06-30 22:11:04','2026-06-30 22:11:04',NULL,NULL,1,NULL,0.00,0,NULL,0,0,'$2y$12$iveF2vuTVxF5GyOQnQrRMOtomv9Nlih91QWv8g1gspVaBHLrBZvQu',NULL,'2026-06-30 22:11:04','2026-06-30 22:11:04'),(2,'admin','admin@baano.ru','user',NULL,'2026-06-30 23:03:20',NULL,NULL,NULL,1,NULL,0.00,0,NULL,0,0,'$2y$12$xHRSVL0ESyLsH3mQNGSrg.bTb2Lb5eV3Uz59bUQ0eeuchg3edVsu6',NULL,'2026-06-30 22:56:32','2026-06-30 23:03:24'),(3,'Олег','ole2776@icloud.com','user','+79068088844',NULL,NULL,'2315','2026-07-04 08:25:56',0,NULL,0.00,0,NULL,0,0,'$2y$12$7Jv/u0kxYS2gsvGdDKeQueqKIxal2FWxDsFgt8uekaClC3WHFwgti',NULL,'2026-07-04 08:15:56','2026-07-04 08:15:56');
+INSERT INTO `users` VALUES (1,'user','knaz2012@gmail.com','user','+79000000000','2026-06-30 22:11:04','2026-06-30 22:11:04',NULL,NULL,1,NULL,0.00,0,NULL,0,0,'$2y$12$ZMElfu2ZC2o/snr2JYkbm.v9pn0V46LlrMXi5snGMz5eS/cb5C/WK',NULL,'2026-06-30 22:11:04','2026-07-17 01:57:29'),(2,'Super Admin','admin@baano.ru','admin','666',NULL,'2026-07-15 05:58:15',NULL,NULL,1,NULL,0.00,0,NULL,0,0,'$2y$12$eU5e2IRvOUyu8VwVDgAeP.o19mGlGC6Z1yhN4JcMHiYc/os7D4oqC',NULL,'2026-06-30 22:56:32','2026-07-17 01:32:12'),(3,'Олег','ole2776@icloud.com','user','+79068088844','2026-07-16 23:45:01','2026-07-17 04:33:41','2315','2026-07-04 08:25:56',0,NULL,0.00,0,NULL,0,0,'$2y$12$7Jv/u0kxYS2gsvGdDKeQueqKIxal2FWxDsFgt8uekaClC3WHFwgti',NULL,'2026-07-04 08:15:56','2026-07-16 23:45:01'),(12,'Maxim','lokshin.maksim@gmail.com','user','+75645646545','2026-07-18 08:38:05',NULL,NULL,NULL,0,NULL,0.00,0,NULL,0,0,'$2y$12$ILpoNUNOyvJK0i0hj4ZNOeVbbG4xXV6DZGu.cuD5qhd0rYrW3VYUm',NULL,'2026-07-18 08:37:18','2026-07-18 08:38:05');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -564,4 +658,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-13 21:24:52
+-- Dump completed on 2026-07-19 16:55:36

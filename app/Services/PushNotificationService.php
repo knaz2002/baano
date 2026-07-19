@@ -67,18 +67,4 @@ class PushNotificationService
             return false;
         }
     }
-
-    /**
-     * Записывает код подтверждения в файл для тестирования
-     */
-    public function logVerificationCode(string $name, string $email, string $phone, string $code): void
-    {
-        $logFile = 'c:/baano/baano/veryfy.txt';
-        $datetime = now()->format('Y-m-d H:i:s');
-        $logEntry = "{$datetime} | {$name} | {$email} | {$phone} | Код: {$code}\n";
-        
-        file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
-        
-        Log::info("Verification code logged: {$code} for {$email}");
-    }
 }

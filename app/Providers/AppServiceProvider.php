@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $debugTo = config('mail.debug_to');
+
+        if ($debugTo && ! app()->isProduction()) {
+            Mail::alwaysTo($debugTo);
+        }
     }
 }

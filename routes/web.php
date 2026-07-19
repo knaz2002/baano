@@ -10,6 +10,7 @@ use App\Models\Favorite;
 use App\Models\User;
 use App\Models\Review;
 use App\Http\Controllers\MessageController;
+use App\Services\SmsService;
 
 // Сообщения
 Route::prefix('messages')->name('messages.')->middleware('auth')->group(function () {
@@ -128,11 +129,22 @@ Route::middleware('guest')->group(function () {
             ]);
             
             Auth::login($user);
-            
-            $user->sendEmailVerificationNotification();
-            
-            return redirect('/verify-email');
-            
+
+            // 1. Сгенерировать 4-значный код (с ведущими нулями: 0042)
+            $code = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+
+            // 2. Сохранить в пользователя
+            $user->phone_verification_code = $code;
+            $user->phone_verification_expires_at = now()->addMinutes(10);
+            $user->save();
+
+            // 3. Отправка кода (SMS_DRIVER=log пишет в laravel.log)
+            app(SmsService::class)->sendVerificationCode($user->phone, $code);
+            \App\Http\Controllers\Auth\PhoneVerificationController::markSent($user->id);
+
+            // 4. Email — после подтверждения телефона в PhoneVerificationController::verify()
+            return redirect('/verify-phone');
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return Inertia::render('Auth/Register', [
                 'errors' => $e->errors(),
@@ -158,6 +170,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/verify-email', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'notice'])->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'verify'])->name('verification.verify');
     Route::post('/email/verification-notification', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'resend'])->name('verification.send');
+    Route::get('/verify-phone', [\App\Http\Controllers\Auth\PhoneVerificationController::class, 'show'])->name('phone.verify');
+    Route::post('/verify-phone', [\App\Http\Controllers\Auth\PhoneVerificationController::class, 'verify'])
+        ->middleware('throttle:20,1')
+        ->name('phone.verify.submit');
+    Route::post('/verify-phone/resend', [\App\Http\Controllers\Auth\PhoneVerificationController::class, 'resend'])
+        ->middleware('throttle:10,1')
+        ->name('phone.resend');
 });
 
 Route::middleware(['auth'])->group(function () {

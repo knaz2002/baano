@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Debug catch-all (local / non-production)
+    |--------------------------------------------------------------------------
+    |
+    | When set, all outgoing mail is redirected to this address.
+    | Useful for testing with fake registration emails.
+    |
+    */
+
+    'debug_to' => env('MAIL_DEBUG_TO'),
+
 ];
