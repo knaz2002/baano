@@ -98,3 +98,7 @@ Thumbs.db
 /SMS_VERIFICATION.md
 /SMS_VERIFICATION_TODO.md
 /FRONTEND.md
+/baano_db.sql
+/baano_db_seeded.sql
+/storage/app/seed-dumps/
+
