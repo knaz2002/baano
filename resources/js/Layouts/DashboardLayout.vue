@@ -55,13 +55,37 @@
                             </Link>
                         </div>
 
-                        <!-- Навигация (только уникальные пункты) -->
+                        <!-- Навигация -->
                         <nav class="space-y-1 md:space-y-2">
+                            <!-- ДОБАВЛЕНО: Главная (перед Личной информацией) -->
+                            <Link href="/" @click="showSidebar = false" class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl transition-colors" :class="isActive('/') ? 'bg-purple-50' : 'hover:bg-gray-50'" style="color: #1D1B20;">
+                                <svg class="w-5 h-5 flex-shrink-0" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                </svg>
+                                <span class="text-sm md:text-base">Главная</span>
+                            </Link>
+
                             <Link href="/dashboard" @click="showSidebar = false" class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl transition-colors" :class="isActive('/dashboard') ? 'bg-purple-50' : 'hover:bg-gray-50'" style="color: #1D1B20;">
                                 <svg class="w-5 h-5 flex-shrink-0" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                                 <span class="text-sm md:text-base">Личная информация</span>
+                            </Link>
+
+
+                                <!-- Сообщения -->
+                                <Link href="/messages" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-purple-50">
+                                    <svg class="w-5 h-5" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                                    </svg>
+                                    <span class="text-sm md:text-base">Сообщения</span>
+                                </Link>
+                            <!-- ДОБАВЛЕНО: Мои объявления -->
+                            <Link href="/user/listings" @click="showSidebar = false" class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl transition-colors" :class="isActive('/user/listings') ? 'bg-purple-50' : 'hover:bg-gray-50'" style="color: #1D1B20;">
+                                <svg class="w-5 h-5 flex-shrink-0" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                </svg>
+                                <span class="text-sm md:text-base">Мои объявления</span>
                             </Link>
 
                             <Link href="/dashboard/reviews" @click="showSidebar = false" class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl transition-colors" :class="isActive('/dashboard/reviews') ? 'bg-purple-50' : 'hover:bg-gray-50'" style="color: #1D1B20;">
@@ -91,35 +115,43 @@
             </div>
         </div>
 
-        <!-- Мобильная нижняя панель навигации -->
+        <!-- Мобильная нижняя панель навигации (5 иконок) -->
         <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[9999]">
             <div class="flex items-center justify-around h-16">
                 <Link href="/" class="flex flex-col items-center justify-center flex-1 h-full" :class="isActive('/') ? 'text-purple-600' : 'text-gray-600'">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
-                    <span class="text-xs mt-1">Главная</span>
+                    <span class="text-[10px] mt-1">Главная</span>
+                </Link>
+
+                <!-- ДОБАВЛЕНО: Мои объявления -->
+                <Link href="/user/listings" class="flex flex-col items-center justify-center flex-1 h-full" :class="isActive('/user/listings') ? 'text-purple-600' : 'text-gray-600'">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <span class="text-[10px] mt-1">Объявления</span>
                 </Link>
 
                 <Link href="/user/favorites" class="flex flex-col items-center justify-center flex-1 h-full" :class="isActive('/user/favorites') ? 'text-purple-600' : 'text-gray-600'">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                     </svg>
-                    <span class="text-xs mt-1">Избранное</span>
+                    <span class="text-[10px] mt-1">Избранное</span>
                 </Link>
 
                 <Link href="/dashboard/messages" class="flex flex-col items-center justify-center flex-1 h-full" :class="isActive('/dashboard/messages') ? 'text-purple-600' : 'text-gray-600'">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                     </svg>
-                    <span class="text-xs mt-1">Сообщения</span>
+                    <span class="text-[10px] mt-1">Сообщения</span>
                 </Link>
 
                 <Link href="/dashboard" class="flex flex-col items-center justify-center flex-1 h-full" :class="isActive('/dashboard') ? 'text-purple-600' : 'text-gray-600'">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
-                    <span class="text-xs mt-1">Кабинет</span>
+                    <span class="text-[10px] mt-1">Кабинет</span>
                 </Link>
             </div>
         </nav>

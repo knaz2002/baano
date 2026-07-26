@@ -9,6 +9,7 @@ use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class ListingResource extends Resource
 {
@@ -88,6 +89,17 @@ class ListingResource extends Resource
                 Forms\Components\Toggle::make('is_active')
                     ->label('Активно')
                     ->default(true),
+                    
+                // НАДЕЖНАЯ НАСТРОЙКА ЗАГРУЗКИ ИЗОБРАЖЕНИЙ
+                SpatieMediaLibraryFileUpload::make('images')
+                    ->label('Изображения')
+                    ->collection('images')
+                    ->multiple()
+                    ->maxFiles(10)
+                    ->maxSize(5120) // 5 MB
+                    ->image()
+                    ->directory('listings') // Все картинки будут в папке listings
+                    ->columnSpanFull(),
             ]);
     }
 

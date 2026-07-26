@@ -15,21 +15,24 @@ class Listing extends Model implements HasMedia
     use InteractsWithMedia;
 
     protected $fillable = [
-    'user_id',
-    'category_id',
-    'title',
-    'description',
-    'price',
-    'price_type',
-    'location',  
-    'images',
-    'status',
-    'is_active',
-];
+        'user_id',
+        'category_id',
+        'title',
+        'description',
+        'price',
+        'price_type',
+        'location',
+        'status',
+        'is_active',
+    ];
+
     protected $casts = [
         'is_active' => 'boolean',
         'price' => 'decimal:2',
     ];
+
+    // ДОБАВЛЕНО: автоматически добавляем поле image при сериализации
+    protected $appends = ['image'];
 
     public function user(): BelongsTo
     {
@@ -51,22 +54,30 @@ class Listing extends Model implements HasMedia
         return $this->hasMany(Review::class);
     }
 
-public function favorites()
-{
-    return $this->morphMany(Favorite::class, 'favoritable');
-}
+    public function favorites()
+    {
+        return $this->morphMany(Favorite::class, 'favoritable');
+    }
 
-public function isFavoritedBy($user)
-{
-    return $this->favorites()->where('user_id', $user->id)->exists();
-}
+    public function isFavoritedBy($user)
+    {
+        return $this->favorites()->where('user_id', $user->id)->exists();
+    }
+
+    // ДОБАВЛЕНО: accessor для получения первого изображения
+    public function getImageAttribute(): ?string
+    {
+        $media = $this->getFirstMedia('images');
+        return $media ? $media->getUrl() : null;
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')
              ->useDisk('public');
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
              ->width(300)

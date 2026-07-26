@@ -196,12 +196,11 @@ const updateListing = () => {
             formData.append(`images[]`, form.value.newImages[i]);
         }
     }
-
-    router.post(`/user/listings/${props.listing.id}`, formData, {
-        method: 'put',
-        onSuccess: () => {
-            router.visit('/user/listings');
-        },
-    });
+router.post(`/user/listings/${props.listing.id}`, formData, {
+    preserveScroll: true,
+    onSuccess: () => {
+        router.visit('/user/listings');
+    }
+});
 };
 </script>
