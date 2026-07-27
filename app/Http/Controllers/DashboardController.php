@@ -253,22 +253,20 @@ public function index()
 }
 
     public function reviews()
-    {
-        $reviews = Review::where('user_id', Auth::id())
-            ->with(['listing:id,title', 'user:id,name'])
-            ->latest()
-            ->get()
-            ->map(fn($r) => [
-                'id' => $r->id,
-                'rating' => $r->rating,
-                'comment' => $r->comment,
-                'created_at' => $r->created_at,
-                'listing' => $r->listing ? ['id' => $r->listing->id, 'title' => $r->listing->title] : null,
-                'user' => $r->user ? ['id' => $r->user->id, 'name' => $r->user->name] : null,
-            ]);
-
-        return Inertia::render('Dashboard/Reviews', [
-            'reviews' => $reviews,
+{
+    $reviews = Review::where('user_id', Auth::id())
+        ->with(['listing:id,title', 'user:id,name'])
+        ->latest()
+        ->get()
+        ->map(fn($r) => [
+            'id' => $r->id, 'rating' => $r->rating, 'comment' => $r->comment,
+            'created_at' => $r->created_at,
+            'listing' => $r->listing ? ['id' => $r->listing->id, 'title' => $r->listing->title] : null,
+            'user' => $r->user ? ['id' => $r->user->id, 'name' => $r->user->name] : null,
         ]);
-    }
+
+    \Log::info('Reviews data:', ['count' => $reviews->count(), 'data' => $reviews->toArray()]);
+    
+    return Inertia::render('Dashboard/Reviews', ['reviews' => $reviews]);
+}
 }

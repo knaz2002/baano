@@ -22,12 +22,13 @@ Route::post('/message-user/{user}', [MessageController::class, 'messageUser'])
     ->middleware('auth')
     ->name('message-user');
 
-// Главная страница - используем HomeController
+// Главная страница
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-// Список объявлений (с фильтром по категории)
+// Список объявлений
 Route::get('/listings', [\App\Http\Controllers\ListingController::class, 'index'])->name('listings.index');
 
+// Страница конкретного объявления (ОБЪЕДИНЕННЫЙ И ИСПРАВЛЕННЫЙ МАРШРУТ)
 Route::get('/listings/{listing}', function (Listing $listing) {
     $listing->load(['user', 'category']);
     
@@ -35,8 +36,75 @@ Route::get('/listings/{listing}', function (Listing $listing) {
         ->where('favoritable_type', 'App\\Models\\Listing')
         ->where('favoritable_id', $listing->id)->exists() : false;
     
+    // Загружаем только одобренные отзывы
     $reviews = Review::where('listing_id', $listing->id)
-        ->where('is_active', true)->with('user')->latest()->get();
+        ->where('is_active', true)
+        ->with('user')
+        ->latest()
+        ->get();
+    
+    // Похожие объявления
+    $similarListings = Listing::where('is_active', true)
+        ->where('category_id', $listing->category_id)
+        ->where('id', '!=', $listing->id)
+        ->with(['category', 'user'])
+        ->inRandomOrder()
+        ->take(8)
+        ->get()
+        ->map(fn($l) => [
+            'id' => $l->id,
+            'title' => $l->title,
+            'description' => $l->description ?? '',
+            'price' => $l->price,
+            'location' => $l->location ?? '',
+            'image' => $l->getFirstMediaUrl('images', 'thumb'),
+            'category' => $l->category ? ['id' => $l->category->id, 'name' => $l->category->name] : null,
+        ]);
+    
+    // Чат (если пользователь не владелец)
+    $conversation = null;
+    $chatMessages = [];
+    
+    if (Auth::check() && $listing->user_id !== Auth::id()) {
+        $userId = Auth::id();
+        $conversation = \App\Models\Conversation::where(function($q) use ($listing, $userId) {
+            $q->where('user_one_id', $userId)->where('user_two_id', $listing->user_id);
+        })->orWhere(function($q) use ($listing, $userId) {
+            $q->where('user_one_id', $listing->user_id)->where('user_two_id', $userId);
+        })->first();
+        
+        if ($conversation) {
+            $chatMessages = $conversation->messages()
+                ->with('sender:id,name')
+                ->orderBy('created_at', 'asc')
+                ->get()
+                ->map(fn($m) => [
+                    'id' => $m->id,
+                    'body' => $m->body,
+                    'sender_id' => $m->sender_id,
+                    'sender_name' => $m->sender->name,
+                    'is_mine' => $m->sender_id === Auth::id(),
+                    'created_at' => $m->created_at->format('H:i'),
+                ]);
+        }
+    }
+
+    // === ЛОГИКА ОТЗЫВОВ ===
+    $userReview = null;
+    $canReview = false;
+
+    if (Auth::check()) {
+        // Проверяем, оставлял ли уже этот пользователь отзыв
+        $userReview = Review::where('listing_id', $listing->id)
+            ->where('user_id', Auth::id())
+            ->first();
+            
+        // Можно оставить отзыв, если это НЕ владелец объявления и отзыва еще НЕТ
+        if ($listing->user_id !== Auth::id() && !$userReview) {
+            $canReview = true;
+        }
+    }
+    // ====================
     
     return Inertia::render('Listing/Show', [
         'listing' => [
@@ -50,19 +118,35 @@ Route::get('/listings/{listing}', function (Listing $listing) {
             'category' => $listing->category ? ['id' => $listing->category->id, 'name' => $listing->category->name] : null,
             'user_id' => $listing->user_id,
             'user' => $listing->user ? ['id' => $listing->user->id, 'name' => $listing->user->name] : null,
+            'created_at' => $listing->created_at,
+            'views' => $listing->views ?? 0,
         ],
         'reviews' => $reviews->map(fn($r) => [
-            'id' => $r->id, 'rating' => $r->rating, 'comment' => $r->comment,
+            'id' => $r->id, 
+            'rating' => $r->rating, 
+            'comment' => $r->comment,
             'created_at' => $r->created_at,
             'user' => $r->user ? ['id' => $r->user->id, 'name' => $r->user->name] : null,
         ]),
         'isFavorited' => $isFavorited,
         'auth' => ['user' => Auth::user()],
+        'conversation' => $conversation ? ['id' => $conversation->id] : null,
+        'chatMessages' => $chatMessages,
+        'similarListings' => $similarListings,
+        // Передаем данные об отзывах на фронтенд
+        'canReview' => $canReview,
+        'userReview' => $userReview ? [
+            'id' => $userReview->id,
+            'rating' => $userReview->rating,
+            'comment' => $userReview->comment,
+            'is_active' => $userReview->is_active,
+        ] : null,
     ]);
 })->name('listings.show');
 
 Route::post('/telegram/webhook', [\App\Http\Controllers\Api\TelegramWebhookController::class, 'handle']);
 
+// === АВТОРИЗАЦИЯ ===
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
         return Inertia::render('Auth/Login');
@@ -82,36 +166,24 @@ Route::middleware('guest')->group(function () {
         return back()->withErrors(['email' => 'Неверные учетные данные']);
     });
 
-    //очистка формы регистрации--------------------------------------------------//
     Route::get('/register', function () {
         session()->forget('errors');
         return Inertia::render('Auth/Register');
     })->name('register');
 
-    //--------------------------------------------------------------------------//
-
-    //РЕГИСТРАЦИЯ--------------------------------------------------------------//
     Route::post('/register', function (Request $request) {
         try {
             $phone = preg_replace('/\D/', '', $request->phone);
             $formattedPhone = '+' . $phone;
             
             if (User::where('phone', $formattedPhone)->exists()) {
-                return Inertia::render('Auth/Register', [
-                    'errors' => ['phone' => 'Этот телефон уже зарегистрирован'],
-                ])->toResponse($request)->setStatusCode(422);
+                return back()->withErrors(['phone' => 'Этот телефон уже зарегистрирован']);
             }
-            
             if (User::where('email', $request->email)->exists()) {
-                return Inertia::render('Auth/Register', [
-                    'errors' => ['email' => 'Этот email уже зарегистрирован'],
-                ])->toResponse($request)->setStatusCode(422);
+                return back()->withErrors(['email' => 'Этот email уже зарегистрирован']);
             }
-            
             if ($request->password !== $request->password_confirmation) {
-                return Inertia::render('Auth/Register', [
-                    'errors' => ['password' => 'Пароли не совпадают'],
-                ])->toResponse($request)->setStatusCode(422);
+                return back()->withErrors(['password' => 'Пароли не совпадают']);
             }
             
             $validated = $request->validate([
@@ -128,23 +200,16 @@ Route::middleware('guest')->group(function () {
             ]);
             
             Auth::login($user);
-            
             $user->sendEmailVerificationNotification();
-            
             return redirect('/verify-email');
             
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return Inertia::render('Auth/Register', [
-                'errors' => $e->errors(),
-            ])->toResponse($request)->setStatusCode(422);
+            return back()->withErrors($e->errors());
         } catch (\Exception $e) {
             \Log::error('Registration error: ' . $e->getMessage());
-            return Inertia::render('Auth/Register', [
-                'errors' => ['error' => 'Ошибка регистрации'],
-            ])->toResponse($request)->setStatusCode(422);
+            return back()->withErrors(['error' => 'Ошибка регистрации']);
         }
     });
-    //----------------------------------------------------------------------------------------------------//
 });
 
 Route::post('/logout', function (Request $request) {
@@ -160,6 +225,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/email/verification-notification', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'resend'])->name('verification.send');
 });
 
+// === ЛИЧНЫЙ КАБИНЕТ ПОЛЬЗОВАТЕЛЯ ===
 Route::middleware(['auth'])->group(function () {
     Route::get('/user/favorites', function () {
         $favorites = Favorite::where('user_id', Auth::id())->with(['favoritable.user', 'favoritable.category'])->latest()->get();
@@ -214,6 +280,7 @@ Route::middleware(['auth'])->group(function () {
                 'id' => $l->id, 'title' => $l->title, 'price' => $l->price,
                 'status' => $l->is_active ? 'active' : 'pending',
                 'category' => $l->category ? ['name' => $l->category->name] : null,
+                'image' => $l->getFirstMediaUrl('images', 'thumb'),
             ]),
             'auth' => ['user' => Auth::user()],
         ]);
@@ -313,6 +380,7 @@ Route::middleware(['auth'])->group(function () {
         })->name('user.listings.destroy');
     });
     
+    // Маршруты для работы с отзывами
     Route::middleware(['email.verified'])->group(function () {
         Route::post('/listings/{listing}/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->name('reviews.store');
         Route::put('/reviews/{review}', [\App\Http\Controllers\User\ReviewController::class, 'update'])->name('reviews.update');
@@ -320,6 +388,7 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
+// === АДМИН-ПАНЕЛЬ ===
 Route::middleware(['auth'])->prefix('manage')->name('admin.')->group(function () {
     Route::get('/', function () {
         $stats = [
@@ -338,103 +407,17 @@ Route::middleware(['auth'])->prefix('manage')->name('admin.')->group(function ()
     Route::get('/settings', function () { return view('admin.settings'); })->name('settings');
 });
 
-
-Route::get('/listings/{listing}', function (Listing $listing) {
-    $listing->load(['user', 'category']);
-    
-    $isFavorited = Auth::check() ? Favorite::where('user_id', Auth::id())
-        ->where('favoritable_type', 'App\\Models\\Listing')
-        ->where('favoritable_id', $listing->id)->exists() : false;
-    
-    $reviews = Review::where('listing_id', $listing->id)
-        ->where('is_active', true)->with('user')->latest()->get();
-    
-    $similarListings = Listing::where('is_active', true)
-        ->where('category_id', $listing->category_id)
-        ->where('id', '!=', $listing->id)
-        ->with(['category', 'user'])
-        ->inRandomOrder()
-        ->take(8)
-        ->get()
-        ->map(fn($l) => [
-            'id' => $l->id,
-            'title' => $l->title,
-            'description' => $l->description ?? '',
-            'price' => $l->price,
-            'location' => $l->location ?? '',
-            'image' => $l->getFirstMediaUrl('images', 'thumb'),
-            'category' => $l->category ? ['id' => $l->category->id, 'name' => $l->category->name] : null,
-            'rating' => 4.8,
-            'reviews_count' => rand(50, 300),
-        ]);
-    
-    $conversation = null;
-    $chatMessages = [];
-    
-    if (Auth::check() && $listing->user_id !== Auth::id()) {
-        $userId = Auth::id();
-        
-        $conversation = \App\Models\Conversation::where(function($q) use ($listing, $userId) {
-            $q->where('user_one_id', $userId)
-              ->where('user_two_id', $listing->user_id);
-        })->orWhere(function($q) use ($listing, $userId) {
-            $q->where('user_one_id', $listing->user_id)
-              ->where('user_two_id', $userId);
-        })->first();
-        
-        if ($conversation) {
-            $chatMessages = $conversation->messages()
-                ->with('sender:id,name')
-                ->orderBy('created_at', 'asc')
-                ->get()
-                ->map(fn($m) => [
-                    'id' => $m->id,
-                    'body' => $m->body,
-                    'sender_id' => $m->sender_id,
-                    'sender_name' => $m->sender->name,
-                    'is_mine' => $m->sender_id === Auth::id(),
-                    'created_at' => $m->created_at->format('H:i'),
-                ]);
-        }
-    }
-    
-    return Inertia::render('Listing/Show', [
-        'listing' => [
-            'id' => $listing->id,
-            'title' => $listing->title,
-            'description' => $listing->description,
-            'price' => $listing->price,
-            'price_type' => $listing->price_type,
-            'location' => $listing->location,
-            'images' => $listing->getMedia('images')->map(fn($m) => $m->getUrl()),
-            'category' => $listing->category ? ['id' => $listing->category->id, 'name' => $listing->category->name] : null,
-            'user_id' => $listing->user_id,
-            'user' => $listing->user ? ['id' => $listing->user->id, 'name' => $listing->user->name] : null,
-            'created_at' => $listing->created_at,
-            'views' => $listing->views ?? 0,
-        ],
-        'reviews' => $reviews->map(fn($r) => [
-            'id' => $r->id, 'rating' => $r->rating, 'comment' => $r->comment,
-            'created_at' => $r->created_at,
-            'user' => $r->user ? ['id' => $r->user->id, 'name' => $r->user->name] : null,
-        ]),
-        'isFavorited' => $isFavorited,
-        'auth' => ['user' => Auth::user()],
-        'conversation' => $conversation ? ['id' => $conversation->id] : null,
-        'chatMessages' => $chatMessages,
-        'similarListings' => $similarListings,
-    ]);
-})->name('listings.show');
-// Личный кабинет
+// === DASHBOARD (Личный кабинет с боковой панелью) ===
 Route::middleware(['auth'])->prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('index');
     Route::get('/listings', [\App\Http\Controllers\DashboardController::class, 'listings'])->name('listings');
     Route::get('/favorites', [\App\Http\Controllers\DashboardController::class, 'favorites'])->name('favorites');
     Route::get('/messages', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages');
-    Route::get('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'showMessage'])->name('messages.show');
+    Route::get('/messages/{conversation?}', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages.show');
     Route::post('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'sendMessage'])->name('messages.send');
     Route::get('/reviews', [\App\Http\Controllers\DashboardController::class, 'reviews'])->name('reviews');
 });
+
 // Профиль
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile/edit', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
