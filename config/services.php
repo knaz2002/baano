@@ -45,4 +45,15 @@ return [
     'bot_token' => env('TELEGRAM_BOT_TOKEN'),
     'bot_username' => env('TELEGRAM_BOT_USERNAME'),
     ],
+
+    'sms' => [
+        'driver' => env('SMS_DRIVER', 'log'),
+        'sender' => env('SMS_SENDER'),
+        'debug_mail' => env('SMS_DEBUG_MAIL'),
+        'smsru' => [
+            'api_id' => env('SMS_RU_API_ID'),
+            'test' => env('SMS_RU_TEST', true),
+        ],
+    ],
 ];
+

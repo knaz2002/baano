@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('listings', function (Blueprint $table) {
-            if (! Schema::hasColumn('listings', 'price_type')) {
-                $table->string('price_type')->default('fixed')->after('price');
-            }
+            //
         });
     }
 
@@ -24,9 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('listings', function (Blueprint $table) {
-            if (Schema::hasColumn('listings', 'price_type')) {
-                $table->dropColumn('price_type');
-            }
+            //
         });
     }
 };

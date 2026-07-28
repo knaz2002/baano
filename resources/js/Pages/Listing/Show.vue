@@ -12,7 +12,6 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
                     <!-- Галерея -->
                     <div class="lg:col-span-6">
-                        <!-- Десктоп: миниатюры слева вертикально -->
                         <div class="hidden lg:flex gap-4">
                             <div class="flex flex-col gap-2 relative">
                                 <button v-if="listing.images.length > 4" @click="scrollThumbnails(-1)" class="absolute -top-8 left-1/2 -translate-x-1/2 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-50">
@@ -35,7 +34,6 @@
                             </div>
                         </div>
 
-                        <!-- Мобильные: миниатюры под главным изображением горизонтально -->
                         <div class="lg:hidden">
                             <div class="relative mb-3">
                                 <img :src="currentImageSrc" :alt="listing.title" class="w-full h-64 sm:h-80 object-cover rounded-xl">
@@ -61,7 +59,6 @@
                             </div>
                             <h1 class="text-base sm:text-lg md:text-xl font-bold mb-3" style="color: #1D1B20;">{{ listing.title }}</h1>
 
-                            <!-- Действия -->
                             <div class="flex items-center gap-3 md:gap-4 mb-6 text-xs md:text-sm">
                                 <button @click="toggleFavorite" class="flex items-center gap-2 hover:text-purple-600 transition-colors" :class="isFavorited ? 'text-red-500' : 'text-gray-600'">
                                     <svg class="w-5 h-5" :fill="isFavorited ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +68,6 @@
                                 </button>
                             </div>
 
-                            <!-- Цена -->
                             <div class="mb-4 md:mb-6 pb-4 md:pb-6 border-b" style="border-color: #E7E0EC;">
                                 <div class="flex items-baseline gap-3">
                                     <span class="text-3xl md:text-4xl font-bold" style="color: #B3261E;">{{ formatPrice(listing.price) }}</span>
@@ -80,12 +76,10 @@
                                 <p class="text-xs md:text-sm mt-1" style="color: #49454F;">{{ getPriceType(listing.price_type) }}</p>
                             </div>
 
-                            <!-- Кнопка действия -->
                             <button @click="openChat" class="w-full py-3 md:py-4 rounded-xl text-white font-semibold text-base md:text-lg transition-all hover:shadow-lg active:scale-95 mb-4 md:mb-6" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);">
                                 Написать сообщение
                             </button>
 
-                            <!-- Исполнитель -->
                             <div class="mb-4 md:mb-6 pb-4 md:pb-6 border-b" style="border-color: #E7E0EC;">
                                 <div class="flex items-center gap-3 mb-3">
                                     <div class="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style="background: linear-gradient(135deg, #6750A4 0%, #7D5260 100%);">
@@ -104,7 +98,6 @@
                                 </div>
                             </div>
 
-                            <!-- Локация -->
                             <div class="mb-4 md:mb-6 pb-4 md:pb-6 border-b" style="border-color: #E7E0EC;">
                                 <div class="flex items-center gap-2 text-xs md:text-sm" style="color: #49454F;">
                                     <svg class="w-5 h-5" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,7 +153,7 @@
                             </div>
                         </div>
 
-                        <!-- === ОТЗЫВЫ (ОБНОВЛЕННАЯ ВЕРСИЯ) === -->
+                        <!-- === ОТЗЫВЫ (ЧИСТАЯ ВЕРСИЯ БЕЗ КОНФЛИКТОВ) === -->
                         <div v-if="activeTab === 'reviews'">
                             <div class="flex items-center justify-between mb-6">
                                 <h2 class="text-base md:text-xl font-bold" style="color: #1D1B20;">Отзывы</h2>
@@ -273,10 +266,8 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { router, Link, usePage } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-
-const page = usePage();
 
 const props = defineProps({
     listing: { type: Object, required: true },

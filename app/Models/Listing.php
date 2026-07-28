@@ -15,21 +15,25 @@ class Listing extends Model implements HasMedia
     use InteractsWithMedia;
 
     protected $fillable = [
-    'user_id',
-    'category_id',
-    'title',
-    'description',
-    'price',
-    'price_type',
-    'location',  
-    'images',
-    'status',
-    'is_active',
-];
+        'user_id',
+        'category_id',
+        'title',
+        'description',
+        'price',
+        'price_type',
+        'location',
+        'attributes', // <-- ДОБАВЛЕНО: для хранения специфичных полей категории
+        'status',
+        'is_active',
+    ];
+
     protected $casts = [
         'is_active' => 'boolean',
         'price' => 'decimal:2',
+        'attributes' => 'array', // <-- ДОБАВЛЕНО: автоматическое преобразование JSON <-> Array
     ];
+
+    protected $appends = ['image'];
 
     public function user(): BelongsTo
     {
@@ -51,22 +55,28 @@ class Listing extends Model implements HasMedia
         return $this->hasMany(Review::class);
     }
 
-public function favorites()
-{
-    return $this->morphMany(Favorite::class, 'favoritable');
-}
-
-public function isFavoritedBy($user)
-{
-    return $this->favorites()->where('user_id', $user->id)->exists();
-}
-    public function registerMediaCollections(): void
+    public function favorites()
     {
-        $this->addMediaCollection('images')
-             ->useDisk('public');
+        return $this->morphMany(Favorite::class, 'favoritable');
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function isFavoritedBy($user)
+    {
+        return $this->favorites()->where('user_id', $user->id)->exists();
+    }
+
+    public function getImageAttribute(): ?string
+    {
+        $media = $this->getFirstMedia('images');
+        return $media ? $media->getUrl() : null;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')->useDisk('public');
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
              ->width(300)
