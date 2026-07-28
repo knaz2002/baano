@@ -549,7 +549,7 @@ import {
     toolsBrands, 
     generatorsBrands, 
     photoVideoBrands 
-} from '@/data/vehicleData.js';
+} from '@/vehicleData.js';
 
 const props = defineProps({ 
     categories: { 
