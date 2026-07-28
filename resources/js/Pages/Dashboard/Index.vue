@@ -1,43 +1,52 @@
 <template>
-    <DashboardLayout active-tab="profile">
-        <div class="bg-white rounded-xl shadow-sm p-6">
-            <h1 class="text-2xl font-bold mb-6" style="color: #2C3E50;">Личная информация</h1>
+    <DashboardLayout active-tab="dashboard">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+            <h1 class="text-2xl font-bold mb-6" style="color: #1D1B20;">Личная информация</h1>
             
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Имя</label>
-                    <input 
-                        type="text" 
-                        :value="user?.name || ''"
-                        disabled
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                    >
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input 
-                        type="email" 
-                        :value="user?.email || ''"
-                        disabled
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                    >
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Телефон</label>
-                    <input 
-                        type="tel" 
-                        :value="user?.phone || 'Не указан'"
-                        disabled
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                    >
-                </div>
-
-                <div class="pt-4">
-                    <Link href="/profile/edit" class="btn-gradient px-6 py-2 rounded-lg">
-                        Редактировать профиль
-                    </Link>
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: #49454F;">Имя</label>
+                        <input 
+                            type="text" 
+                            :value="user.name" 
+                            disabled
+                            class="w-full px-4 py-3 rounded-xl border-2 bg-gray-50 focus:outline-none"
+                            style="border-color: #E7E0EC;"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: #49454F;">Email</label>
+                        <input 
+                            type="email" 
+                            :value="user.email" 
+                            disabled
+                            class="w-full px-4 py-3 rounded-xl border-2 bg-gray-50 focus:outline-none"
+                            style="border-color: #E7E0EC;"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: #49454F;">Телефон</label>
+                        <input 
+                            type="tel" 
+                            :value="user.phone || 'Не указан'" 
+                            disabled
+                            class="w-full px-4 py-3 rounded-xl border-2 bg-gray-50 focus:outline-none"
+                            style="border-color: #E7E0EC;"
+                        >
+                    </div>
+                    
+                    <div class="pt-4">
+                        <Link 
+                            href="/profile/edit"
+                            class="inline-block px-6 py-3 rounded-xl text-white font-medium transition-all hover:shadow-lg"
+                            style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
+                        >
+                            Редактировать профиль
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
@@ -47,11 +56,8 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
+import { usePage } from '@inertiajs/vue3';
 
-const props = defineProps({
-    user: {
-        type: Object,
-        default: null
-    }
-});
+const page = usePage();
+const user = page.props.auth.user;
 </script>
