@@ -138,14 +138,14 @@ const scrollToBottom = () => {
     });
 };
 
-// === ГЛАВНОЕ: Загружаем данные через fetch, НЕ меняя URL и НЕ перезагружая компонент ===
 const selectConversation = async (convId) => {
     selectedConversationId.value = convId;
     loadingMessages.value = true;
     messages.value = [];
     
     try {
-        const response = await fetch(`/messages/api/${convId}`, {
+        // ИСПРАВЛЕНО: добавлен префикс /dashboard
+        const response = await fetch(`/dashboard/messages/api/${convId}`, {
             headers: {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
@@ -158,7 +158,6 @@ const selectConversation = async (convId) => {
         selectedConversation.value = data.conversation;
         messages.value = data.messages;
         
-        // Сбрасываем счетчик непрочитанных в левом списке
         const convIndex = props.conversations.findIndex(c => c.id === convId);
         if (convIndex !== -1) {
             props.conversations[convIndex].unread_count = 0;
@@ -180,7 +179,8 @@ const sendMessage = async () => {
     newMessage.value = '';
 
     try {
-        const response = await fetch(`/messages/${selectedConversationId.value}`, {
+        // ИСПРАВЛЕНО: добавлен префикс /dashboard
+        const response = await fetch(`/dashboard/messages/${selectedConversationId.value}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -193,11 +193,10 @@ const sendMessage = async () => {
         
         if (!response.ok) throw new Error('Send error');
         
-        // После успешной отправки перезагружаем сообщения этого диалога
         await selectConversation(selectedConversationId.value);
     } catch (error) {
         console.error('Error sending message:', error);
-        newMessage.value = body; // Возвращаем текст, если ошибка
+        newMessage.value = body;
     } finally {
         sending.value = false;
     }
