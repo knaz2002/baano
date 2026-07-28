@@ -368,6 +368,7 @@ Route::middleware(['auth'])->prefix('dashboard')->name('dashboard.')->group(func
     Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->name('index');
     Route::get('/listings', [\App\Http\Controllers\DashboardController::class, 'listings'])->name('listings');
     Route::get('/favorites', [\App\Http\Controllers\DashboardController::class, 'favorites'])->name('favorites');
+    Route::get('/messages/api/{conversation}', [\App\Http\Controllers\DashboardController::class, 'getConversationMessages'])->name('messages.api'); // <-- ДОБАВИТЬ ЭТУ СТРОКУ
     Route::get('/messages', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages');
     Route::get('/messages/{conversation?}', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages.show');
     Route::post('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'sendMessage'])->name('messages.send');
