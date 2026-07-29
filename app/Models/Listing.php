@@ -22,15 +22,15 @@ class Listing extends Model implements HasMedia
         'price',
         'price_type',
         'location',
-        'attributes', // <-- ДОБАВЛЕНО: для хранения специфичных полей категории
+        'listing_attributes',
         'status',
         'is_active',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
         'price' => 'decimal:2',
-        'attributes' => 'array', // <-- ДОБАВЛЕНО: автоматическое преобразование JSON <-> Array
+        'is_active' => 'boolean',
+        'listing_attributes' => 'array',
     ];
 
     protected $appends = ['image'];
@@ -83,4 +83,16 @@ class Listing extends Model implements HasMedia
              ->height(200)
              ->nonQueued();
     }
+
+// Геттер для обратной совместимости
+public function getAttributesAttribute()
+{
+    return $this->listing_attributes;
+}
+
+// Сеттер для обратной совместимости
+public function setAttributesAttribute($value)
+{
+    $this->listing_attributes = $value;
+}
 }

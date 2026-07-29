@@ -76,7 +76,7 @@ class ListingController extends Controller
         }
 
         $listingIds = $listings->pluck('id');
-        $favoritedIds = Auth::check() 
+        $favoritedIds = Auth::check()
             ? Favorite::where('user_id', Auth::id())
                 ->where('favoritable_type', 'App\\Models\\Listing')
                 ->whereIn('favoritable_id', $listingIds)
@@ -143,4 +143,41 @@ class ListingController extends Controller
 
         return $ids;
     }
+public function show(Listing $listing)
+{
+    $listing->load(['category', 'user']);
+
+    // Получаем атрибуты
+    $attrs = $listing->listing_attributes ?? [];
+
+    return Inertia::render('Listing/Show', [
+        'listing' => [
+            'id' => $listing->id,
+            'title' => $listing->title,
+            'description' => $listing->description,
+            'price' => $listing->price,
+            'price_type' => $listing->price_type,
+            'location' => $listing->location,
+            'custom_attributes' => $attrs, // <-- ПЕРЕИМЕНОВАЛИ! Не 'attributes'
+            'category' => $listing->category ? [
+                'id' => $listing->category->id,
+                'name' => $listing->category->name,
+            ] : null,
+            'user' => $listing->user ? [
+                'id' => $listing->user->id,
+                'name' => $listing->user->name,
+                'phone' => $listing->user->phone ?? null,
+            ] : null,
+            'images' => $listing->getMedia('images')->map(fn($m) => $m->getUrl()),
+            'created_at' => $listing->created_at->format('d.m.Y'),
+            'is_active' => $listing->is_active,
+        ],
+        'reviews' => [],
+        'isFavorited' => false,
+        'similarListings' => [],
+        'canReview' => false,
+        'userReview' => null,
+        'auth' => auth()->check() ? auth()->user() : null,
+    ]);
+}
 }

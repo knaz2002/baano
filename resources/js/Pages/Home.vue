@@ -100,9 +100,13 @@
                 </div>
             </div>
 
-            <!-- 3. Сетка всех объявлений -->
-            <div class="mb-12">
-                <div class="flex items-center justify-between mb-6">
+        <!-- 3. Сетка всех объявлений -->
+                <div class="mb-12">
+                    <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg sm:text-xl md:text-2xl font-bold" style="color: #1D1B20;">Все объявления</h2>
+                    <span class="text-sm font-medium" style="color: #6750A4;">
+                        {{ gridListings.length }} объявлений
+                    </span>
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-6">

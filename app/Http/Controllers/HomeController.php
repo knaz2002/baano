@@ -39,12 +39,12 @@ class HomeController extends Controller
             ];
         }
 
-        // === СЕТКА ОБЪЯВЛЕНИЙ (вместо слайдера) ===
+        // === СЕТКА ОБЪЯВЛЕНИЙ (все объявления в СЛУЧАЙНОМ порядке) ===
         $gridListings = Listing::where('is_active', true)
-            ->with(['category', 'user'])
-            ->latest()
-            ->take(20) // 4 ряда по 5 объявлений
-            ->get();
+                ->with(['category', 'user'])
+                ->inRandomOrder()
+                ->get()
+                ->shuffle(); // Дополнительная рандомизация на уровне PHP
 
         $favoritedIds = Auth::check()
             ? Favorite::where('user_id', Auth::id())

@@ -28,14 +28,14 @@ Route::get('/listings', [\App\Http\Controllers\ListingController::class, 'index'
 
 Route::get('/listings/{listing}', function (Listing $listing) {
     $listing->load(['user', 'category']);
-    
+
     $isFavorited = Auth::check() ? Favorite::where('user_id', Auth::id())
         ->where('favoritable_type', 'App\\Models\\Listing')
         ->where('favoritable_id', $listing->id)->exists() : false;
-    
+
     $reviews = Review::where('listing_id', $listing->id)
         ->where('is_active', true)->with('user')->latest()->get();
-    
+
     $similarListings = Listing::where('is_active', true)
         ->where('category_id', $listing->category_id)
         ->where('id', '!=', $listing->id)
@@ -49,10 +49,10 @@ Route::get('/listings/{listing}', function (Listing $listing) {
             'image' => $l->getFirstMediaUrl('images', 'thumb'),
             'category' => $l->category ? ['id' => $l->category->id, 'name' => $l->category->name] : null,
         ]);
-    
+
     $conversation = null;
     $chatMessages = [];
-    
+
     if (Auth::check() && $listing->user_id !== Auth::id()) {
         $userId = Auth::id();
         $conversation = \App\Models\Conversation::where(function($q) use ($listing, $userId) {
@@ -60,7 +60,7 @@ Route::get('/listings/{listing}', function (Listing $listing) {
         })->orWhere(function($q) use ($listing, $userId) {
             $q->where('user_one_id', $listing->user_id)->where('user_two_id', $userId);
         })->first();
-        
+
         if ($conversation) {
             $chatMessages = $conversation->messages()
                 ->with('sender:id,name')
@@ -83,11 +83,14 @@ Route::get('/listings/{listing}', function (Listing $listing) {
             $canReview = true;
         }
     }
-    
+
     return Inertia::render('Listing/Show', [
         'listing' => [
             'id' => $listing->id, 'title' => $listing->title, 'description' => $listing->description,
-            'price' => $listing->price, 'price_type' => $listing->price_type, 'location' => $listing->location,
+            'price' => $listing->price,
+            'price_type' => $listing->price_type,
+            'location' => $listing->location,
+            'custom_attributes' => $listing->listing_attributes ?? [],
             'images' => $listing->getMedia('images')->map(fn($m) => $m->getUrl()),
             'category' => $listing->category ? ['id' => $listing->category->id, 'name' => $listing->category->name] : null,
             'user_id' => $listing->user_id,
@@ -117,7 +120,7 @@ Route::post('/telegram/webhook', [\App\Http\Controllers\Api\TelegramWebhookContr
 // === АВТОРИЗАЦИЯ (GUEST) ===
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () { return Inertia::render('Auth/Login'); })->name('login');
-    
+
     Route::post('/login', function (Request $request) {
         $credentials = $request->validate(['email' => 'required|email', 'password' => 'required']);
         if (Auth::attempt($credentials, $request->filled('remember'))) {
@@ -136,7 +139,7 @@ Route::middleware('guest')->group(function () {
         try {
             $phone = preg_replace('/\D/', '', $request->phone);
             $formattedPhone = '+' . $phone;
-            
+
             if (User::where('phone', $formattedPhone)->exists()) {
                 return back()->withErrors(['phone' => 'Этот телефон уже зарегистрирован']);
             }
@@ -146,22 +149,22 @@ Route::middleware('guest')->group(function () {
             if ($request->password !== $request->password_confirmation) {
                 return back()->withErrors(['password' => 'Пароли не совпадают']);
             }
-            
+
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
                 'password' => 'required|string|min:8',
             ]);
-            
+
             $user = User::create([
                 'name' => $validated['name'], 'phone' => $formattedPhone,
                 'email' => $validated['email'], 'password' => bcrypt($validated['password']),
             ]);
-            
+
             Auth::login($user);
             $user->sendEmailVerificationNotification();
             return redirect('/verify-email');
-            
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors());
         } catch (\Exception $e) {
@@ -200,10 +203,10 @@ Route::middleware(['auth'])->group(function () {
                 ] : null,
             ];
         })->filter(fn($item) => $item['favoritable'] !== null);
-        
+
         return Inertia::render('Favorites', ['favorites' => $favoritesData->values(), 'auth' => ['user' => Auth::user()]]);
     })->name('user.favorites.index');
-    
+
     Route::middleware(['email.verified'])->group(function () {
         Route::post('/user/favorites/toggle', function (Request $request) {
             $validated = $request->validate(['listing_id' => 'required|exists:listings,id']);
@@ -220,13 +223,13 @@ Route::middleware(['auth'])->group(function () {
                 return back()->with('success', 'Добавлено в избранное');
             }
         })->name('user.favorites.toggle');
-        
+
         Route::delete('/user/favorites/{id}', function ($id) {
             Favorite::where('user_id', Auth::id())->where('id', $id)->firstOrFail()->delete();
             return back()->with('success', 'Удалено из избранного');
         })->name('user.favorites.destroy');
     });
-    
+
     Route::get('/user/listings', function () {
         $listings = Listing::where('user_id', Auth::id())->with('category')->latest()->get();
         return Inertia::render('Listing/Index', [
@@ -239,14 +242,14 @@ Route::middleware(['auth'])->group(function () {
             'auth' => ['user' => Auth::user()],
         ]);
     })->name('user.listings.index');
-    
+
     Route::middleware(['email.verified'])->group(function () {
         Route::get('/user/listings/create', function () {
             $categories = Category::with('children.children')->whereNull('parent_id')->get();
             return Inertia::render('Listing/Create', ['categories' => $categories, 'auth' => ['user' => Auth::user()]]);
         })->name('user.listings.create');
-        
-        
+
+
         Route::post('/user/listings', function (Request $request) {
             $validated = $request->validate([
                 'category_id' => 'required|exists:categories,id',
@@ -259,7 +262,7 @@ Route::middleware(['auth'])->group(function () {
                 'images' => 'nullable|array|max:10',
                 'images.*' => 'image|max:2048',
             ]);
-            
+
             $listing = Listing::create([
                 'user_id' => Auth::id(),
                 'category_id' => $validated['category_id'],
@@ -271,23 +274,24 @@ Route::middleware(['auth'])->group(function () {
                 'attributes' => $request->filled('attributes') ? json_decode($request->attributes, true) : null, // <-- ДОБАВЛЕНО
                 'is_active' => false,
             ]);
-            
+
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     $listing->addMedia($image)->toMediaCollection('images');
                 }
             }
-            
+
             return redirect('/user/listings')->with('success', 'Объявление создано');
         })->name('user.listings.store');
-        
+
         Route::get('/user/listings/{listing}/edit', function (Listing $listing) {
             if ($listing->user_id !== Auth::id()) abort(403);
             $categories = Category::all();
             return Inertia::render('Listing/Edit', [
                 'listing' => [
                     'id' => $listing->id, 'title' => $listing->title, 'description' => $listing->description,
-                    'price' => $listing->price, 'price_type' => $listing->price_type,
+                    'price' => $listing->price,
+                    'price_type' => $listing->price_type,
                     'location' => $listing->location, 'category_id' => $listing->category_id,
                     'images' => $listing->getMedia('images')->map(fn($m) => $m->getUrl()),
                 ],
@@ -295,10 +299,10 @@ Route::middleware(['auth'])->group(function () {
                 'auth' => ['user' => Auth::user()],
             ]);
         })->name('user.listings.edit');
-        
+
         Route::put('/user/listings/{listing}', function (Request $request, Listing $listing) {
             if ($listing->user_id !== Auth::id()) abort(403);
-            
+
             $validated = $request->validate([
                 'category_id' => 'required|exists:categories,id',
                 'title' => 'required|max:255',
@@ -310,7 +314,7 @@ Route::middleware(['auth'])->group(function () {
                 'images' => 'nullable|array|max:10',
                 'images.*' => 'image|max:2048',
             ]);
-            
+
             $listing->update([
                 'category_id' => $validated['category_id'],
                 'title' => $validated['title'],
@@ -320,24 +324,24 @@ Route::middleware(['auth'])->group(function () {
                 'location' => $validated['location'] ?? null,
                 'attributes' => $request->filled('attributes') ? json_decode($request->attributes, true) : null, // <-- ДОБАВЛЕНО
             ]);
-            
+
             if ($request->hasFile('images')) {
                 $listing->clearMediaCollection('images');
                 foreach ($request->file('images') as $image) {
                     $listing->addMedia($image)->toMediaCollection('images');
                 }
             }
-            
+
             return redirect('/user/listings')->with('success', 'Объявление обновлено');
         })->name('user.listings.update');
-        
+
         Route::delete('/user/listings/{listing}', function (Listing $listing) {
             if ($listing->user_id !== Auth::id()) abort(403);
             $listing->delete();
             return back()->with('success', 'Объявление удалено');
         })->name('user.listings.destroy');
     });
-    
+
     Route::middleware(['email.verified'])->group(function () {
         Route::post('/listings/{listing}/reviews', [\App\Http\Controllers\User\ReviewController::class, 'store'])->name('reviews.store');
         Route::put('/reviews/{review}', [\App\Http\Controllers\User\ReviewController::class, 'update'])->name('reviews.update');
@@ -356,7 +360,7 @@ Route::middleware(['auth'])->prefix('manage')->name('admin.')->group(function ()
         ];
         return view('admin.dashboard', compact('stats'));
     })->name('dashboard');
-    
+
     Route::resource('users', \App\Http\Controllers\Admin\AdminUserController::class);
     Route::resource('listings', \App\Http\Controllers\Admin\AdminListingController::class);
     Route::resource('categories', \App\Http\Controllers\Admin\AdminCategoryController::class);

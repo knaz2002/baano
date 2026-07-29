@@ -133,6 +133,8 @@
                         <!-- Характеристики -->
                         <div v-if="activeTab === 'specs'">
                             <h2 class="text-base md:text-xl font-bold mb-4" style="color: #1D1B20;">Характеристики</h2>
+
+                            <!-- Общие поля -->
                             <div class="space-y-3">
                                 <div class="flex justify-between py-3 border-b text-sm" style="border-color: #E7E0EC;">
                                     <span style="color: #49454F;">Тип</span>
@@ -151,84 +153,183 @@
                                     <span class="font-medium" style="color: #1D1B20;">{{ formatDate(listing.created_at) }}</span>
                                 </div>
                             </div>
+                            <!-- АТРИБУТЫ НЕДВИЖИМОСТИ -->
+<div
+v-if="
+    listing.custom_attributes?.area !== undefined ||
+    listing.custom_attributes?.floor !== undefined ||
+    listing.custom_attributes?.rooms !== undefined ||
+    listing.custom_attributes?.property_type ||
+    listing.custom_attributes?.furnished !== undefined
+"
+    class="mt-6"
+>
+    <h3
+        class="font-bold text-sm md:text-base mb-3"
+        style="color: #1D1B20;"
+    >
+        Параметры недвижимости
+    </h3>
+
+    <div class="space-y-3">
+        <div
+            v-if="listing.custom_attributes?.property_type"
+            class="flex justify-between gap-4 py-3 border-b text-sm"
+            style="border-color: #E7E0EC;"
+        >
+            <span style="color: #49454F;">Тип недвижимости</span>
+
+            <span
+                class="font-medium text-right"
+                style="color: #1D1B20;"
+            >
+                {{
+                    {
+                        apartment: 'Квартира',
+                        house: 'Дом',
+                        commercial: 'Коммерческая недвижимость',
+                        room: 'Комната',
+                        studio: 'Студия'
+                    }[listing.custom_attributes.property_type]
+                    || listing.custom_attributes.property_type
+                }}
+            </span>
+        </div>
+
+        <div
+            v-if="listing.custom_attributes?.area !== undefined"
+            class="flex justify-between gap-4 py-3 border-b text-sm"
+            style="border-color: #E7E0EC;"
+        >
+            <span style="color: #49454F;">Площадь</span>
+
+            <span
+                class="font-medium text-right"
+                style="color: #1D1B20;"
+            >
+                {{ listing.custom_attributes.area }} м²
+            </span>
+        </div>
+
+        <div
+            v-if="listing.custom_attributes?.rooms !== undefined"
+            class="flex justify-between gap-4 py-3 border-b text-sm"
+            style="border-color: #E7E0EC;"
+        >
+            <span style="color: #49454F;">Количество комнат</span>
+
+            <span
+                class="font-medium text-right"
+                style="color: #1D1B20;"
+            >
+                {{ listing.custom_attributes.rooms }}
+            </span>
+        </div>
+
+        <div
+            v-if="listing.custom_attributes?.floor !== undefined"
+            class="flex justify-between gap-4 py-3 border-b text-sm"
+            style="border-color: #E7E0EC;"
+        >
+            <span style="color: #49454F;">Этаж</span>
+
+            <span
+                class="font-medium text-right"
+                style="color: #1D1B20;"
+            >
+                {{ listing.custom_attributes.floor }}
+            </span>
+        </div>
+
+        <div
+            v-if="listing.custom_attributes?.condition"
+            class="flex justify-between gap-4 py-3 border-b text-sm"
+            style="border-color: #E7E0EC;"
+        >
+            <span style="color: #49454F;">Состояние</span>
+
+            <span
+                class="font-medium text-right"
+                style="color: #1D1B20;"
+            >
+                {{
+                    {
+                        finish: 'С ремонтом',
+                        pre_finish: 'Предчистовая отделка',
+                        rough: 'Черновая отделка',
+                        without_finish: 'Без отделки'
+                    }[listing.custom_attributes.condition]
+                    || listing.custom_attributes.condition
+                }}
+            </span>
+        </div>
+
+        <div
+            v-if="
+                listing.custom_attributes?.furnished !== undefined &&
+                listing.custom_attributes?.furnished !== null
+            "
+            class="flex justify-between gap-4 py-3 border-b text-sm"
+            style="border-color: #E7E0EC;"
+        >
+            <span style="color: #49454F;">Мебель</span>
+
+            <span
+                class="font-medium text-right"
+                style="color: #1D1B20;"
+            >
+                {{ listing.custom_attributes.furnished ? 'Есть' : 'Нет' }}
+            </span>
+        </div>
+    </div>
+</div>
+
+                            <!-- АТРИБУТЫ ТРАНСПОРТА -->
+                            <div v-if="listing.custom_attributes?.brand" class="mt-6">
+                                <h3 class="font-bold text-sm md:text-base mb-3" style="color: #1D1B20;">Технические характеристики</h3>
+                                <div class="space-y-3">
+                                    <div v-if="listing.custom_attributes.brand" class="flex justify-between py-3 border-b text-sm" style="border-color: #E7E0EC;">
+                                        <span style="color: #49454F;">Марка</span>
+                                        <span class="font-medium" style="color: #1D1B20;">{{ listing.custom_attributes.brand }}</span>
+                                    </div>
+                                    <div v-if="listing.custom_attributes.model" class="flex justify-between py-3 border-b text-sm" style="border-color: #E7E0EC;">
+                                        <span style="color: #49454F;">Модель</span>
+                                        <span class="font-medium" style="color: #1D1B20;">{{ listing.custom_attributes.model }}</span>
+                                    </div>
+                                    <div v-if="listing.custom_attributes.year" class="flex justify-between py-3 border-b text-sm" style="border-color: #E7E0EC;">
+                                        <span style="color: #49454F;">Год выпуска</span>
+                                        <span class="font-medium" style="color: #1D1B20;">{{ listing.custom_attributes.year }}</span>
+                                    </div>
+                                    <div v-if="listing.custom_attributes.mileage" class="flex justify-between py-3 border-b text-sm" style="border-color: #E7E0EC;">
+                                        <span style="color: #49454F;">Пробег</span>
+                                        <span class="font-medium" style="color: #1D1B20;">{{ listing.custom_attributes.mileage.toLocaleString('ru-RU') }} км</span>
+                                    </div>
+                                    <div v-if="listing.custom_attributes.capacity" class="flex justify-between py-3 border-b text-sm" style="border-color: #E7E0EC;">
+                                        <span style="color: #49454F;">Грузоподъемность</span>
+                                        <span class="font-medium" style="color: #1D1B20;">{{ listing.custom_attributes.capacity }} т</span>
+                                    </div>
+                                    <div v-if="listing.custom_attributes.body_type" class="flex justify-between py-3 border-b text-sm" style="border-color: #E7E0EC;">
+                                        <span style="color: #49454F;">Тип кузова</span>
+                                        <span class="font-medium" style="color: #1D1B20;">{{ getBodyType(listing.custom_attributes.body_type) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- АТРИБУТЫ УСЛУГ -->
+                            <div v-if="listing.custom_attributes?.experience_years" class="mt-6">
+                                <h3 class="font-bold text-sm md:text-base mb-3" style="color: #1D1B20;">Детали услуги</h3>
+                                <div class="space-y-3">
+                                    <div v-if="listing.custom_attributes.experience_years" class="flex justify-between py-3 border-b text-sm" style="border-color: #E7E0EC;">
+                                        <span style="color: #49454F;">Стаж работы</span>
+                                        <span class="font-medium" style="color: #1D1B20;">{{ listing.custom_attributes.experience_years }} лет</span>
+                                    </div>
+                                    <div v-if="listing.custom_attributes.service_area" class="flex justify-between py-3 border-b text-sm" style="border-color: #E7E0EC;">
+                                        <span style="color: #49454F;">Зона обслуживания</span>
+                                        <span class="font-medium" style="color: #1D1B20;">{{ listing.custom_attributes.service_area }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
-                        <!-- === ОТЗЫВЫ (ЧИСТАЯ ВЕРСИЯ БЕЗ КОНФЛИКТОВ) === -->
-                        <div v-if="activeTab === 'reviews'">
-                            <div class="flex items-center justify-between mb-6">
-                                <h2 class="text-base md:text-xl font-bold" style="color: #1D1B20;">Отзывы</h2>
-                            </div>
-
-                            <!-- 1. Форма для нового отзыва -->
-                            <div v-if="canReview" class="mb-8 p-4 rounded-xl" style="background-color: #F5F5F5;">
-                                <h3 class="font-semibold mb-3" style="color: #1D1B20;">Оставить отзыв</h3>
-                                <form @submit.prevent="submitReview">
-                                    <div class="mb-3">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Оценка</label>
-                                        <div class="flex gap-1">
-                                            <button v-for="star in 5" :key="star" type="button" @click="newReviewRating = star" class="text-2xl focus:outline-none transition-colors" :class="star <= newReviewRating ? 'text-yellow-400' : 'text-gray-300'">★</button>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Комментарий</label>
-                                        <textarea v-model="newReviewComment" rows="3" class="w-full px-4 py-2 border-2 rounded-xl focus:outline-none text-sm" style="border-color: #E7E0EC;" placeholder="Расскажите о вашем опыте..." maxlength="1000" required></textarea>
-                                    </div>
-                                    <button type="submit" :disabled="reviewSending" class="px-6 py-2 rounded-xl text-white font-medium text-sm transition-all hover:shadow-lg disabled:opacity-50" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);">
-                                        {{ reviewSending ? 'Отправка...' : 'Отправить на модерацию' }}
-                                    </button>
-                                </form>
-                            </div>
-
-                            <!-- 2. Блок уже оставленного отзыва пользователем -->
-                            <div v-else-if="userReview" class="mb-8 p-4 rounded-xl border-2" style="border-color: #E7E0EC; background-color: #FAFAFA;">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h3 class="font-semibold" style="color: #1D1B20;">Ваш отзыв</h3>
-                                    <span v-if="!userReview.is_active" class="px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">На модерации</span>
-                                    <span v-else class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">Опубликован</span>
-                                </div>
-                                <div class="flex text-yellow-400 mb-2">
-                                    <span v-for="n in 5" :key="n" :class="n <= userReview.rating ? 'text-yellow-400' : 'text-gray-300'">★</span>
-                                </div>
-                                <p class="text-gray-700 mb-3">{{ userReview.comment }}</p>
-                                <div class="flex gap-2">
-                                    <button @click="deleteReview" class="text-sm text-red-500 hover:underline">Удалить отзыв</button>
-                                </div>
-                            </div>
-
-                            <!-- 3. Сообщения для тех, кто не может писать отзыв -->
-                            <div v-else-if="!auth?.user" class="mb-8 p-4 rounded-xl text-center" style="background-color: #F5F5F5;">
-                                <p class="text-gray-600">
-                                    <Link href="/login" class="font-semibold hover:underline" style="color: #6750A4;">Войдите в систему</Link>, чтобы оставить отзыв.
-                                </p>
-                            </div>
-                            <div v-else-if="listing.user_id === auth?.user?.id" class="mb-8 p-4 rounded-xl text-center" style="background-color: #F5F5F5;">
-                                <p class="text-gray-500">Вы не можете оставлять отзывы на свои собственные объявления.</p>
-                            </div>
-
-                            <!-- 4. Список всех одобренных отзывов -->
-                            <div v-if="reviews.length > 0" class="space-y-4">
-                                <div v-for="review in reviews" :key="review.id" class="border-b last:border-0 pb-4 last:pb-0" style="border-color: #E7E0EC;">
-                                    <div class="flex items-center gap-3 mb-3">
-                                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style="background: linear-gradient(135deg, #6750A4 0%, #9B7FCF 100%);">
-                                            {{ review.user?.name?.charAt(0) || '?' }}
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="font-semibold text-sm md:text-base truncate" style="color: #1D1B20;">{{ review.user?.name }}</p>
-                                            <div class="flex text-yellow-400 text-xs md:text-sm">
-                                                <span v-for="i in 5" :key="i">{{ i <= review.rating ? '★' : '☆' }}</span>
-                                            </div>
-                                        </div>
-                                        <span class="text-xs md:text-sm flex-shrink-0" style="color: #49454F;">{{ formatDate(review.created_at) }}</span>
-                                    </div>
-                                    <p class="text-sm" style="color: #49454F;">{{ review.comment }}</p>
-                                </div>
-                            </div>
-                            
-                            <div v-else class="text-center py-8 text-gray-500">
-                                Пока нет одобренных отзывов.
-                            </div>
-                        </div>
-                        <!-- === КОНЕЦ БЛОКА ОТЗЫВОВ === -->
 
                         <!-- Похожие -->
                         <div v-if="activeTab === 'similar'">
@@ -257,6 +358,11 @@
                                 <p class="text-lg" style="color: #49454F;">Похожих объявлений не найдено</p>
                             </div>
                         </div>
+
+                        <!-- Отзывы -->
+                        <div v-if="activeTab === 'reviews'">
+                            <p class="text-gray-500">Отзывы будут здесь...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -282,11 +388,6 @@ const props = defineProps({
 const currentImageIndex = ref(0);
 const thumbnailStart = ref(0);
 const activeTab = ref('description');
-
-// Переменные для формы отзыва
-const newReviewRating = ref(5);
-const newReviewComment = ref('');
-const reviewSending = ref(false);
 
 const tabs = computed(() => [
     { id: 'description', name: 'Описание' },
@@ -332,6 +433,18 @@ const getPriceType = (type) => {
     return types[type] || '';
 };
 
+const getBodyType = (type) => {
+    const types = {
+        'tent': 'Тент',
+        'refrigerator': 'Рефрижератор',
+        'van': 'Фургон',
+        'flatbed': 'Бортовой',
+        'dump': 'Самосвал',
+        'container': 'Контейнеровоз'
+    };
+    return types[type] || type;
+};
+
 const toggleFavorite = () => {
     router.post('/user/favorites/toggle', { listing_id: props.listing.id }, { preserveScroll: true });
 };
@@ -339,37 +452,6 @@ const toggleFavorite = () => {
 const openChat = () => {
     router.post('/message-user/' + props.listing.user_id, {}, { preserveScroll: true });
 };
-
-// === МЕТОДЫ ДЛЯ РАБОТЫ С ОТЗЫВАМИ ===
-const submitReview = () => {
-    if (!newReviewComment.value.trim()) return;
-    
-    reviewSending.value = true;
-    
-    router.post(`/listings/${props.listing.id}/reviews`, {
-        rating: newReviewRating.value,
-        comment: newReviewComment.value,
-    }, {
-        preserveScroll: true,
-        onSuccess: () => {
-            newReviewComment.value = '';
-            reviewSending.value = false;
-        },
-        onError: () => {
-            reviewSending.value = false;
-        }
-    });
-};
-
-const deleteReview = () => {
-    if (!props.userReview) return;
-    if (!confirm('Вы уверены, что хотите удалить свой отзыв?')) return;
-    
-    router.delete(`/reviews/${props.userReview.id}`, {
-        preserveScroll: true,
-    });
-};
-// =====================================
 </script>
 
 <style scoped>
