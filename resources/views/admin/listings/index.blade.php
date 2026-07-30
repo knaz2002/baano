@@ -36,19 +36,57 @@
                                         {{ number_format($listing->price, 0, ',', ' ') }} ₽
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        @if($listing->is_active)
+                                        @if($listing->status === 'pending')
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                {{ $listing->requested_is_active
+                                                    ? 'На модерации: публикация'
+                                                    : 'На модерации: снятие' }}
+                                            </span>
+                                        @elseif($listing->status === 'active' && $listing->is_active)
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                 Опубликовано
                                             </span>
                                         @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                На модерации
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-700">
+                                                Снято с публикации
                                             </span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <button class="text-blue-600 hover:text-blue-900 mr-3">Изменить</button>
-                                        <button class="text-red-600 hover:text-red-900">Удалить</button>
+                                        @if($listing->status === 'pending')
+                                            <form
+                                                method="POST"
+                                                action="{{ route('admin.listings.approve', $listing) }}"
+                                                class="inline"
+                                            >
+                                                @csrf
+                                                @method('PATCH')
+
+                                                <button
+                                                    type="submit"
+                                                    class="text-green-600 hover:text-green-900 mr-3 font-medium"
+                                                >
+                                                    Одобрить
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                        <form
+                                            method="POST"
+                                            action="{{ route('admin.listings.destroy', $listing) }}"
+                                            class="inline"
+                                            onsubmit="return confirm('Удалить объявление без возможности восстановления?')"
+                                        >
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button
+                                                type="submit"
+                                                class="text-red-600 hover:text-red-900"
+                                            >
+                                                Удалить
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 @empty

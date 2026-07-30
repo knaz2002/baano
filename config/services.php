@@ -34,7 +34,7 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-        
+
     'vapid' => [
     'subject' => env('VAPID_SUBJECT', 'mailto:admin@baano.local'),
     'public_key' => env('VAPID_PUBLIC_KEY'),
@@ -54,6 +54,10 @@ return [
             'api_id' => env('SMS_RU_API_ID'),
             'test' => env('SMS_RU_TEST', true),
         ],
+    ],
+
+    'pexels' => [
+        'key' => env('PEXELS_API_KEY'),
     ],
 ];
 

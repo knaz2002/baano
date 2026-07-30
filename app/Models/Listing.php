@@ -22,16 +22,20 @@ class Listing extends Model implements HasMedia
         'price',
         'price_type',
         'location',
+        'city',
+        'listing_attributes',
         'status',
         'is_active',
+        'requested_is_active',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean',
         'price' => 'decimal:2',
+        'is_active' => 'boolean',
+        'requested_is_active' => 'boolean',
+        'listing_attributes' => 'array',
     ];
 
-    // ДОБАВЛЕНО: автоматически добавляем поле image при сериализации
     protected $appends = ['image'];
 
     public function user(): BelongsTo
@@ -64,7 +68,6 @@ class Listing extends Model implements HasMedia
         return $this->favorites()->where('user_id', $user->id)->exists();
     }
 
-    // ДОБАВЛЕНО: accessor для получения первого изображения
     public function getImageAttribute(): ?string
     {
         $media = $this->getFirstMedia('images');
@@ -73,8 +76,7 @@ class Listing extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('images')
-             ->useDisk('public');
+        $this->addMediaCollection('images')->useDisk('public');
     }
 
     public function registerMediaConversions(?Media $media = null): void
@@ -84,4 +86,16 @@ class Listing extends Model implements HasMedia
              ->height(200)
              ->nonQueued();
     }
+
+// Геттер для обратной совместимости
+public function getAttributesAttribute()
+{
+    return $this->listing_attributes;
+}
+
+// Сеттер для обратной совместимости
+public function setAttributesAttribute($value)
+{
+    $this->listing_attributes = $value;
+}
 }

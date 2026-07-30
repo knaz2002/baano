@@ -39,21 +39,21 @@ class HomeController extends Controller
             ];
         }
 
-        $sliderListings = Listing::where('is_active', true)
-            ->with(['category', 'user'])
-            ->latest()
-            ->take(20)
-            ->get();
+        // === СЕТКА ОБЪЯВЛЕНИЙ (все объявления в СЛУЧАЙНОМ порядке) ===
+        $gridListings = Listing::where('is_active', true)
+                ->with(['category', 'user'])
+                ->inRandomOrder()
+                ->get()
+                ->shuffle(); // Дополнительная рандомизация на уровне PHP
 
-        // Получаем ID избранных объявлений для текущего пользователя
         $favoritedIds = Auth::check()
             ? Favorite::where('user_id', Auth::id())
                 ->where('favoritable_type', 'App\\Models\\Listing')
-                ->whereIn('favoritable_id', $sliderListings->pluck('id'))
+                ->whereIn('favoritable_id', $gridListings->pluck('id'))
                 ->pluck('favoritable_id')
             : collect();
 
-        $sliderListingsData = $sliderListings->map(fn($l) => [
+        $gridListingsData = $gridListings->map(fn($l) => [
             'id' => $l->id,
             'title' => $l->title,
             'description' => $l->description ?? '',
@@ -66,6 +66,7 @@ class HomeController extends Controller
             'is_favorited' => $favoritedIds->contains($l->id),
         ]);
 
+        // === VIP ОБЪЯВЛЕНИЯ ===
         $vipListings = Listing::where('is_active', true)
             ->with(['category', 'user'])
             ->inRandomOrder()
@@ -85,7 +86,7 @@ class HomeController extends Controller
 
         return Inertia::render('Home', [
             'parentCategories' => $parentCategoriesData,
-            'sliderListings' => $sliderListingsData,
+            'gridListings' => $gridListingsData, // <-- ПЕРЕДАЁМ gridListings
             'vipListings' => $vipListings,
         ]);
     }

@@ -8,13 +8,24 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasColumn('listings', 'price_type')) {
+            return;
+        }
+
         Schema::table('listings', function (Blueprint $table) {
-            $table->string('price_type')->default('fixed')->after('price');
+            $table
+                ->string('price_type')
+                ->default('fixed')
+                ->after('price');
         });
     }
 
     public function down(): void
     {
+        if (! Schema::hasColumn('listings', 'price_type')) {
+            return;
+        }
+
         Schema::table('listings', function (Blueprint $table) {
             $table->dropColumn('price_type');
         });
