@@ -52,6 +52,26 @@
                                 </select>
                             </div>
                         </div>
+                          <!-- Город -->
+                          <div>
+                              <label
+                                  class="block text-sm font-medium mb-2"
+                                  style="color: #49454F;"
+                              >
+                                  Город
+                              </label>
+
+                              <input
+                                  v-model="form.city"
+                                  type="text"
+                                  maxlength="120"
+                                  placeholder="Например, Москва"
+                                  class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none"
+                                  style="border-color: #E7E0EC;"
+                              >
+                          </div>
+
+
 
                         <!-- Локация -->
                         <div>
@@ -59,51 +79,62 @@
                             <input v-model="form.location" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
                         </div>
 
-                        <!-- === ДИНАМИЧЕСКИЕ ПОЛЯ (Те же ID категорий, что и в Create.vue) === -->
-                        <div v-if="form.category_id == 1" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики недвижимости</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Тип недвижимости</label>
-                                    <select v-model="form.attributes.property_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
-                                        <option value="apartment">Квартира</option>
-                                        <option value="house">Дом</option>
-                                        <option value="land">Участок</option>
-                                        <option value="commercial">Коммерческая</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Площадь (м²)</label>
-                                    <input v-model.number="form.attributes.area" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
-                                </div>
-                            </div>
-                        </div>
+                          <!-- Характеристики категории -->
+                          <ListingAttributesFields
+                              v-model="form.attributes"
+                              :category-id="form.category_id"
+                              :categories="categories"
+                          />
 
-                        <div v-if="form.category_id == 2" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики транспорта</h3>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Марка</label>
-                                    <input v-model="form.attributes.brand" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Год выпуска</label>
-                                    <input v-model.number="form.attributes.year" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
-                                </div>
-                            </div>
-                        </div>
-                        <!-- ================================================================== -->
+                          <!-- Текущие фотографии -->
+                          <div v-if="form.images.length > 0">
+                              <label
+                                  class="block text-sm font-medium mb-2"
+                                  style="color: #49454F;"
+                              >
+                                  Текущие фотографии
+                              </label>
 
-                        <!-- Текущие фотографии -->
-                        <div v-if="form.images && form.images.length > 0">
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Текущие фотографии</label>
-                            <div class="flex gap-3 flex-wrap">
-                                <div v-for="(img, index) in form.images" :key="index" class="relative">
-                                    <img :src="img" class="w-32 h-32 object-cover rounded-lg">
-                                </div>
-                            </div>
-                            <p class="text-sm mt-2" style="color: #79747E;">Новые фотографии заменят текущие</p>
-                        </div>
+                              <div class="flex gap-3 flex-wrap">
+                                  <div
+                                      v-for="image in form.images"
+                                      :key="image.id"
+                                      class="relative"
+                                  >
+                                      <img
+                                          :src="image.url"
+                                          class="w-32 h-32 object-cover rounded-lg"
+                                      >
+
+                                      <button
+                                          type="button"
+                                          title="Удалить изображение"
+                                          aria-label="Удалить изображение"
+                                          :disabled="!canRemoveExistingImage()"
+                                          class="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full text-xl font-bold text-white shadow-md transition-transform hover:scale-110 disabled:cursor-not-allowed disabled:opacity-40"
+                                          style="background-color: #DC2626;"
+                                          @click="removeExistingImage(image.id)"
+                                      >
+                                          ×
+                                      </button>
+                                  </div>
+                              </div>
+
+                              <p
+                                  class="text-sm mt-2"
+                                  style="color: #79747E;"
+                              >
+                                  В объявлении должна оставаться минимум одна фотография
+                              </p>
+                          </div>
+
+                          <p
+                              v-if="imageError"
+                              class="text-sm"
+                              style="color: #DC2626;"
+                          >
+                              {{ imageError }}
+                          </p>
 
                         <!-- Новые фотографии -->
                         <div>
@@ -131,6 +162,7 @@
 import { ref } from 'vue';
 import { router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import ListingAttributesFields from '@/Components/ListingAttributesFields.vue';
 
 const props = defineProps({
     listing: Object,
@@ -144,15 +176,51 @@ const form = ref({
     price: props.listing.price,
     price_type: props.listing.price_type,
     location: props.listing.location || '',
-    attributes: props.listing.attributes || {}, // <-- ДОБАВЛЕНО: инициализация из существующих данных
+    city: props.listing.city || '',
+    attributes: {
+        ...(props.listing.attributes || {}),
+    },
     images: props.listing.images || [],
+    removed_media_ids: [],
 });
 
-const handleImageUpload = (event) => {
-    const files = event.target.files;
-    if (files.length > 0) {
-        form.value.newImages = files;
+const imageError = ref('');
+
+const newImagesCount = () => {
+    return form.value.newImages?.length || 0;
+};
+
+const canRemoveExistingImage = () => {
+    return (
+        form.value.images.length
+        + newImagesCount()
+    ) > 1;
+};
+
+const removeExistingImage = (mediaId) => {
+    if (!canRemoveExistingImage()) {
+        imageError.value =
+            'Нельзя удалить последнюю фотографию.';
+        return;
     }
+
+    if (!form.value.removed_media_ids.includes(mediaId)) {
+        form.value.removed_media_ids.push(mediaId);
+    }
+
+    form.value.images = form.value.images.filter(
+        image => image.id !== mediaId
+    );
+
+    imageError.value = '';
+};
+
+const handleImageUpload = (event) => {
+    form.value.newImages = Array.from(
+        event.target.files || []
+    );
+
+    imageError.value = '';
 };
 
 const updateListing = () => {
@@ -163,9 +231,14 @@ const updateListing = () => {
     formData.append('price', form.value.price);
     formData.append('price_type', form.value.price_type);
     formData.append('location', form.value.location);
+    formData.append('city', form.value.city || '');
     
     // <-- ДОБАВЛЕНО: Отправляем attributes как JSON-строку
     formData.append('attributes', JSON.stringify(form.value.attributes));
+
+    form.value.removed_media_ids.forEach((mediaId) => {
+        formData.append('removed_media_ids[]', mediaId);
+    });
     
     if (form.value.newImages) {
         for (let i = 0; i < form.value.newImages.length; i++) {

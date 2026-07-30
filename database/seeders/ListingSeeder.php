@@ -281,6 +281,7 @@ class ListingSeeder extends Seeder
             while ($count < $listingsPerCategory && $totalCreated < 120) {
                 $listingData = $matchedListings[$count % count($matchedListings)];
                 $imageKey = $listingData['image_key'] ?? 'default';
+                $location = $this->getRandomLocation();
 
                 $listing = Listing::create([
                     'user_id' => $admin->id,
@@ -289,7 +290,8 @@ class ListingSeeder extends Seeder
                     'description' => $listingData['desc'],
                     'price' => $listingData['price'],
                     'price_type' => 'fixed',
-                    'location' => $this->getRandomLocation(),
+                    'location' => $location,
+                    'city' => $this->extractCityFromLocation($location),
                     'listing_attributes' => $this->getAttributesForCategory($category->id),
                     'is_active' => true,
                 ]);
@@ -796,6 +798,35 @@ class ListingSeeder extends Seeder
             ['title' => 'Профессиональные услуги', 'price' => rand(1000, 50000), 'desc' => 'Опыт работы более 5 лет', 'image_key' => 'default', 'keywords' => ['услуга']],
             ['title' => 'Выполню работу качественно', 'price' => rand(1000, 50000), 'desc' => 'Гарантия результата', 'image_key' => 'default', 'keywords' => ['услуга']],
         ];
+    }
+
+    private function extractCityFromLocation(
+        string $location
+    ): ?string {
+        $location = trim($location);
+
+        if (
+            $location === ''
+            || mb_strtolower($location) === 'адрес не указан'
+        ) {
+            return null;
+        }
+
+        if (
+            preg_match(
+                '/(?:^|,\s*)г\.?\s*([^,]+)/ui',
+                $location,
+                $matches
+            )
+        ) {
+            $city = trim($matches[1]);
+
+            return $city !== ''
+                ? $city
+                : null;
+        }
+
+        return null;
     }
 
     private function getRandomLocation(): string

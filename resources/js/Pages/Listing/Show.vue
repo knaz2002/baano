@@ -450,7 +450,11 @@ const toggleFavorite = () => {
 };
 
 const openChat = () => {
-    router.post('/message-user/' + props.listing.user_id, {}, { preserveScroll: true });
+    router.post(
+        '/message-user/' + props.listing.user_id,
+        { listing_id: props.listing.id },
+        { preserveScroll: true }
+    );
 };
 </script>
 

@@ -56,16 +56,51 @@
                                     v-model="filters.category"
                                     class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white"
                                     style="border-color: #E7E0EC; color: #1D1B20;"
-                                    @change="applyFilters"
+                                    @change="onCategoryChange"
                                 >
                                     <option value="">Все категории</option>
-                                    <optgroup v-for="cat in categories" :key="cat.id" :label="cat.name">
-                                        <option :value="cat.id">{{ cat.name }}</option>
-                                        <option v-for="child in cat.children" :key="child.id" :value="child.id">
-                                            — {{ child.name }}
+                                    <optgroup
+                                        v-for="cat in categories"
+                                        :key="cat.id"
+                                        :label="cat.name"
+                                    >
+                                        <option :value="cat.id">
+                                            {{ cat.name }}
                                         </option>
+
+                                        <template
+                                            v-for="child in cat.children || []"
+                                            :key="child.id"
+                                        >
+                                            <option :value="child.id">
+                                                — {{ child.name }}
+                                            </option>
+
+                                            <option
+                                                v-for="grandchild in child.children || []"
+                                                :key="grandchild.id"
+                                                :value="grandchild.id"
+                                            >
+                                                —— {{ grandchild.name }}
+                                            </option>
+                                        </template>
                                     </optgroup>
                                 </select>
+                            </div>
+
+                            <!-- Город -->
+                            <div class="mb-4 md:mb-6">
+                                <label
+                                    class="block text-sm font-medium mb-2"
+                                    style="color: #49454F;"
+                                >
+                                    Город
+                                </label>
+
+                                <CitySelect
+                                    v-model="filters.city"
+                                    @change="onCityChange"
+                                />
                             </div>
 
                             <!-- Цена -->
@@ -98,6 +133,233 @@
                                     class="custom-range-slider w-full"
                                     @input="applyFilters"
                                 >
+
+                                <div
+                                    class="mt-2 text-center text-xs font-medium"
+                                    style="color: #6750A4;"
+                                >
+                                    {{ formatPrice(priceMax) }} ₽
+                                </div>
+                            </div>
+
+                            <!-- Фильтры коммерческой недвижимости -->
+                            <div
+                                v-if="filterConfig.type === 'commercial'"
+                                class="mb-4 md:mb-6"
+                            >
+                                <label
+                                    class="block text-sm font-medium mb-2"
+                                    style="color: #49454F;"
+                                >
+                                    Площадь, м²
+                                </label>
+
+                                <div class="flex gap-2 mb-3">
+                                    <input
+                                        v-model.number="filters.area_min"
+                                        type="number"
+                                        :min="areaRange.min"
+                                        :max="filters.area_max || areaRange.max"
+                                        :step="getAreaStep()"
+                                        placeholder="от"
+                                        class="w-full min-w-0 px-3 py-2 rounded-lg border-2 focus:outline-none text-sm"
+                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        @change="applyAreaFilters"
+                                    >
+
+                                    <input
+                                        v-model.number="filters.area_max"
+                                        type="number"
+                                        :min="filters.area_min || areaRange.min"
+                                        :max="areaRange.max"
+                                        :step="getAreaStep()"
+                                        placeholder="до"
+                                        class="w-full min-w-0 px-3 py-2 rounded-lg border-2 focus:outline-none text-sm"
+                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        @change="applyAreaFilters"
+                                    >
+                                </div>
+
+                                <input
+                                    v-model.number="filters.area_max"
+                                    type="range"
+                                    :min="filters.area_min || areaRange.min"
+                                    :max="areaRange.max"
+                                    :step="getAreaStep()"
+                                    class="custom-range-slider w-full"
+                                    @input="applyAreaFilters"
+                                >
+
+                                <div
+                                    class="mt-2 text-center text-xs font-medium"
+                                    style="color: #6750A4;"
+                                >
+                                    {{ filters.area_max }} м²
+                                </div>
+
+                            </div>
+
+                            <!-- Фильтры квартир -->
+                            <div
+                                v-if="filterConfig.type === 'apartments'"
+                                class="mb-4 md:mb-6 space-y-4"
+                            >
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium mb-2"
+                                        style="color: #49454F;"
+                                    >
+                                        Количество комнат
+                                    </label>
+
+                                    <div class="grid grid-cols-5 gap-1">
+                                        <label
+                                            v-for="room in filterConfig.options.rooms || []"
+                                            :key="room"
+                                            class="flex flex-col items-center gap-1 px-1 py-2 rounded-lg border cursor-pointer hover:bg-purple-50"
+                                            style="border-color: #E7E0EC;"
+                                        >
+                                            <input
+                                                v-model="filters.rooms"
+                                                type="checkbox"
+                                                :value="String(room)"
+                                                @change="applyFilters"
+                                            >
+
+                                            <span class="text-xs">
+                                                {{ room }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium mb-2"
+                                        style="color: #49454F;"
+                                    >
+                                        Этаж
+                                    </label>
+
+                                    <select
+                                        v-model="filters.floor"
+                                        class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white"
+                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        @change="applyFilters"
+                                    >
+                                        <option value="">
+                                            Любой этаж
+                                        </option>
+
+                                        <option
+                                            v-for="floor in filterConfig.options.floors || []"
+                                            :key="floor"
+                                            :value="String(floor)"
+                                        >
+                                            {{ floor }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Фильтры транспорта и оборудования -->
+                            <div
+                                v-if="[
+                                    'transport',
+                                    'equipment'
+                                ].includes(filterConfig.type)"
+                                class="mb-4 md:mb-6 space-y-4"
+                            >
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium mb-2"
+                                        style="color: #49454F;"
+                                    >
+                                        {{
+                                            filterConfig.type === 'equipment'
+                                                ? 'Производитель / марка'
+                                                : 'Марка'
+                                        }}
+                                    </label>
+
+                                    <select
+                                        v-model="filters.brand"
+                                        class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white"
+                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        @change="onBrandChange"
+                                    >
+                                        <option value="">
+                                            Все марки
+                                        </option>
+
+                                        <option
+                                            v-for="brand in filterConfig.options.brands || []"
+                                            :key="brand"
+                                            :value="brand"
+                                        >
+                                            {{ brand }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label
+                                        class="block text-sm font-medium mb-2"
+                                        style="color: #49454F;"
+                                    >
+                                        Модель
+                                    </label>
+
+                                    <select
+                                        v-model="filters.model"
+                                        :disabled="!filters.brand"
+                                        class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        @change="applyFilters"
+                                    >
+                                        <option value="">
+                                            Все модели
+                                        </option>
+
+                                        <option
+                                            v-for="model in availableModels"
+                                            :key="model"
+                                            :value="model"
+                                        >
+                                            {{ model }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div
+                                    v-if="filterConfig.type === 'transport'"
+                                >
+                                    <label
+                                        class="block text-sm font-medium mb-2"
+                                        style="color: #49454F;"
+                                    >
+                                        Год выпуска
+                                    </label>
+
+                                    <select
+                                        v-model="filters.year"
+                                        class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white"
+                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        @change="applyFilters"
+                                    >
+                                        <option value="">
+                                            Любой год
+                                        </option>
+
+                                        <option
+                                            v-for="year in filterConfig.options.years || []"
+                                            :key="year"
+                                            :value="String(year)"
+                                        >
+                                            {{ year }}
+                                        </option>
+                                    </select>
+                                </div>
                             </div>
 
                             <!-- Сортировка -->
@@ -213,15 +475,23 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import CitySelect from '@/Components/CitySelect.vue';
 
 const props = defineProps({
     listings: { type: Array, default: () => [] },
     categories: { type: Array, default: () => [] },
     currentCategory: { type: Object, default: null },
     priceRange: { type: Object, default: () => ({ min: 0, max: 10000000 }) },
+    filterConfig: {
+        type: Object,
+        default: () => ({
+            type: null,
+            options: {},
+        }),
+    },
     filters: { type: Object, default: () => ({}) },
     pagination: { type: Object, default: () => ({}) }
 });
@@ -230,15 +500,102 @@ const showFilters = ref(false);
 const filters = ref({
     search: props.filters.search || '',
     category: props.filters.category || '',
+    city: props.filters.city || '',
+    area_min:
+        props.filters.area_min !== null
+        && props.filters.area_min !== undefined
+        && props.filters.area_min !== ''
+            ? Number(props.filters.area_min)
+            : Number(
+                props.filterConfig?.options?.area?.min || 0
+            ),
+    area_max:
+        props.filters.area_max !== null
+        && props.filters.area_max !== undefined
+        && props.filters.area_max !== ''
+            ? Number(props.filters.area_max)
+            : Number(
+                props.filterConfig?.options?.area?.max || 0
+            ),
+    rooms: Array.isArray(props.filters.rooms)
+        ? props.filters.rooms.map(String)
+        : [],
+    floor: props.filters.floor
+        ? String(props.filters.floor)
+        : '',
+    brand: props.filters.brand || '',
+    model: props.filters.model || '',
+    year: props.filters.year
+        ? String(props.filters.year)
+        : '',
     sort: props.filters.sort || 'latest'
 });
+
+const availableModels = computed(() => {
+    const modelsByBrand =
+        props.filterConfig?.options?.modelsByBrand || {};
+
+    return modelsByBrand[filters.value.brand] || [];
+});
+
+const areaRange = computed(() => {
+    const area =
+        props.filterConfig?.options?.area || {};
+
+    return {
+        min: Number(area.min) || 0,
+        max: Number(area.max) || 0,
+    };
+});
+
+const resetDynamicFilters = () => {
+    filters.value.area_min = '';
+    filters.value.area_max = '';
+    filters.value.rooms = [];
+    filters.value.floor = '';
+    filters.value.brand = '';
+    filters.value.model = '';
+    filters.value.year = '';
+};
 
 const priceMin = ref(props.priceRange.min);
 const priceMax = ref(props.priceRange.max);
 
 const onCategoryChange = () => {
-    priceMin.value = props.priceRange.min;
-    priceMax.value = props.priceRange.max;
+    resetDynamicFilters();
+
+    router.get('/listings', {
+        search: filters.value.search,
+        category: filters.value.category,
+        city: filters.value.city,
+        sort: filters.value.sort,
+    }, {
+        preserveState: false,
+        preserveScroll: true,
+    });
+};
+
+const onCityChange = () => {
+    router.get('/listings', {
+        search: filters.value.search,
+        category: filters.value.category,
+        city: filters.value.city,
+        area_min: filters.value.area_min,
+        area_max: filters.value.area_max,
+        rooms: filters.value.rooms,
+        floor: filters.value.floor,
+        brand: filters.value.brand,
+        model: filters.value.model,
+        year: filters.value.year,
+        sort: filters.value.sort,
+    }, {
+        preserveState: false,
+        preserveScroll: true,
+    });
+};
+
+const onBrandChange = () => {
+    filters.value.model = '';
     applyFilters();
 };
 
@@ -263,6 +620,45 @@ const getStep = () => {
     return 100000;
 };
 
+const getAreaStep = () => {
+    const range =
+        areaRange.value.max - areaRange.value.min;
+
+    if (range <= 100) return 1;
+    if (range <= 500) return 5;
+    if (range <= 2000) return 10;
+
+    return 50;
+};
+
+const applyAreaFilters = () => {
+    let min = Number(filters.value.area_min);
+    let max = Number(filters.value.area_max);
+
+    if (!Number.isFinite(min)) {
+        min = areaRange.value.min;
+    }
+
+    if (!Number.isFinite(max)) {
+        max = areaRange.value.max;
+    }
+
+    min = Math.max(
+        areaRange.value.min,
+        Math.min(min, areaRange.value.max)
+    );
+
+    max = Math.max(
+        min,
+        Math.min(max, areaRange.value.max)
+    );
+
+    filters.value.area_min = min;
+    filters.value.area_max = max;
+
+    applyFilters();
+};
+
 const applyFilters = () => {
     const min = Math.max(priceMin.value, props.priceRange.min);
     const max = Math.min(priceMax.value, props.priceRange.max);
@@ -270,6 +666,14 @@ const applyFilters = () => {
     router.get('/listings', {
         search: filters.value.search,
         category: filters.value.category,
+        city: filters.value.city,
+        area_min: filters.value.area_min,
+        area_max: filters.value.area_max,
+        rooms: filters.value.rooms,
+        floor: filters.value.floor,
+        brand: filters.value.brand,
+        model: filters.value.model,
+        year: filters.value.year,
         sort: filters.value.sort,
         price_min: min,
         price_max: max,
@@ -280,14 +684,12 @@ const applyFilters = () => {
 };
 
 const resetFilters = () => {
-    filters.value = {
-        search: '',
-        category: '',
-        sort: 'latest'
-    };
-    priceMin.value = props.priceRange.min;
-    priceMax.value = props.priceRange.max;
-    applyFilters();
+    router.get('/listings', {
+        sort: 'latest',
+    }, {
+        preserveState: false,
+        preserveScroll: true,
+    });
 };
 
 const toggleFavorite = (listingId) => {
@@ -301,7 +703,39 @@ const buildQueryString = (page) => {
     params.set('page', page);
     if (filters.value.search) params.set('search', filters.value.search);
     if (filters.value.category) params.set('category', filters.value.category);
-    if (filters.value.sort) params.set('sort', filters.value.sort);
+    if (filters.value.city) params.set('city', filters.value.city);
+
+    if (filters.value.area_min !== '') {
+        params.set('area_min', filters.value.area_min);
+    }
+
+    if (filters.value.area_max !== '') {
+        params.set('area_max', filters.value.area_max);
+    }
+
+    filters.value.rooms.forEach((room) => {
+        params.append('rooms[]', room);
+    });
+
+    if (filters.value.floor) {
+        params.set('floor', filters.value.floor);
+    }
+
+    if (filters.value.brand) {
+        params.set('brand', filters.value.brand);
+    }
+
+    if (filters.value.model) {
+        params.set('model', filters.value.model);
+    }
+
+    if (filters.value.year) {
+        params.set('year', filters.value.year);
+    }
+
+    if (filters.value.sort) {
+        params.set('sort', filters.value.sort);
+    }
     if (priceMin.value > props.priceRange.min) params.set('price_min', priceMin.value);
     if (priceMax.value < props.priceRange.max) params.set('price_max', priceMax.value);
     return params.toString();

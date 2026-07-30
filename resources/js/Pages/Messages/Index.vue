@@ -20,11 +20,11 @@
                         </div>
 
                         <div v-else class="divide-y divide-gray-100 overflow-y-auto" style="max-height: calc(100vh - 250px);">
-                            <button
+                            <div
                                 v-for="conv in conversations"
                                 :key="conv.id"
                                 @click="selectConversation(conv.id)"
-                                class="w-full text-left p-3 md:p-4 hover:bg-gray-50 transition-colors"
+                                class="w-full text-left p-3 md:p-4 hover:bg-gray-50 transition-colors cursor-pointer"
                                 :class="selectedConversationId === conv.id ? 'bg-purple-50' : ''"
                             >
                                 <div class="flex items-center gap-3">
@@ -36,6 +36,13 @@
                                             <h3 class="font-semibold text-gray-900 truncate text-sm">{{ conv.other_user.name }}</h3>
                                             <span v-if="conv.last_message" class="text-xs text-gray-500 flex-shrink-0">{{ formatDate(conv.last_message.created_at) }}</span>
                                         </div>
+                                        <p
+                                            v-if="conv.listing"
+                                            class="text-xs font-medium truncate mt-1"
+                                            style="color: #6750A4;"
+                                        >
+                                            {{ conv.listing.title }}
+                                        </p>
                                         <p v-if="conv.last_message" class="text-xs text-gray-600 truncate mt-1">
                                             <span v-if="conv.last_message.sender_id === currentUserId" class="text-gray-400">Вы: </span>
                                             {{ conv.last_message.body }}
@@ -44,8 +51,20 @@
                                     <div v-if="conv.unread_count > 0" class="text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);">
                                         {{ conv.unread_count }}
                                     </div>
+
+                                    <button
+                                        type="button"
+                                        title="Удалить диалог"
+                                        class="p-2 rounded-lg hover:bg-red-50 transition-colors flex-shrink-0"
+                                        style="color: #B3261E;"
+                                        @click.stop="openDeleteModal(conv)"
+                                    >
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
                                 </div>
-                            </button>
+                            </div>
                         </div>
                     </div>
 
@@ -68,6 +87,14 @@
                                 <div class="flex-1">
                                     <h2 class="font-semibold text-base" style="color: #1D1B20;">{{ selectedConversation.other_user.name }}</h2>
                                     <p class="text-xs text-green-500">в сети</p>
+                                    <Link
+                                        v-if="selectedConversation.listing"
+                                        :href="`/listings/${selectedConversation.listing.id}`"
+                                        class="block text-xs font-medium truncate hover:underline mt-1"
+                                        style="color: #6750A4;"
+                                    >
+                                        {{ selectedConversation.listing.title }}
+                                    </Link>
                                 </div>
                             </div>
 
@@ -102,6 +129,49 @@
                 </div>
             </div>
         </div>
+
+        <div
+            v-if="conversationToDelete"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style="background-color: rgba(0, 0, 0, 0.5);"
+            @click.self="closeDeleteModal"
+        >
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-5 md:p-6">
+                <h2 class="text-lg md:text-xl font-bold mb-3" style="color: #1D1B20;">
+                    Удалить диалог?
+                </h2>
+
+                <p class="text-sm leading-relaxed mb-2" style="color: #49454F;">
+                    Диалог и история сообщений будут удалены только из вашего списка.
+                </p>
+
+                <p class="text-sm leading-relaxed mb-6" style="color: #49454F;">
+                    У второго участника переписка останется. При новом сообщении диалог снова появится.
+                </p>
+
+                <div class="flex justify-end gap-3">
+                    <button
+                        type="button"
+                        class="px-4 py-2 rounded-xl font-medium hover:bg-gray-100"
+                        style="color: #49454F;"
+                        :disabled="deletingConversation"
+                        @click="closeDeleteModal"
+                    >
+                        Отмена
+                    </button>
+
+                    <button
+                        type="button"
+                        class="px-4 py-2 rounded-xl text-white font-medium disabled:opacity-50"
+                        style="background-color: #B3261E;"
+                        :disabled="deletingConversation"
+                        @click="deleteConversation"
+                    >
+                        {{ deletingConversation ? 'Удаление…' : 'Удалить' }}
+                    </button>
+                </div>
+            </div>
+        </div>
     </DashboardLayout>
 </template>
 
@@ -122,6 +192,8 @@ const newMessage = ref('');
 const sending = ref(false);
 const loadingMessages = ref(false);
 const messagesContainer = ref(null);
+const conversationToDelete = ref(null);
+const deletingConversation = ref(false);
 
 const currentUserId = computed(() => page.props.auth?.user?.id || null);
 
@@ -168,6 +240,58 @@ const selectConversation = async (convId) => {
         console.error('Error loading messages:', error);
     } finally {
         loadingMessages.value = false;
+    }
+};
+
+const openDeleteModal = (conversation) => {
+    conversationToDelete.value = conversation;
+};
+
+const closeDeleteModal = () => {
+    if (deletingConversation.value) return;
+
+    conversationToDelete.value = null;
+};
+
+const deleteConversation = async () => {
+    if (!conversationToDelete.value || deletingConversation.value) return;
+
+    deletingConversation.value = true;
+    const conversationId = conversationToDelete.value.id;
+
+    try {
+        const response = await fetch(`/dashboard/messages/${conversationId}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Delete error');
+        }
+
+        const index = props.conversations.findIndex(
+            conversation => conversation.id === conversationId
+        );
+
+        if (index !== -1) {
+            props.conversations.splice(index, 1);
+        }
+
+        if (selectedConversationId.value === conversationId) {
+            selectedConversationId.value = null;
+            selectedConversation.value = null;
+            messages.value = [];
+        }
+
+        conversationToDelete.value = null;
+    } catch (error) {
+        console.error('Error deleting conversation:', error);
+    } finally {
+        deletingConversation.value = false;
     }
 };
 

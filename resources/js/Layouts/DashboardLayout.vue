@@ -30,7 +30,7 @@
                         </Link>
 
                         <!-- Сообщения -->
-                        <Link href="/messages" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-purple-50" :class="isActive('/messages') ? 'bg-purple-50' : ''">
+                        <Link href="/dashboard/messages" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-purple-50" :class="isActive('/dashboard/messages') ? 'bg-purple-50' : ''">
                             <svg class="w-5 h-5" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                             </svg>
@@ -114,7 +114,7 @@
                         <span class="text-xs">Избранное</span>
                     </Link>
 
-                    <Link href="/messages" class="flex flex-col items-center gap-1 p-2 rounded-lg transition-colors" :class="isActive('/messages') ? 'text-purple-600' : 'text-gray-600'">
+                    <Link href="/dashboard/messages" class="flex flex-col items-center gap-1 p-2 rounded-lg transition-colors" :class="isActive('/dashboard/messages') ? 'text-purple-600' : 'text-gray-600'">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                         </svg>

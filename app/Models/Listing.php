@@ -22,14 +22,17 @@ class Listing extends Model implements HasMedia
         'price',
         'price_type',
         'location',
+        'city',
         'listing_attributes',
         'status',
         'is_active',
+        'requested_is_active',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'is_active' => 'boolean',
+        'requested_is_active' => 'boolean',
         'listing_attributes' => 'array',
     ];
 

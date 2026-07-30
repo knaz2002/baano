@@ -68,9 +68,45 @@ class AdminListingController extends Controller
         return redirect()->route('admin.listings.index')->with('success', 'Объявление обновлено');
     }
 
+    public function approve(Listing $listing)
+    {
+        if ($listing->status !== 'pending') {
+            return back()->with(
+                'error',
+                'Объявление не находится на модерации'
+            );
+        }
+
+        $publish = (bool) $listing->requested_is_active;
+
+        $listing->update([
+            'is_active' => $publish,
+            'status' => $publish ? 'active' : 'inactive',
+            'requested_is_active' => null,
+        ]);
+
+        return back()->with(
+            'success',
+            $publish
+                ? 'Объявление одобрено и опубликовано'
+                : 'Снятие объявления с публикации одобрено'
+        );
+    }
+
     public function destroy(Listing $listing)
     {
-        $listing->delete();
-        return redirect()->route('admin.listings.index')->with('success', 'Объявление удалено');
+        \Illuminate\Support\Facades\DB::transaction(
+            function () use ($listing) {
+                $listing->favorites()->delete();
+                $listing->delete();
+            }
+        );
+
+        return redirect()
+            ->route('admin.listings.index')
+            ->with(
+                'success',
+                'Объявление и связанные с ним данные удалены'
+            );
     }
 }

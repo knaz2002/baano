@@ -71,25 +71,52 @@ class DashboardController extends Controller
     {
         $userId = Auth::id();
 
-        $conversations = Conversation::where('user_one_id', $userId)
-            ->orWhere('user_two_id', $userId)
-            ->with(['userOne:id,name', 'userTwo:id,name', 'lastMessage:id,conversation_id,body,sender_id,created_at'])
+        $conversations = Conversation::visibleFor($userId)
+            ->with([
+                'userOne:id,name',
+                'userTwo:id,name',
+                'listing:id,title',
+                'lastMessage:id,conversation_id,body,sender_id,created_at',
+            ])
             ->orderByDesc('last_message_at')
             ->get()
-            ->map(function ($conv) use ($userId) {
-                $otherUser = $conv->user_one_id === $userId ? $conv->userTwo : $conv->userOne;
-                $unreadCount = Message::where('conversation_id', $conv->id)
+            ->map(function ($conversation) use ($userId) {
+                $otherUser = $conversation->user_one_id === $userId
+                    ? $conversation->userTwo
+                    : $conversation->userOne;
+
+                $unreadCount = $conversation
+                    ->messagesVisibleFor($userId)
                     ->where('sender_id', '!=', $userId)
                     ->where('is_read', false)
                     ->count();
 
+                $hiddenAt = $conversation->hiddenAtFor($userId);
+
+                $visibleLastMessage = $conversation->lastMessage
+                    && (
+                        !$hiddenAt
+                        || $conversation->lastMessage->created_at->gt($hiddenAt)
+                    )
+                        ? $conversation->lastMessage
+                        : null;
+
                 return [
-                    'id' => $conv->id,
-                    'other_user' => ['id' => $otherUser->id, 'name' => $otherUser->name],
-                    'last_message' => $conv->lastMessage ? [
-                        'body' => $conv->lastMessage->body,
-                        'sender_id' => $conv->lastMessage->sender_id,
-                        'created_at' => $conv->lastMessage->created_at->toIso8601String(),
+                    'id' => $conversation->id,
+                    'other_user' => [
+                        'id' => $otherUser->id,
+                        'name' => $otherUser->name,
+                    ],
+                    'listing' => $conversation->listing ? [
+                        'id' => $conversation->listing->id,
+                        'title' => $conversation->listing->title,
+                    ] : null,
+                    'last_message' => $visibleLastMessage ? [
+                        'body' => $visibleLastMessage->body,
+                        'sender_id' => $visibleLastMessage->sender_id,
+                        'created_at' => $visibleLastMessage
+                            ->created_at
+                            ->toIso8601String(),
                     ] : null,
                     'unread_count' => $unreadCount,
                 ];
@@ -102,30 +129,52 @@ class DashboardController extends Controller
         ];
 
         if ($conversationId) {
-            $conversation = Conversation::with(['userOne:id,name', 'userTwo:id,name'])->findOrFail($conversationId);
-            if ($conversation->user_one_id !== $userId && $conversation->user_two_id !== $userId) abort(403);
+            $conversation = Conversation::visibleFor($userId)
+                ->with([
+                    'userOne:id,name',
+                    'userTwo:id,name',
+                    'listing:id,title',
+                ])
+                ->findOrFail($conversationId);
 
-            Message::where('conversation_id', $conversation->id)
+            if (!$conversation->isParticipant($userId)) {
+                abort(403);
+            }
+
+            $conversation
+                ->messagesVisibleFor($userId)
                 ->where('sender_id', '!=', $userId)
                 ->where('is_read', false)
                 ->update(['is_read' => true]);
 
-            $data['messages'] = Message::where('conversation_id', $conversation->id)
+            $data['messages'] = $conversation
+                ->messagesVisibleFor($userId)
                 ->with('sender:id,name')
-                ->orderBy('created_at', 'asc')
+                ->orderBy('created_at')
                 ->get()
-                ->map(fn($m) => [
-                    'id' => $m->id, 'body' => $m->body, 'sender_id' => $m->sender_id,
-                    'sender_name' => $m->sender->name, 'is_mine' => $m->sender_id === $userId,
-                    'created_at' => $m->created_at->format('H:i'),
+                ->map(fn ($message) => [
+                    'id' => $message->id,
+                    'body' => $message->body,
+                    'sender_id' => $message->sender_id,
+                    'sender_name' => $message->sender->name,
+                    'is_mine' => $message->sender_id === $userId,
+                    'created_at' => $message->created_at->format('H:i'),
                 ]);
+
+            $otherUser = $conversation->user_one_id === $userId
+                ? $conversation->userTwo
+                : $conversation->userOne;
 
             $data['selectedConversation'] = [
                 'id' => $conversation->id,
                 'other_user' => [
-                    'id' => ($conversation->user_one_id === $userId ? $conversation->userTwo->id : $conversation->userOne->id),
-                    'name' => ($conversation->user_one_id === $userId ? $conversation->userTwo->name : $conversation->userOne->name),
-                ]
+                    'id' => $otherUser->id,
+                    'name' => $otherUser->name,
+                ],
+                'listing' => $conversation->listing ? [
+                    'id' => $conversation->listing->id,
+                    'title' => $conversation->listing->title,
+                ] : null,
             ];
         }
 
@@ -135,34 +184,54 @@ class DashboardController extends Controller
     public function getConversationMessages($conversationId)
     {
         $userId = Auth::id();
-        $conversation = Conversation::with(['userOne:id,name', 'userTwo:id,name'])->findOrFail($conversationId);
 
-        if ($conversation->user_one_id !== $userId && $conversation->user_two_id !== $userId) {
+        $conversation = Conversation::visibleFor($userId)
+            ->with([
+                'userOne:id,name',
+                'userTwo:id,name',
+                'listing:id,title',
+            ])
+            ->findOrFail($conversationId);
+
+        if (!$conversation->isParticipant($userId)) {
             abort(403);
         }
 
-        Message::where('conversation_id', $conversation->id)
+        $conversation
+            ->messagesVisibleFor($userId)
             ->where('sender_id', '!=', $userId)
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        $messages = Message::where('conversation_id', $conversation->id)
+        $messages = $conversation
+            ->messagesVisibleFor($userId)
             ->with('sender:id,name')
-            ->orderBy('created_at', 'asc')
+            ->orderBy('created_at')
             ->get()
-            ->map(fn($m) => [
-                'id' => $m->id, 'body' => $m->body, 'sender_id' => $m->sender_id,
-                'sender_name' => $m->sender->name, 'is_mine' => $m->sender_id === $userId,
-                'created_at' => $m->created_at->format('H:i'),
+            ->map(fn ($message) => [
+                'id' => $message->id,
+                'body' => $message->body,
+                'sender_id' => $message->sender_id,
+                'sender_name' => $message->sender->name,
+                'is_mine' => $message->sender_id === $userId,
+                'created_at' => $message->created_at->format('H:i'),
             ]);
+
+        $otherUser = $conversation->user_one_id === $userId
+            ? $conversation->userTwo
+            : $conversation->userOne;
 
         return response()->json([
             'conversation' => [
                 'id' => $conversation->id,
                 'other_user' => [
-                    'id' => ($conversation->user_one_id === $userId ? $conversation->userTwo->id : $conversation->userOne->id),
-                    'name' => ($conversation->user_one_id === $userId ? $conversation->userTwo->name : $conversation->userOne->name),
-                ]
+                    'id' => $otherUser->id,
+                    'name' => $otherUser->name,
+                ],
+                'listing' => $conversation->listing ? [
+                    'id' => $conversation->listing->id,
+                    'title' => $conversation->listing->title,
+                ] : null,
             ],
             'messages' => $messages,
         ]);
@@ -171,28 +240,55 @@ class DashboardController extends Controller
     public function sendMessage(Request $request, $conversationId)
     {
         $userId = Auth::id();
+
         $conversation = Conversation::findOrFail($conversationId);
 
-        if ($conversation->user_one_id !== $userId && $conversation->user_two_id !== $userId) {
+        if (!$conversation->isParticipant($userId)) {
             abort(403);
         }
 
-        $validated = $request->validate(['body' => 'required|string|max:1000']);
+        $validated = $request->validate([
+            'body' => 'required|string|max:1000',
+        ]);
 
-        Message::create([
+        $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $userId,
             'body' => $validated['body'],
             'is_read' => false,
         ]);
 
-        $conversation->update(['last_message_at' => now()]);
+        $conversation->update([
+            'last_message_id' => $message->id,
+            'last_message_at' => now(),
+        ]);
+
 
         if ($request->wantsJson()) {
             return response()->json(['success' => true]);
         }
 
-        return redirect()->route('messages.show', $conversationId);
+        return redirect()->route(
+            'messages.show',
+            $conversation->id
+        );
+    }
+
+    public function hideConversation($conversationId)
+    {
+        $userId = Auth::id();
+
+        $conversation = Conversation::findOrFail($conversationId);
+
+        if (!$conversation->isParticipant($userId)) {
+            abort(403);
+        }
+
+        $conversation->hideFor($userId);
+
+        return response()->json([
+            'success' => true,
+        ]);
     }
 
     public function reviews()

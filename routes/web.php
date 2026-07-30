@@ -11,13 +11,6 @@ use App\Models\User;
 use App\Models\Review;
 use App\Http\Controllers\MessageController;
 
-// === СООБЩЕНИЯ ===
-Route::prefix('messages')->name('messages.')->middleware('auth')->group(function () {
-    Route::get('/', [\App\Http\Controllers\MessageController::class, 'index'])->name('index');
-    Route::get('/{conversation}', [\App\Http\Controllers\MessageController::class, 'show'])->name('show');
-    Route::post('/{conversation}', [\App\Http\Controllers\MessageController::class, 'store'])->name('store');
-});
-
 Route::post('/message-user/{user}', [MessageController::class, 'messageUser'])
     ->middleware('auth')
     ->name('message-user');
@@ -55,11 +48,22 @@ Route::get('/listings/{listing}', function (Listing $listing) {
 
     if (Auth::check() && $listing->user_id !== Auth::id()) {
         $userId = Auth::id();
-        $conversation = \App\Models\Conversation::where(function($q) use ($listing, $userId) {
-            $q->where('user_one_id', $userId)->where('user_two_id', $listing->user_id);
-        })->orWhere(function($q) use ($listing, $userId) {
-            $q->where('user_one_id', $listing->user_id)->where('user_two_id', $userId);
-        })->first();
+        $conversation = \App\Models\Conversation::where(
+            'listing_id',
+            $listing->id
+        )
+            ->where(function ($query) use ($listing, $userId) {
+                $query
+                    ->where(function ($q) use ($listing, $userId) {
+                        $q->where('user_one_id', $userId)
+                            ->where('user_two_id', $listing->user_id);
+                    })
+                    ->orWhere(function ($q) use ($listing, $userId) {
+                        $q->where('user_one_id', $listing->user_id)
+                            ->where('user_two_id', $userId);
+                    });
+            })
+            ->first();
 
         if ($conversation) {
             $chatMessages = $conversation->messages()
@@ -91,7 +95,12 @@ Route::get('/listings/{listing}', function (Listing $listing) {
             'price_type' => $listing->price_type,
             'location' => $listing->location,
             'custom_attributes' => $listing->listing_attributes ?? [],
-            'images' => $listing->getMedia('images')->map(fn($m) => $m->getUrl()),
+            'images' => $listing->getMedia('images')
+                        ->map(fn($media) => [
+                            'id' => $media->id,
+                            'url' => $media->getUrl(),
+                        ])
+                        ->values(),
             'category' => $listing->category ? ['id' => $listing->category->id, 'name' => $listing->category->name] : null,
             'user_id' => $listing->user_id,
             'user' => $listing->user ? ['id' => $listing->user->id, 'name' => $listing->user->name] : null,
@@ -234,9 +243,15 @@ Route::middleware(['auth'])->group(function () {
         $listings = Listing::where('user_id', Auth::id())->with('category')->latest()->get();
         return Inertia::render('Listing/Index', [
             'listings' => $listings->map(fn($l) => [
-                'id' => $l->id, 'title' => $l->title, 'price' => $l->price,
-                'status' => $l->is_active ? 'active' : 'pending',
-                'category' => $l->category ? ['name' => $l->category->name] : null,
+                'id' => $l->id,
+                'title' => $l->title,
+                'price' => $l->price,
+                'status' => $l->status,
+                'is_active' => $l->is_active,
+                'requested_is_active' => $l->requested_is_active,
+                'category' => $l->category
+                    ? ['name' => $l->category->name]
+                    : null,
                 'image' => $l->getFirstMediaUrl('images', 'thumb'),
             ]),
             'auth' => ['user' => Auth::user()],
@@ -258,8 +273,9 @@ Route::middleware(['auth'])->group(function () {
                 'price' => 'required|numeric|min:0',
                 'price_type' => 'required|in:fixed,hourly,daily,monthly,negotiable',
                 'location' => 'nullable|string|max:255',
+                'city' => 'nullable|string|max:120',
                 'attributes' => 'nullable|string', // <-- ДОБАВЛЕНО
-                'images' => 'nullable|array|max:10',
+                'images' => 'required|array|min:1|max:10',
                 'images.*' => 'image|max:2048',
             ]);
 
@@ -271,8 +287,11 @@ Route::middleware(['auth'])->group(function () {
                 'price' => $validated['price'],
                 'price_type' => $validated['price_type'],
                 'location' => $validated['location'] ?? null,
-                'attributes' => $request->filled('attributes') ? json_decode($request->attributes, true) : null, // <-- ДОБАВЛЕНО
+                'city' => $validated['city'] ?? null,
+                'listing_attributes' => $request->filled('attributes') ? json_decode($request->input('attributes'), true) : null, // <-- ДОБАВЛЕНО
+                'status' => 'pending',
                 'is_active' => false,
+                'requested_is_active' => true,
             ]);
 
             if ($request->hasFile('images')) {
@@ -292,8 +311,16 @@ Route::middleware(['auth'])->group(function () {
                     'id' => $listing->id, 'title' => $listing->title, 'description' => $listing->description,
                     'price' => $listing->price,
                     'price_type' => $listing->price_type,
-                    'location' => $listing->location, 'category_id' => $listing->category_id,
-                    'images' => $listing->getMedia('images')->map(fn($m) => $m->getUrl()),
+                    'location' => $listing->location,
+                    'city' => $listing->city,
+                    'category_id' => $listing->category_id,
+                    'attributes' => $listing->listing_attributes ?? [],
+                    'images' => $listing->getMedia('images')
+                        ->map(fn($media) => [
+                            'id' => $media->id,
+                            'url' => $media->getUrl(),
+                        ])
+                        ->values(),
                 ],
                 'categories' => $categories->map(fn($c) => ['id' => $c->id, 'name' => $c->name]),
                 'auth' => ['user' => Auth::user()],
@@ -310,10 +337,56 @@ Route::middleware(['auth'])->group(function () {
                 'price' => 'required|numeric|min:0',
                 'price_type' => 'required|in:fixed,hourly,daily,monthly,negotiable',
                 'location' => 'nullable|string|max:255',
+                'city' => 'nullable|string|max:120',
                 'attributes' => 'nullable|string', // <-- ДОБАВЛЕНО
                 'images' => 'nullable|array|max:10',
                 'images.*' => 'image|max:2048',
+                'removed_media_ids' => 'nullable|array',
+                'removed_media_ids.*' => 'integer',
             ]);
+
+            $existingMediaIds = $listing->getMedia('images')
+                ->pluck('id')
+                ->map(fn($id) => (int) $id);
+
+            $removedMediaIds = collect(
+                $validated['removed_media_ids'] ?? []
+            )
+                ->map(fn($id) => (int) $id)
+                ->intersect($existingMediaIds)
+                ->unique();
+
+            $remainingImagesCount = $existingMediaIds
+                ->diff($removedMediaIds)
+                ->count();
+
+            $newImagesCount = count(
+                $request->file('images', [])
+            );
+
+            $finalImagesCount = (
+                $remainingImagesCount
+                + $newImagesCount
+            );
+
+            if ($finalImagesCount < 1) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'images' => 'В объявлении должна остаться хотя бы одна фотография.',
+                ]);
+            }
+
+            if ($finalImagesCount > 10) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'images' => 'В объявлении может быть не более 10 фотографий.',
+                ]);
+            }
+
+            $requestedIsActive = (
+                $listing->status === 'pending'
+                && $listing->requested_is_active !== null
+            )
+                ? $listing->requested_is_active
+                : $listing->is_active;
 
             $listing->update([
                 'category_id' => $validated['category_id'],
@@ -322,23 +395,68 @@ Route::middleware(['auth'])->group(function () {
                 'price' => $validated['price'],
                 'price_type' => $validated['price_type'],
                 'location' => $validated['location'] ?? null,
-                'attributes' => $request->filled('attributes') ? json_decode($request->attributes, true) : null, // <-- ДОБАВЛЕНО
+                'city' => $validated['city'] ?? null,
+                'listing_attributes' => $request->filled('attributes') ? json_decode($request->input('attributes'), true) : null, // <-- ДОБАВЛЕНО
+                'status' => 'pending',
+                'is_active' => false,
+                'requested_is_active' => $requestedIsActive,
             ]);
 
+            $listing->getMedia('images')
+                ->whereIn('id', $removedMediaIds)
+                ->each(fn($media) => $media->delete());
+
             if ($request->hasFile('images')) {
-                $listing->clearMediaCollection('images');
                 foreach ($request->file('images') as $image) {
-                    $listing->addMedia($image)->toMediaCollection('images');
+                    $listing->addMedia($image)
+                        ->toMediaCollection('images');
                 }
             }
 
             return redirect('/user/listings')->with('success', 'Объявление обновлено');
         })->name('user.listings.update');
 
+        Route::patch('/user/listings/{listing}/publication', function (Request $request, Listing $listing) {
+            if ($listing->user_id !== Auth::id()) {
+                abort(403);
+            }
+
+            $validated = $request->validate([
+                'publish' => ['required', 'boolean'],
+            ]);
+
+            $publish = (bool) $validated['publish'];
+
+            $listing->update([
+                'status' => 'pending',
+                'is_active' => false,
+                'requested_is_active' => $publish,
+            ]);
+
+            return back()->with(
+                'success',
+                $publish
+                    ? 'Объявление отправлено на модерацию для публикации'
+                    : 'Объявление снято с публикации и отправлено на модерацию'
+            );
+        })->name('user.listings.publication');
+
         Route::delete('/user/listings/{listing}', function (Listing $listing) {
-            if ($listing->user_id !== Auth::id()) abort(403);
-            $listing->delete();
-            return back()->with('success', 'Объявление удалено');
+            if ($listing->user_id !== Auth::id()) {
+                abort(403);
+            }
+
+            \Illuminate\Support\Facades\DB::transaction(
+                function () use ($listing) {
+                    $listing->favorites()->delete();
+                    $listing->delete();
+                }
+            );
+
+            return back()->with(
+                'success',
+                'Объявление и связанные с ним данные удалены'
+            );
         })->name('user.listings.destroy');
     });
 
@@ -362,7 +480,15 @@ Route::middleware(['auth'])->prefix('manage')->name('admin.')->group(function ()
     })->name('dashboard');
 
     Route::resource('users', \App\Http\Controllers\Admin\AdminUserController::class);
-    Route::resource('listings', \App\Http\Controllers\Admin\AdminListingController::class);
+    Route::patch(
+        'listings/{listing}/approve',
+        [\App\Http\Controllers\Admin\AdminListingController::class, 'approve']
+    )->name('listings.approve');
+
+    Route::resource(
+        'listings',
+        \App\Http\Controllers\Admin\AdminListingController::class
+    )->only(['index', 'destroy']);
     Route::resource('categories', \App\Http\Controllers\Admin\AdminCategoryController::class);
     Route::get('/settings', function () { return view('admin.settings'); })->name('settings');
 });
@@ -376,6 +502,7 @@ Route::middleware(['auth'])->prefix('dashboard')->name('dashboard.')->group(func
     Route::get('/messages', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages');
     Route::get('/messages/{conversation?}', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages.show');
     Route::post('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'sendMessage'])->name('messages.send');
+    Route::delete('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'hideConversation'])->name('messages.hide');
     Route::get('/reviews', [\App\Http\Controllers\DashboardController::class, 'reviews'])->name('reviews');
 });
 
