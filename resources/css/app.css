@@ -1,3 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Onest:wght@500;600;700;800&display=swap');
+
+:root {
+    --font-text: 'Manrope', Arial, sans-serif;
+    --font-heading: 'Onest', 'Manrope', Arial, sans-serif;
+}
+
+html,
+body,
+input,
+textarea,
+select,
+button {
+    font-family: var(--font-text) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-heading,
+.logo,
+.brand,
+.decorative-title {
+    font-family: var(--font-heading) !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,7 +34,7 @@
 /* Baano Design System - Glass-morphism */
 body {
     background: linear-gradient(135deg, #E8E6E1 0%, #D5D3CE 100%) !important;
-    font-family: 'Inter', sans-serif !important;
+    font-family: var(--font-text) !important;
     min-height: 100vh;
 }
 
