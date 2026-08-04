@@ -31,11 +31,11 @@
             <div class="flex gap-4 md:gap-6">
                 <!-- Левый сайдбар с фильтрами -->
                 <aside
-                    class="fixed md:static inset-0 z-50 md:z-auto bg-white md:bg-transparent transform transition-transform duration-300 md:transform-none"
+                    class="fixed md:static inset-0 z-[100] md:z-auto bg-white md:bg-transparent transform transition-transform duration-300 md:transform-none"
                     :class="showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
                 >
                     <div
-                        class="relative z-50 w-full md:w-64 flex-shrink-0 h-full md:h-auto overflow-y-auto bg-white md:bg-transparent pb-28 md:pb-0"
+                        class="relative z-50 w-full md:w-64 flex-shrink-0 h-full md:h-auto overflow-y-auto bg-white md:bg-transparent pb-48 md:pb-0"
                     >
                         <div class="min-h-full md:min-h-0 bg-white md:rounded-2xl md:shadow-lg p-4 md:p-6">
                             <div class="sticky top-0 z-10 flex items-center justify-between mb-4 py-2 -mt-2 bg-white md:hidden">
@@ -388,8 +388,8 @@
                             </button>
 
                             <div
-                                class="fixed bottom-0 left-0 right-0 z-20 p-4 bg-white border-t md:hidden"
-                                style="border-color: #E7E0EC;"
+                                class="fixed left-0 right-0 z-[110] p-4 bg-white border-t md:hidden"
+                                style="bottom: calc(72px + env(safe-area-inset-bottom)); border-color: #E7E0EC;"
                             >
                                 <button
                                     type="button"
