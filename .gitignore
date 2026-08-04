@@ -101,4 +101,5 @@ Thumbs.db
 /baano_db.sql
 /baano_db_seeded.sql
 /storage/app/seed-dumps/
+/MIGRATION_API_NUXT.md
 

@@ -39,6 +39,7 @@ composer dev:win
 | [PROJECT.md](PROJECT.md) | Функционал, маршруты, сущности, структура кода |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Архитектура: Inertia/Vue, Filament, интеграции |
 | [FRONTEND.md](FRONTEND.md) | Frontend: шаблоны, Inertia/SPA, props вместо API, Vue |
+| [MIGRATION_API_NUXT.md](MIGRATION_API_NUXT.md) | План перехода на Laravel API + Nuxt |
 | [PLAN.md](PLAN.md) | План работ и статусы |
 | [AI.md](AI.md) | Checkpoint для восстановления контекста в чате |
 
