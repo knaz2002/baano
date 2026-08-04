@@ -19,7 +19,7 @@
 
             <!-- Мобильная кнопка фильтров -->
             <button 
-                @click="showFilters = !showFilters"
+                @click="openFilters"
                 class="md:hidden mb-4 w-full py-3 rounded-xl bg-white shadow flex items-center justify-center gap-2"
             >
                 <svg class="w-5 h-5" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,17 +30,17 @@
 
             <div class="flex gap-4 md:gap-6">
                 <!-- Левый сайдбар с фильтрами -->
-                <aside 
-                    class="fixed md:static inset-0 z-40 transform transition-transform duration-300 md:transform-none"
+                <aside
+                    class="fixed md:static inset-0 z-[100] md:z-auto bg-white md:bg-transparent transform transition-transform duration-300 md:transform-none"
                     :class="showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
                 >
-                    <div v-if="showFilters" class="md:hidden fixed inset-0 bg-black/50 z-40" @click="showFilters = false"></div>
-                    
-                    <div class="md:relative z-50 w-64 md:w-64 flex-shrink-0 h-full md:h-auto overflow-y-auto bg-white md:bg-transparent p-4 md:p-0">
-                        <div class="bg-white rounded-2xl shadow-lg p-4 md:p-6">
-                            <div class="flex items-center justify-between mb-4 md:hidden">
+                    <div
+                        class="relative z-50 w-full md:w-64 flex-shrink-0 h-full md:h-auto overflow-y-auto bg-white md:bg-transparent pb-48 md:pb-0"
+                    >
+                        <div class="min-h-full md:min-h-0 bg-white md:rounded-2xl md:shadow-lg p-4 md:p-6">
+                            <div class="sticky top-0 z-10 flex items-center justify-between mb-4 py-2 -mt-2 bg-white md:hidden">
                                 <h3 class="text-lg font-bold" style="color: #1D1B20;">Фильтры</h3>
-                                <button @click="showFilters = false" class="p-2 rounded-lg hover:bg-gray-100">
+                                <button @click="closeFilters" class="p-2 rounded-lg hover:bg-gray-100">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
@@ -386,6 +386,20 @@
                             >
                                 Сбросить фильтры
                             </button>
+
+                            <div
+                                class="fixed left-0 right-0 z-[110] p-4 bg-white border-t md:hidden"
+                                style="bottom: calc(72px + env(safe-area-inset-bottom)); border-color: #E7E0EC;"
+                            >
+                                <button
+                                    type="button"
+                                    class="w-full py-3.5 rounded-xl text-white font-semibold shadow-lg"
+                                    style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
+                                    @click="applyFilters(true)"
+                                >
+                                    Применить
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </aside>
@@ -497,6 +511,28 @@ const props = defineProps({
 });
 
 const showFilters = ref(false);
+
+const mobileFiltersAreOpen = () => {
+    return showFilters.value
+        && typeof window !== 'undefined'
+        && window.matchMedia('(max-width: 767px)').matches;
+};
+
+const openFilters = () => {
+    showFilters.value = true;
+};
+
+const closeFilters = () => {
+    showFilters.value = false;
+};
+
+watch(showFilters, (isOpen) => {
+    if (typeof document === 'undefined') {
+        return;
+    }
+
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+});
 const filters = ref({
     search: props.filters.search || '',
     category: props.filters.category || '',
@@ -570,12 +606,17 @@ const onCategoryChange = () => {
         city: filters.value.city,
         sort: filters.value.sort,
     }, {
-        preserveState: false,
+        preserveState: mobileFiltersAreOpen(),
         preserveScroll: true,
+        replace: mobileFiltersAreOpen(),
     });
 };
 
 const onCityChange = () => {
+    if (mobileFiltersAreOpen()) {
+        return;
+    }
+
     router.get('/listings', {
         search: filters.value.search,
         category: filters.value.category,
@@ -659,7 +700,11 @@ const applyAreaFilters = () => {
     applyFilters();
 };
 
-const applyFilters = () => {
+const applyFilters = (force = false) => {
+    if (mobileFiltersAreOpen() && !force) {
+        return;
+    }
+
     const min = Math.max(priceMin.value, props.priceRange.min);
     const max = Math.min(priceMax.value, props.priceRange.max);
     
@@ -680,10 +725,28 @@ const applyFilters = () => {
     }, {
         preserveState: true,
         preserveScroll: true,
+        onSuccess: () => {
+            if (force) {
+                closeFilters();
+            }
+        },
     });
 };
 
 const resetFilters = () => {
+    if (mobileFiltersAreOpen()) {
+        filters.value.search = '';
+        filters.value.category = '';
+        filters.value.city = '';
+        filters.value.sort = 'latest';
+        resetDynamicFilters();
+
+        priceMin.value = props.priceRange.min;
+        priceMax.value = props.priceRange.max;
+
+        return;
+    }
+
     router.get('/listings', {
         sort: 'latest',
     }, {
