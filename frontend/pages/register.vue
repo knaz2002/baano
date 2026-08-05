@@ -24,7 +24,7 @@ async function onSubmit() {
   processing.value = true
   try {
     await auth.register({ ...form })
-    await navigateTo('/')
+    await navigateTo(auth.homePath())
   } catch (e) {
     errors.value = parseApiErrors(e)
   } finally {

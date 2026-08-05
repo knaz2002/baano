@@ -16,7 +16,7 @@ async function onSubmit() {
   processing.value = true
   try {
     await auth.login(email.value, password.value, remember.value)
-    await navigateTo('/')
+    await navigateTo(auth.homePath())
   } catch (e) {
     errors.value = parseApiErrors(e)
   } finally {

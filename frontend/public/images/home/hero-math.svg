@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520">
+    <rect width="720" height="520" rx="54" fill="#E7ECE7"/>
+    <rect x="46" y="42" width="628" height="350" rx="34" fill="#244638"/>
+    <rect x="64" y="60" width="592" height="314" rx="24" fill="#315C47"/>
+
+    <g font-family="Georgia, serif" fill="#FFFDF8">
+        <text x="104" y="130" font-size="42">sin x = a</text>
+        <text x="360" y="136" font-size="40">x² + y² = r²</text>
+        <text x="108" y="220" font-size="43">y = kx + b</text>
+        <text x="355" y="228" font-size="42">a² + b² = c²</text>
+        <text x="106" y="309" font-size="38">∫ f(x) dx</text>
+        <text x="375" y="315" font-size="38">√(x² + y²)</text>
+    </g>
+
+    <path d="M128 420C211 389 304 392 360 430C425 390 520 390 598 422V490C505 460 426 464 360 500C291 462 210 459 128 489Z" fill="#FFFDF8" stroke="#D7D0C4" stroke-width="8"/>
+    <path d="M360 430V500" stroke="#D7D0C4" stroke-width="7"/>
+    <path d="M165 446C228 428 282 433 329 456" fill="none" stroke="#7A897F" stroke-width="7" stroke-linecap="round"/>
+    <path d="M391 456C446 431 500 430 558 446" fill="none" stroke="#7A897F" stroke-width="7" stroke-linecap="round"/>
+    <path d="M500 407L578 470" stroke="#D55F58" stroke-width="13" stroke-linecap="round"/>
+</svg>

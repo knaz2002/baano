@@ -4,10 +4,6 @@ export default defineNuxtRouteMiddleware(async () => {
     await auth.fetchUser()
   }
   if (!auth.isAuthenticated) {
-    return
+    return navigateTo('/login')
   }
-  if (!auth.isEmailVerified) {
-    return navigateTo('/verify-email')
-  }
-  return navigateTo('/')
 })

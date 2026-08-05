@@ -101,3 +101,16 @@ header.app-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 24px rgba(61, 68, 73, 0.08);
 }
+
+.price-red {
+  color: #fe0000 !important;
+}
+
+.listing-card .listing-card-title {
+  color: #315c47 !important;
+}
+
+.vip-accent {
+  background-color: #fe0000 !important;
+  color: #fff !important;
+}

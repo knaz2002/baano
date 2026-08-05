@@ -20,6 +20,7 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     isAuthenticated: (state) => !!state.user,
+    isEmailVerified: (state) => !!state.user?.email_verified_at,
   },
   actions: {
     async fetchUser() {
@@ -61,6 +62,19 @@ export const useAuthStore = defineStore('auth', {
       const { apiFetch } = useApi()
       await apiFetch('/api/logout', { method: 'POST' })
       this.user = null
+    },
+    async resendVerification() {
+      const { apiFetch } = useApi()
+      return apiFetch<{ ok: boolean; message: string }>('/api/email/verification-notification', {
+        method: 'POST',
+      })
+    },
+    /** Куда вести после login/register */
+    homePath(): string {
+      if (!this.user) {
+        return '/login'
+      }
+      return this.isEmailVerified ? '/' : '/verify-email'
     },
   },
 })

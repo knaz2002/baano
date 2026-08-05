@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520">
+    <rect width="720" height="520" rx="54" fill="#E8EEE8"/>
+    <rect x="38" y="38" width="644" height="444" rx="42" fill="#F9F7F1"/>
+
+    <circle cx="590" cy="116" r="62" fill="#F2C875"/>
+    <path d="M38 344C155 282 240 304 319 338C424 383 525 354 682 278V482H38Z" fill="#B8CBB9"/>
+    <path d="M38 390C189 345 304 375 402 407C493 437 574 418 682 365V482H38Z" fill="#66866F"/>
+
+    <path d="M148 316L205 225C222 198 252 183 284 183H437C470 183 501 201 517 230L557 303L604 322C628 332 644 356 644 382V408H98V372C98 345 116 321 142 313Z" fill="#FFFFFF" stroke="#315C47" stroke-width="10"/>
+    <path d="M230 218H432C457 218 479 232 491 254L517 303H184L216 249C220 239 225 229 230 218Z" fill="#AFCBC2"/>
+    <path d="M333 218V303" stroke="#315C47" stroke-width="8"/>
+    <path d="M182 303H520" stroke="#315C47" stroke-width="8"/>
+    <rect x="517" y="323" width="74" height="28" rx="12" fill="#D55F58"/>
+    <rect x="114" y="324" width="72" height="26" rx="12" fill="#F0C665"/>
+
+    <circle cx="205" cy="405" r="54" fill="#263F34"/>
+    <circle cx="205" cy="405" r="25" fill="#D8DDD8"/>
+    <circle cx="526" cy="405" r="54" fill="#263F34"/>
+    <circle cx="526" cy="405" r="25" fill="#D8DDD8"/>
+
+    <rect x="315" y="351" width="98" height="34" rx="10" fill="#F4F0E7"/>
+    <text x="364" y="374" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#315C47">BAANO</text>
+</svg>
