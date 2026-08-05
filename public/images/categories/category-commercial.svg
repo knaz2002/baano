@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <g stroke="#fe0000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 55h44"/>
+    <path d="M15 55V15h21v40"/>
+    <path d="M36 55V8h13v47"/>
+    <path d="M21 23h5m-5 9h5m-5 9h5"/>
+    <path d="M41 17h4m-4 9h4"/>
+    <rect x="34" y="35" width="20" height="12" rx="2"/>
+  </g>
+  <text x="44" y="43.5" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" font-weight="700" fill="#fe0000">АРЕНДА</text>
+</svg>

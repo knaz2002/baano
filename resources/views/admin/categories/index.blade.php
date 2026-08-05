@@ -5,7 +5,7 @@
                 <div class="p-6 text-gray-900">
                     <div class="flex justify-between items-center mb-6">
                         <h1 class="text-2xl font-bold">📂 Управление категориями</h1>
-                        <a href="{{ route('admin.dashboard') }}" class="text-blue-600 hover:underline">← Назад в админку</a>
+                        <a href="{{ route('admin.dashboard') }}" class="text-[#315C47] hover:underline">← Назад в админку</a>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -31,7 +31,7 @@
                                     </td>
 
 				   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-					    <a href="{{ route('admin.categories.edit', $category) }}" class="text-blue-600 hover:text-blue-900 mr-3">Изменить</a>
+					    <a href="{{ route('admin.categories.edit', $category) }}" class="text-[#315C47] hover:text-[#1F4234] mr-3">Изменить</a>
 					    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline" onsubmit="return confirm('Удалить категорию?')">
 					    @csrf
 					    @method('DELETE')
@@ -39,7 +39,7 @@
 					   </Form>
 				  </td>		                    
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <button class="text-blue-600 hover:text-blue-900 mr-3">Изменить</button>
+                                        <button class="text-[#315C47] hover:text-[#1F4234] mr-3">Изменить</button>
                                         <button class="text-red-600 hover:text-red-900">Удалить</button>
                                     </td>
                                 </tr>

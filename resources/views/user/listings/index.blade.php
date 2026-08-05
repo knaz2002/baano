@@ -12,7 +12,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <a href="{{ route('listings.index') }}" class="text-2xl font-bold text-orange-600">
+                    <a href="{{ route('listings.index') }}" class="text-2xl font-bold text-[#fe0000]">
                         Baano
                     </a>
                 </div>
@@ -38,7 +38,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-900">Мои объявления</h1>
-            <a href="{{ route('user.listings.create') }}" class="bg-orange-600 text-white px-6 py-2 rounded-md hover:bg-orange-700">
+            <a href="{{ route('user.listings.create') }}" class="bg-[#fe0000] text-white px-6 py-2 rounded-md hover:bg-[#C9564E] confirm-action action-green">
                 + Создать объявление
             </a>
         </div>
@@ -79,7 +79,7 @@
                             <td class="px-6 py-4 text-sm text-gray-500">
                                 {{ $listing->category->name }}
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-900">
+                            <td class="px-6 py-4 text-sm text-gray-900 price-accent price-red">
                                 {{ number_format($listing->price, 0, ',', ' ') }} ₽
                             </td>
                             <td class="px-6 py-4">
@@ -92,7 +92,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-sm font-medium space-x-2">
-                                <a href="{{ route('user.listings.edit', $listing) }}" class="text-indigo-600 hover:text-indigo-900">
+                                <a href="{{ route('user.listings.edit', $listing) }}" class="text-[#315C47] hover:text-[#1F4234]">
                                     Редактировать
                                 </a>
                                 <form action="{{ route('user.listings.destroy', $listing) }}" method="POST" class="inline" 

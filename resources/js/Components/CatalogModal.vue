@@ -5,7 +5,7 @@
         <div class="relative modal-glass z-10 w-80 max-h-[600px] overflow-y-auto" style="border-radius: 16px;">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold" style="color: #3D4449;">Каталог</h2>
+                    <h2 class="text-2xl font-bold" style="color: #1F4234;">Каталог</h2>
                     <button @click="$emit('close')" class="text-gray-500 hover:text-gray-700">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -117,6 +117,6 @@ const selectCategory = (category) => {
 <style scoped>
 .catalog-category:hover {
     background: rgba(135, 153, 188, 0.2) !important;
-    color: #8799bc;
+    color: #6E927F;
 }
 </style>

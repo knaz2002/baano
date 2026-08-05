@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f8f9fa;
+            background-color: #F7F3EC;
             margin: 0;
             padding: 0;
         }
@@ -20,29 +20,29 @@
             overflow: hidden;
         }
         .logo {
-            max-width: 150px;
+            max-width: 195px;
             height: auto;
         }
         .content {
             padding: 40px 30px;
-            color: #1D1B20;
+            color: #1F4234;
         }
         .title {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #1D1B20;
+            color: #1F4234;
         }
         .text {
             font-size: 16px;
             line-height: 1.6;
-            color: #49454F;
+            color: #68736B;
             margin-bottom: 30px;
         }
         .button {
             display: inline-block;
             padding: 14px 32px;
-            background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);
+            background-color: #315C47;
             color: #ffffff;
             text-decoration: none;
             border-radius: 8px;
@@ -55,22 +55,22 @@
             transform: translateY(-2px);
         }
         .footer {
-            background-color: #F8F7FA;
+            background-color: #F7F3EC;
             padding: 30px;
             text-align: center;
-            color: #6750A4;
+            color: #315C47;
             font-size: 14px;
         }
         .help-text {
             font-size: 14px;
-            color: #6B7280;
+            color: #68736B;
             margin-top: 30px;
             padding-top: 20px;
-            border-top: 1px solid #E7E0EC;
+            border-top: 1px solid #E8E3DA;
         }
         .url-text {
             word-break: break-all;
-            color: #6750A4;
+            color: #315C47;
             font-size: 13px;
         }
     </style>
@@ -91,7 +91,7 @@
             </div>
 
             <div style="text-align: center;">
-                <a href="{{ $url }}" class="button">Подтвердить email</a>
+                <a href="{{ $url }}" class="button action-green">Подтвердить email</a>
             </div>
 
             <div class="text">

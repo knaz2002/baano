@@ -14,7 +14,7 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased" style="background-color: #E8E6E1;">
+<body class="font-sans antialiased" style="background-color: #F7F3EC;">
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
 
 

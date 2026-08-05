@@ -1,23 +1,23 @@
 <template>
     <DashboardLayout>
-        <div class="min-h-screen md:min-h-0 flex flex-col" style="background-color: #E8E6E1;">
+        <div class="min-h-screen md:min-h-0 flex flex-col" style="background-color: #F7F3EC;">
             <!-- Шапка чата -->
             <div class="bg-white shadow-sm p-3 md:p-4 flex items-center gap-3 md:gap-4 sticky top-0 z-10">
                 <!-- Кнопка назад -->
                 <Link href="/dashboard/messages" class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                    <svg class="w-5 h-5 md:w-6 md:h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 md:w-6 md:h-6" style="color: #315C47;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </Link>
 
                 <!-- Аватар собеседника -->
-                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style="background: linear-gradient(135deg, #6750A4 0%, #9B7FCF 100%);">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style="background-color: #315C47;">
                     {{ conversation.other_user.name.charAt(0).toUpperCase() }}
                 </div>
 
                 <!-- Имя собеседника -->
                 <div class="flex-1 min-w-0">
-                    <h2 class="font-semibold text-base md:text-lg truncate" style="color: #1D1B20;">
+                    <h2 class="font-semibold text-base md:text-lg truncate" style="color: #1F4234;">
                         {{ conversation.other_user.name }}
                     </h2>
                     <p class="text-xs text-green-500">в сети</p>
@@ -25,7 +25,7 @@
             </div>
 
             <!-- Сообщения -->
-            <div ref="messagesContainer" class="flex-1 p-3 md:p-4 space-y-3 overflow-y-auto" style="background-color: #F5F5F5; min-height: 0;">
+            <div ref="messagesContainer" class="flex-1 p-3 md:p-4 space-y-3 overflow-y-auto" style="background-color: #F7F3EC; min-height: 0;">
                 <div
                     v-for="msg in messages"
                     :key="msg.id"
@@ -37,7 +37,7 @@
                         :class="msg.is_mine
                             ? 'text-white rounded-br-sm'
                             : 'bg-white text-gray-900 rounded-bl-sm shadow-sm'"
-                        :style="msg.is_mine ? 'background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);' : ''"
+                        :style="msg.is_mine ? 'background-color: #315C47;' : ''"
                     >
                         <p class="text-sm whitespace-pre-wrap break-words">{{ msg.body }}</p>
                         <p class="text-xs mt-1 opacity-75 text-right">{{ msg.created_at }}</p>
@@ -50,13 +50,13 @@
             </div>
 
             <!-- Форма отправки -->
-            <form @submit.prevent="sendMessage" class="bg-white p-3 md:p-4 flex gap-2 sticky bottom-0 md:bottom-auto border-t" style="border-color: #E7E0EC;">
+            <form @submit.prevent="sendMessage" class="bg-white p-3 md:p-4 flex gap-2 sticky bottom-0 md:bottom-auto border-t" style="border-color: #E8E3DA;">
                 <input
                     v-model="newMessage"
                     type="text"
                     placeholder="Напишите сообщение..."
                     class="flex-1 px-4 py-2 border-2 rounded-full focus:outline-none text-sm"
-                    style="border-color: #E7E0EC;"
+                    style="border-color: #E8E3DA;"
                     required
                     maxlength="2000"
                 >
@@ -64,7 +64,7 @@
                     type="submit"
                     class="px-4 md:px-6 py-2 rounded-full text-white font-medium transition-all hover:shadow-lg flex-shrink-0"
                     :disabled="sending || !newMessage.trim()"
-                    style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
+                    style="background-color: #315C47;"
                 >
                     <svg v-if="!sending" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>

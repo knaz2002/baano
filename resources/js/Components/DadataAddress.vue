@@ -7,7 +7,7 @@
             type="text"
             :placeholder="placeholder"
             class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none"
-            style="border-color: #E7E0EC;"
+            style="border-color: #E8E3DA;"
             autocomplete="off"
         >
         
@@ -15,19 +15,19 @@
         <div 
             v-if="showSuggestions && suggestions.length > 0"
             class="absolute z-50 w-full mt-1 bg-white rounded-xl shadow-lg border max-h-60 overflow-y-auto"
-            style="border-color: #E7E0EC;"
+            style="border-color: #E8E3DA;"
         >
             <div 
                 v-for="(suggestion, index) in suggestions" 
                 :key="index"
                 @click="selectSuggestion(suggestion)"
-                class="px-4 py-3 hover:bg-purple-50 cursor-pointer border-b last:border-0"
-                style="border-color: #E7E0EC;"
+                class="px-4 py-3 hover:bg-[#F1F6F2] cursor-pointer border-b last:border-0"
+                style="border-color: #E8E3DA;"
             >
-                <div class="text-sm font-medium" style="color: #1D1B20;">
+                <div class="text-sm font-medium" style="color: #1F4234;">
                     {{ suggestion.value }}
                 </div>
-                <div v-if="suggestion.data" class="text-xs mt-1" style="color: #79747E;">
+                <div v-if="suggestion.data" class="text-xs mt-1" style="color: #7B817D;">
                     {{ suggestion.unrestricted_value }}
                 </div>
             </div>
@@ -35,7 +35,7 @@
 
         <!-- Индикатор загрузки -->
         <div v-if="loading" class="absolute right-3 top-1/2 -translate-y-1/2">
-            <svg class="w-5 h-5 animate-spin" style="color: #6750A4;" fill="none" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 animate-spin" style="color: #315C47;" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>

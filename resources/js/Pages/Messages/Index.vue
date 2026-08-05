@@ -1,16 +1,16 @@
 <template>
     <DashboardLayout>
-        <div class="min-h-screen pb-20 md:pb-0" style="background-color: #E8E6E1;">
+        <div class="min-h-screen pb-20 md:pb-0" style="background-color: #F7F3EC;">
             <div class="max-w-6xl mx-auto px-3 md:px-4 py-4 md:py-8">
                 <div class="flex items-center justify-between mb-4 md:mb-6">
-                    <h1 class="text-xl md:text-2xl font-bold" style="color: #1D1B20;">Сообщения</h1>
-                    <Link href="/" class="text-sm font-medium hover:underline" style="color: #6750A4;">На главную</Link>
+                    <h1 class="text-xl md:text-2xl font-bold" style="color: #1F4234;">Сообщения</h1>
+                    <Link href="/" class="text-sm font-medium hover:underline" style="color: #315C47;">На главную</Link>
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col md:flex-row" style="min-height: 600px;">
                     
                     <!-- ЛЕВАЯ ПАНЕЛЬ: Список диалогов (ВСЕГДА видна) -->
-                    <div class="w-full md:w-80 border-r" style="border-color: #E7E0EC;">
+                    <div class="w-full md:w-80 border-r" style="border-color: #E8E3DA;">
                         <div v-if="!conversations || conversations.length === 0" class="p-8 text-center text-gray-500">
                             <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
@@ -25,10 +25,10 @@
                                 :key="conv.id"
                                 @click="selectConversation(conv.id)"
                                 class="w-full text-left p-3 md:p-4 hover:bg-gray-50 transition-colors cursor-pointer"
-                                :class="selectedConversationId === conv.id ? 'bg-purple-50' : ''"
+                                :class="selectedConversationId === conv.id ? 'bg-[#F1F6F2]' : ''"
                             >
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style="background: linear-gradient(135deg, #6750A4 0%, #9B7FCF 100%);">
+                                    <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style="background-color: #315C47;">
                                         {{ conv.other_user.name.charAt(0).toUpperCase() }}
                                     </div>
                                     <div class="flex-1 min-w-0">
@@ -39,7 +39,7 @@
                                         <p
                                             v-if="conv.listing"
                                             class="text-xs font-medium truncate mt-1"
-                                            style="color: #6750A4;"
+                                            style="color: #315C47;"
                                         >
                                             {{ conv.listing.title }}
                                         </p>
@@ -48,7 +48,7 @@
                                             {{ conv.last_message.body }}
                                         </p>
                                     </div>
-                                    <div v-if="conv.unread_count > 0" class="text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);">
+                                    <div v-if="conv.unread_count > 0" class="text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0" style="background-color: #315C47;">
                                         {{ conv.unread_count }}
                                     </div>
 
@@ -80,31 +80,31 @@
                         </div>
 
                         <div v-else class="flex-1 flex flex-col">
-                            <div class="bg-white border-b p-4 flex items-center gap-3 sticky top-0 z-10" style="border-color: #E7E0EC;">
-                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style="background: linear-gradient(135deg, #6750A4 0%, #9B7FCF 100%);">
+                            <div class="bg-white border-b p-4 flex items-center gap-3 sticky top-0 z-10" style="border-color: #E8E3DA;">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style="background-color: #315C47;">
                                     {{ selectedConversation.other_user.name.charAt(0).toUpperCase() }}
                                 </div>
                                 <div class="flex-1">
-                                    <h2 class="font-semibold text-base" style="color: #1D1B20;">{{ selectedConversation.other_user.name }}</h2>
+                                    <h2 class="font-semibold text-base" style="color: #1F4234;">{{ selectedConversation.other_user.name }}</h2>
                                     <p class="text-xs text-green-500">в сети</p>
                                     <Link
                                         v-if="selectedConversation.listing"
                                         :href="`/listings/${selectedConversation.listing.id}`"
                                         class="block text-xs font-medium truncate hover:underline mt-1"
-                                        style="color: #6750A4;"
+                                        style="color: #315C47;"
                                     >
                                         {{ selectedConversation.listing.title }}
                                     </Link>
                                 </div>
                             </div>
 
-                            <div ref="messagesContainer" class="flex-1 p-4 space-y-3 overflow-y-auto" style="background-color: #F5F5F5;">
+                            <div ref="messagesContainer" class="flex-1 p-4 space-y-3 overflow-y-auto" style="background-color: #F7F3EC;">
                                 <div v-if="loadingMessages" class="text-center text-gray-500 py-8">Загрузка...</div>
                                 
                                 <div v-else v-for="msg in messages" :key="msg.id" class="flex" :class="msg.is_mine ? 'justify-end' : 'justify-start'">
                                     <div class="max-w-[80%] md:max-w-md px-4 py-2 rounded-2xl"
                                         :class="msg.is_mine ? 'text-white rounded-br-sm' : 'bg-white text-gray-900 rounded-bl-sm shadow-sm'"
-                                        :style="msg.is_mine ? 'background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);' : ''">
+                                        :style="msg.is_mine ? 'background-color: #315C47;' : ''">
                                         <p class="text-sm whitespace-pre-wrap break-words">{{ msg.body }}</p>
                                         <p class="text-xs mt-1 opacity-75 text-right">{{ msg.created_at }}</p>
                                     </div>
@@ -115,9 +115,9 @@
                                 </div>
                             </div>
 
-                            <form @submit.prevent="sendMessage" class="bg-white p-4 flex gap-2 border-t" style="border-color: #E7E0EC;">
-                                <input v-model="newMessage" type="text" placeholder="Напишите сообщение..." class="flex-1 px-4 py-2 border-2 rounded-full focus:outline-none text-sm" style="border-color: #E7E0EC;" required maxlength="2000">
-                                <button type="submit" class="px-6 py-2 rounded-full text-white font-medium transition-all hover:shadow-lg flex-shrink-0" :disabled="sending || !newMessage.trim()" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);">
+                            <form @submit.prevent="sendMessage" class="bg-white p-4 flex gap-2 border-t" style="border-color: #E8E3DA;">
+                                <input v-model="newMessage" type="text" placeholder="Напишите сообщение..." class="flex-1 px-4 py-2 border-2 rounded-full focus:outline-none text-sm" style="border-color: #E8E3DA;" required maxlength="2000">
+                                <button type="submit" class="px-6 py-2 rounded-full text-white font-medium transition-all hover:shadow-lg flex-shrink-0" :disabled="sending || !newMessage.trim()" style="background-color: #315C47;">
                                     <svg v-if="!sending" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                                     </svg>
@@ -137,23 +137,23 @@
             @click.self="closeDeleteModal"
         >
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-5 md:p-6">
-                <h2 class="text-lg md:text-xl font-bold mb-3" style="color: #1D1B20;">
+                <h2 class="text-lg md:text-xl font-bold mb-3" style="color: #1F4234;">
                     Удалить диалог?
                 </h2>
 
-                <p class="text-sm leading-relaxed mb-2" style="color: #49454F;">
+                <p class="text-sm leading-relaxed mb-2" style="color: #68736B;">
                     Диалог и история сообщений будут удалены только из вашего списка.
                 </p>
 
-                <p class="text-sm leading-relaxed mb-6" style="color: #49454F;">
+                <p class="text-sm leading-relaxed mb-6" style="color: #68736B;">
                     У второго участника переписка останется. При новом сообщении диалог снова появится.
                 </p>
 
                 <div class="flex justify-end gap-3">
                     <button
                         type="button"
-                        class="px-4 py-2 rounded-xl font-medium hover:bg-gray-100"
-                        style="color: #49454F;"
+                        class="px-4 py-2 rounded-xl font-medium hover:bg-gray-100 cancel-action action-red"
+                        style="color: #68736B;"
                         :disabled="deletingConversation"
                         @click="closeDeleteModal"
                     >

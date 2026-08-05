@@ -1,8 +1,8 @@
 <template>
     <DashboardLayout active-tab="reviews">
-        <div class="min-h-screen pb-20" style="background-color: #E8E6E1;">
+        <div class="min-h-screen pb-20" style="background-color: #F7F3EC;">
             <div class="max-w-4xl mx-auto px-4 py-8">
-                <h1 class="text-2xl font-bold mb-6" style="color: #1D1B20;">Отзывы</h1>
+                <h1 class="text-2xl font-bold mb-6" style="color: #1F4234;">Отзывы</h1>
                 
                 <div v-if="!reviews || reviews.length === 0" class="bg-white rounded-2xl shadow-lg p-8 text-center">
                     <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -16,7 +16,7 @@
                     <div v-for="review in reviews" :key="review.id" class="bg-white rounded-2xl shadow-lg p-6">
                         <div class="flex items-start justify-between mb-3">
                             <div>
-                                <h3 class="font-semibold text-base" style="color: #1D1B20;">
+                                <h3 class="font-semibold text-base" style="color: #1F4234;">
                                     {{ review.listing?.title || 'Объявление' }}
                                 </h3>
                                 <p class="text-sm text-gray-500">{{ review.user?.name }}</p>
@@ -25,7 +25,7 @@
                                 <div class="flex text-yellow-400 mr-2">
                                     <span v-for="n in 5" :key="n" :class="n <= review.rating ? 'text-yellow-400' : 'text-gray-300'">★</span>
                                 </div>
-                                <span class="text-sm font-bold" style="color: #6750A4;">{{ review.rating }}/5</span>
+                                <span class="text-sm font-bold" style="color: #315C47;">{{ review.rating }}/5</span>
                             </div>
                         </div>
                         <p class="text-gray-700 mb-3">{{ review.comment }}</p>

@@ -2,14 +2,14 @@
     <AppLayout>
         <div class="max-w-4xl mx-auto px-4 py-8">
             <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h1 class="text-2xl font-bold mb-6" style="color: #1D1B20;">Создать объявление</h1>
+                <h1 class="text-2xl font-bold mb-6" style="color: #1F4234;">Создать объявление</h1>
 
                 <form @submit.prevent="createListing">
                     <div class="space-y-6">
                         <!-- Категория -->
                         <div>
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Категория</label>
-                            <select v-model="form.category_id" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" required>
+                            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Категория</label>
+                            <select v-model="form.category_id" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" required>
                                 <option value="">Выберите категорию</option>
                                 <template v-for="cat in safeCategories" :key="cat.id">
                                     <option :value="cat.id" :disabled="hasChildren(cat)">{{ cat.name }}</option>
@@ -25,25 +25,25 @@
 
                         <!-- Заголовок -->
                         <div>
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Заголовок</label>
-                            <input v-model="form.title" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" required>
+                            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Заголовок</label>
+                            <input v-model="form.title" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" required>
                         </div>
 
                         <!-- Описание -->
                         <div>
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Описание</label>
-                            <textarea v-model="form.description" rows="6" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" required></textarea>
+                            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Описание</label>
+                            <textarea v-model="form.description" rows="6" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" required></textarea>
                         </div>
 
                         <!-- Цена и Тип цены -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium mb-2" style="color: #49454F;">Цена</label>
-                                <input v-model.number="form.price" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" required>
+                                <label class="block text-sm font-medium mb-2" style="color: #68736B;">Цена</label>
+                                <input v-model.number="form.price" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" required>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium mb-2" style="color: #49454F;">Тип цены</label>
-                                <select v-model="form.price_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" required>
+                                <label class="block text-sm font-medium mb-2" style="color: #68736B;">Тип цены</label>
+                                <select v-model="form.price_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" required>
                                     <option value="fixed">Фиксированная</option>
                                     <option value="hourly">За час</option>
                                     <option value="daily">За день</option>
@@ -55,23 +55,23 @@
 
                         <!-- Локация (DaData) -->
                         <div class="relative" style="z-index: 100;">
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Локация (Адрес)</label>
-                            <input v-model="locationQuery" @input="onLocationInput" @focus="showSuggestions = true" @blur="closeSuggestions" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" placeholder="Начните вводить адрес..." autocomplete="off">
-                            <div v-if="showSuggestions && locationSuggestions.length > 0" class="absolute z-[9999] w-full mt-1 bg-white rounded-xl shadow-2xl border max-h-60 overflow-y-auto" style="border-color: #E7E0EC;">
-                                <button v-for="(suggestion, index) in locationSuggestions" :key="index" @mousedown.prevent="selectSuggestion(suggestion)" @touchstart.prevent="selectSuggestion(suggestion)" type="button" class="w-full text-left px-4 py-3 hover:bg-gray-50 active:bg-gray-100 transition-colors border-b last:border-0" style="border-color: #E7E0EC;">
-                                    <p class="text-sm font-medium" style="color: #1D1B20;">{{ suggestion.value }}</p>
-                                    <p v-if="suggestion.data && suggestion.data.city_with_type" class="text-xs mt-1" style="color: #79747E;">{{ suggestion.data.region_with_type }}</p>
+                            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Локация (Адрес)</label>
+                            <input v-model="locationQuery" @input="onLocationInput" @focus="showSuggestions = true" @blur="closeSuggestions" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" placeholder="Начните вводить адрес..." autocomplete="off">
+                            <div v-if="showSuggestions && locationSuggestions.length > 0" class="absolute z-[9999] w-full mt-1 bg-white rounded-xl shadow-2xl border max-h-60 overflow-y-auto" style="border-color: #E8E3DA;">
+                                <button v-for="(suggestion, index) in locationSuggestions" :key="index" @mousedown.prevent="selectSuggestion(suggestion)" @touchstart.prevent="selectSuggestion(suggestion)" type="button" class="w-full text-left px-4 py-3 hover:bg-gray-50 active:bg-gray-100 transition-colors border-b last:border-0" style="border-color: #E8E3DA;">
+                                    <p class="text-sm font-medium" style="color: #1F4234;">{{ suggestion.value }}</p>
+                                    <p v-if="suggestion.data && suggestion.data.city_with_type" class="text-xs mt-1" style="color: #7B817D;">{{ suggestion.data.region_with_type }}</p>
                                 </button>
                             </div>
                         </div>
 
                         <!-- === НЕДВИЖИМОСТЬ (родитель ID: 1) === -->
                         <div v-if="parentCategoryId == 1" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики недвижимости</h3>
+                            <h3 class="font-semibold text-base" style="color: #1F4234;">Характеристики недвижимости</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Тип недвижимости</label>
-                                    <select v-model="form.attributes.property_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Тип недвижимости</label>
+                                    <select v-model="form.attributes.property_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="apartment">Квартира</option>
                                         <option value="house">Дом</option>
@@ -80,20 +80,20 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Площадь (м²)</label>
-                                    <input v-model.number="form.attributes.area" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Площадь (м²)</label>
+                                    <input v-model.number="form.attributes.area" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Этаж</label>
-                                    <input v-model.number="form.attributes.floor" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Этаж</label>
+                                    <input v-model.number="form.attributes.floor" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Комнат</label>
-                                    <input v-model.number="form.attributes.rooms" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Комнат</label>
+                                    <input v-model.number="form.attributes.rooms" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Состояние</label>
-                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Состояние</label>
+                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="rough">Черновая отделка</option>
                                         <option value="pre_finish">Предчистовая</option>
@@ -103,8 +103,8 @@
                                 </div>
                                 <div class="flex items-end">
                                     <div class="flex items-center gap-2">
-                                        <input v-model="form.attributes.furnished" type="checkbox" class="w-4 h-4 rounded" style="accent-color: #6750A4;">
-                                        <label class="text-sm font-medium" style="color: #49454F;">Меблирована</label>
+                                        <input v-model="form.attributes.furnished" type="checkbox" class="w-4 h-4 rounded" style="accent-color: #315C47;">
+                                        <label class="text-sm font-medium" style="color: #68736B;">Меблирована</label>
                                     </div>
                                 </div>
                             </div>
@@ -112,33 +112,33 @@
 
                         <!-- === ТРАНСПОРТ (ID: 15) === -->
                         <div v-if="selectedCategoryId == 15" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики легкового автомобиля</h3>
+                            <h3 class="font-semibold text-base" style="color: #1F4234;">Характеристики легкового автомобиля</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Марка</label>
-                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Марка</label>
+                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Выберите марку</option>
                                         <option v-for="brand in availableBrands" :key="brand" :value="brand">{{ brand }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Модель</label>
-                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" :disabled="!form.attributes.brand">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Модель</label>
+                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" :disabled="!form.attributes.brand">
                                         <option value="">Выберите модель</option>
                                         <option v-for="model in availableModels" :key="model" :value="model">{{ model }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Год выпуска</label>
-                                    <input v-model.number="form.attributes.year" type="number" min="1900" :max="currentYear" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Год выпуска</label>
+                                    <input v-model.number="form.attributes.year" type="number" min="1900" :max="currentYear" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Пробег (км)</label>
-                                    <input v-model.number="form.attributes.mileage" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Пробег (км)</label>
+                                    <input v-model.number="form.attributes.mileage" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Тип топлива</label>
-                                    <select v-model="form.attributes.fuel_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Тип топлива</label>
+                                    <select v-model="form.attributes.fuel_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="petrol">Бензин</option>
                                         <option value="diesel">Дизель</option>
@@ -148,8 +148,8 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Коробка передач</label>
-                                    <select v-model="form.attributes.transmission" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Коробка передач</label>
+                                    <select v-model="form.attributes.transmission" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="manual">Механика</option>
                                         <option value="automatic">Автомат</option>
@@ -158,8 +158,8 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Привод</label>
-                                    <select v-model="form.attributes.drive" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Привод</label>
+                                    <select v-model="form.attributes.drive" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="fwd">Передний</option>
                                         <option value="rwd">Задний</option>
@@ -167,8 +167,8 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Состояние</label>
-                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Состояние</label>
+                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="new">Новое</option>
                                         <option value="used">Б/у</option>
@@ -179,37 +179,37 @@
 
                         <!-- === МОТОЦИКЛЫ (ID: 16) === -->
                         <div v-if="selectedCategoryId == 16" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики мотоцикла</h3>
+                            <h3 class="font-semibold text-base" style="color: #1F4234;">Характеристики мотоцикла</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Марка</label>
-                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Марка</label>
+                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Выберите марку</option>
                                         <option v-for="brand in availableBrands" :key="brand" :value="brand">{{ brand }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Модель</label>
-                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" :disabled="!form.attributes.brand">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Модель</label>
+                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" :disabled="!form.attributes.brand">
                                         <option value="">Выберите модель</option>
                                         <option v-for="model in availableModels" :key="model" :value="model">{{ model }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Год выпуска</label>
-                                    <input v-model.number="form.attributes.year" type="number" min="1900" :max="currentYear" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Год выпуска</label>
+                                    <input v-model.number="form.attributes.year" type="number" min="1900" :max="currentYear" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Пробег (км)</label>
-                                    <input v-model.number="form.attributes.mileage" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Пробег (км)</label>
+                                    <input v-model.number="form.attributes.mileage" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Объём двигателя (см³)</label>
-                                    <input v-model.number="form.attributes.engine_capacity" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Объём двигателя (см³)</label>
+                                    <input v-model.number="form.attributes.engine_capacity" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Тип</label>
-                                    <select v-model="form.attributes.moto_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Тип</label>
+                                    <select v-model="form.attributes.moto_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="sport">Спортивный</option>
                                         <option value="touring">Туристический</option>
@@ -224,37 +224,37 @@
 
                         <!-- === ГРУЗОВОЙ ТРАНСПОРТ (ID: 17) === -->
                         <div v-if="selectedCategoryId == 17" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики грузового транспорта</h3>
+                            <h3 class="font-semibold text-base" style="color: #1F4234;">Характеристики грузового транспорта</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Марка</label>
-                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Марка</label>
+                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Выберите марку</option>
                                         <option v-for="brand in availableBrands" :key="brand" :value="brand">{{ brand }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Модель</label>
-                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" :disabled="!form.attributes.brand">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Модель</label>
+                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" :disabled="!form.attributes.brand">
                                         <option value="">Выберите модель</option>
                                         <option v-for="model in availableModels" :key="model" :value="model">{{ model }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Год выпуска</label>
-                                    <input v-model.number="form.attributes.year" type="number" min="1900" :max="currentYear" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Год выпуска</label>
+                                    <input v-model.number="form.attributes.year" type="number" min="1900" :max="currentYear" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Пробег (км)</label>
-                                    <input v-model.number="form.attributes.mileage" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Пробег (км)</label>
+                                    <input v-model.number="form.attributes.mileage" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Грузоподъёмность (т)</label>
-                                    <input v-model.number="form.attributes.capacity" type="number" step="0.1" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Грузоподъёмность (т)</label>
+                                    <input v-model.number="form.attributes.capacity" type="number" step="0.1" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Тип кузова</label>
-                                    <select v-model="form.attributes.body_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Тип кузова</label>
+                                    <select v-model="form.attributes.body_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="tent">Тент</option>
                                         <option value="refrigerator">Рефрижератор</option>
@@ -269,66 +269,66 @@
 
                         <!-- === СПЕЦТРАНСПОРТ (ID: 18) === -->
                         <div v-if="selectedCategoryId == 18" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики спецтранспорта</h3>
+                            <h3 class="font-semibold text-base" style="color: #1F4234;">Характеристики спецтранспорта</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Марка</label>
-                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Марка</label>
+                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Выберите марку</option>
                                         <option v-for="brand in availableBrands" :key="brand" :value="brand">{{ brand }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Модель</label>
-                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" :disabled="!form.attributes.brand">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Модель</label>
+                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" :disabled="!form.attributes.brand">
                                         <option value="">Выберите модель</option>
                                         <option v-for="model in availableModels" :key="model" :value="model">{{ model }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Год выпуска</label>
-                                    <input v-model.number="form.attributes.year" type="number" min="1900" :max="currentYear" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Год выпуска</label>
+                                    <input v-model.number="form.attributes.year" type="number" min="1900" :max="currentYear" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Наработка (моточасы)</label>
-                                    <input v-model.number="form.attributes.hours" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Наработка (моточасы)</label>
+                                    <input v-model.number="form.attributes.hours" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                             </div>
                         </div>
 
                         <!-- === СТРОИТЕЛЬНАЯ ТЕХНИКА (ID: 20) === -->
                         <div v-if="selectedCategoryId == 20" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики строительной техники</h3>
+                            <h3 class="font-semibold text-base" style="color: #1F4234;">Характеристики строительной техники</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Марка</label>
-                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Марка</label>
+                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Выберите марку</option>
                                         <option v-for="brand in availableBrands" :key="brand" :value="brand">{{ brand }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Модель</label>
-                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" :disabled="!form.attributes.brand">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Модель</label>
+                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" :disabled="!form.attributes.brand">
                                         <option value="">Выберите модель</option>
                                         <option v-for="model in availableModels" :key="model" :value="model">{{ model }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Год выпуска</label>
-                                    <input v-model.number="form.attributes.year" type="number" min="1900" :max="currentYear" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Год выпуска</label>
+                                    <input v-model.number="form.attributes.year" type="number" min="1900" :max="currentYear" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Наработка (моточасы)</label>
-                                    <input v-model.number="form.attributes.hours" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Наработка (моточасы)</label>
+                                    <input v-model.number="form.attributes.hours" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Мощность (л.с.)</label>
-                                    <input v-model.number="form.attributes.power" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Мощность (л.с.)</label>
+                                    <input v-model.number="form.attributes.power" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Состояние</label>
-                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Состояние</label>
+                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="new">Новое</option>
                                         <option value="used_excellent">Б/у отличное</option>
@@ -341,25 +341,25 @@
 
                         <!-- === ИНСТРУМЕНТЫ (ID: 21) === -->
                         <div v-if="selectedCategoryId == 21" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики инструмента</h3>
+                            <h3 class="font-semibold text-base" style="color: #1F4234;">Характеристики инструмента</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Производитель</label>
-                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Производитель</label>
+                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Выберите производителя</option>
                                         <option v-for="brand in availableBrands" :key="brand" :value="brand">{{ brand }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Модель</label>
-                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" :disabled="!form.attributes.brand">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Модель</label>
+                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" :disabled="!form.attributes.brand">
                                         <option value="">Выберите модель</option>
                                         <option v-for="model in availableModels" :key="model" :value="model">{{ model }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Тип инструмента</label>
-                                    <select v-model="form.attributes.tool_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Тип инструмента</label>
+                                    <select v-model="form.attributes.tool_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="drill">Дрель / Шуруповерт</option>
                                         <option value="grinder">Болгарка (УШМ)</option>
@@ -369,8 +369,8 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Питание</label>
-                                    <select v-model="form.attributes.power_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Питание</label>
+                                    <select v-model="form.attributes.power_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="corded">Сетевой</option>
                                         <option value="cordless">Аккумуляторный</option>
@@ -378,8 +378,8 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Состояние</label>
-                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Состояние</label>
+                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="new">Новый</option>
                                         <option value="used_excellent">Б/у отличное</option>
@@ -391,29 +391,29 @@
 
                         <!-- === ГЕНЕРАТОРЫ (ID: 22) === -->
                         <div v-if="selectedCategoryId == 22" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики генератора</h3>
+                            <h3 class="font-semibold text-base" style="color: #1F4234;">Характеристики генератора</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Производитель</label>
-                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Производитель</label>
+                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Выберите производителя</option>
                                         <option v-for="brand in availableBrands" :key="brand" :value="brand">{{ brand }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Модель</label>
-                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" :disabled="!form.attributes.brand">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Модель</label>
+                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" :disabled="!form.attributes.brand">
                                         <option value="">Выберите модель</option>
                                         <option v-for="model in availableModels" :key="model" :value="model">{{ model }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Мощность (кВт)</label>
-                                    <input v-model.number="form.attributes.power" type="number" step="0.1" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Мощность (кВт)</label>
+                                    <input v-model.number="form.attributes.power" type="number" step="0.1" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Тип топлива</label>
-                                    <select v-model="form.attributes.fuel_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Тип топлива</label>
+                                    <select v-model="form.attributes.fuel_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="petrol">Бензин</option>
                                         <option value="diesel">Дизель</option>
@@ -422,8 +422,8 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Состояние</label>
-                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Состояние</label>
+                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="new">Новый</option>
                                         <option value="used_excellent">Б/у отличное</option>
@@ -435,25 +435,25 @@
 
                         <!-- === ФОТО И ВИДЕОТЕХНИКА (ID: 23) === -->
                         <div v-if="selectedCategoryId == 23" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Характеристики фото/видеотехники</h3>
+                            <h3 class="font-semibold text-base" style="color: #1F4234;">Характеристики фото/видеотехники</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Производитель</label>
-                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Производитель</label>
+                                    <select v-model="form.attributes.brand" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Выберите производителя</option>
                                         <option v-for="brand in availableBrands" :key="brand" :value="brand">{{ brand }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Модель</label>
-                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" :disabled="!form.attributes.brand">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Модель</label>
+                                    <select v-model="form.attributes.model" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" :disabled="!form.attributes.brand">
                                         <option value="">Выберите модель</option>
                                         <option v-for="model in availableModels" :key="model" :value="model">{{ model }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Тип техники</label>
-                                    <select v-model="form.attributes.device_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Тип техники</label>
+                                    <select v-model="form.attributes.device_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="camera">Фотоаппарат</option>
                                         <option value="video">Видеокамера</option>
@@ -464,8 +464,8 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Состояние</label>
-                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Состояние</label>
+                                    <select v-model="form.attributes.condition" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="new">Новый</option>
                                         <option value="used_excellent">Б/у отличное</option>
@@ -477,19 +477,19 @@
 
                         <!-- === УСЛУГИ (родитель ID: 24) === -->
                         <div v-if="parentCategoryId == 24" class="p-4 rounded-xl bg-gray-50 space-y-4">
-                            <h3 class="font-semibold text-base" style="color: #1D1B20;">Детали услуги</h3>
+                            <h3 class="font-semibold text-base" style="color: #1F4234;">Детали услуги</h3>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Стаж работы (лет)</label>
-                                    <input v-model.number="form.attributes.experience_years" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Стаж работы (лет)</label>
+                                    <input v-model.number="form.attributes.experience_years" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Зона обслуживания</label>
-                                    <input v-model="form.attributes.service_area" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" placeholder="Например: Москва и МО">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Зона обслуживания</label>
+                                    <input v-model="form.attributes.service_area" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" placeholder="Например: Москва и МО">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">График работы</label>
-                                    <select v-model="form.attributes.work_schedule" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">График работы</label>
+                                    <select v-model="form.attributes.work_schedule" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                         <option value="">Не выбрано</option>
                                         <option value="full_time">Полный день</option>
                                         <option value="part_time">Частичная занятость</option>
@@ -498,35 +498,35 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-2" style="color: #49454F;">Гарантия (месяцев)</label>
-                                    <input v-model.number="form.attributes.warranty_months" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                                    <label class="block text-sm font-medium mb-2" style="color: #68736B;">Гарантия (месяцев)</label>
+                                    <input v-model.number="form.attributes.warranty_months" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                                 </div>
                             </div>
                             <div class="flex flex-col gap-2">
                                 <div class="flex items-center gap-2">
-                                    <input v-model="form.attributes.warranty" type="checkbox" class="w-4 h-4 rounded" style="accent-color: #6750A4;">
-                                    <label class="text-sm font-medium" style="color: #49454F;">Предоставляю гарантию</label>
+                                    <input v-model="form.attributes.warranty" type="checkbox" class="w-4 h-4 rounded" style="accent-color: #315C47;">
+                                    <label class="text-sm font-medium" style="color: #68736B;">Предоставляю гарантию</label>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <input v-model="form.attributes.emergency_service" type="checkbox" class="w-4 h-4 rounded" style="accent-color: #6750A4;">
-                                    <label class="text-sm font-medium" style="color: #49454F;">Срочный выезд</label>
+                                    <input v-model="form.attributes.emergency_service" type="checkbox" class="w-4 h-4 rounded" style="accent-color: #315C47;">
+                                    <label class="text-sm font-medium" style="color: #68736B;">Срочный выезд</label>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Фотографии -->
                         <div>
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Фотографии</label>
-                            <input type="file" multiple accept="image/*" @change="handleImageUpload" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
-                            <p class="text-sm mt-2" style="color: #79747E;">Максимум 10 фотографий</p>
+                            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Фотографии</label>
+                            <input type="file" multiple accept="image/*" @change="handleImageUpload" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
+                            <p class="text-sm mt-2" style="color: #7B817D;">Максимум 10 фотографий</p>
                         </div>
 
                         <!-- Кнопки -->
                         <div class="flex flex-col gap-3">
-                            <button type="submit" class="w-full py-3.5 rounded-xl text-white font-semibold text-base transition-all hover:shadow-lg active:scale-95" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);" :disabled="form.processing">
+                            <button type="submit" class="w-full py-3.5 rounded-xl text-white font-semibold text-base transition-all hover:shadow-lg active:scale-95 confirm-action action-green" style="background-color: #315C47;" :disabled="form.processing">
                                 {{ form.processing ? 'Отправка...' : 'Создать' }}
                             </button>
-                            <Link href="/user/listings" class="w-full py-3.5 rounded-xl font-semibold text-base border-2 transition-all hover:shadow-md text-center" style="border-color: #6750A4; color: #6750A4;">Отмена</Link>
+                            <Link href="/user/listings" class="w-full py-3.5 rounded-xl font-semibold text-base border-2 transition-all hover:shadow-md text-center cancel-action action-red" style="border-color: #315C47; color: #315C47;">Отмена</Link>
                         </div>
                     </div>
                 </form>

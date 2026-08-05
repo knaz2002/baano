@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640">
+    <rect width="900" height="640" rx="48" fill="#F4F0E7"/>
+    <rect x="38" y="38" width="824" height="564" rx="38" fill="#FFFDF8"/>
+
+    <rect x="500" y="78" width="294" height="210" rx="26" fill="#DCE7DD"/>
+    <rect x="523" y="101" width="248" height="164" rx="18" fill="#C7DBD0"/>
+    <circle cx="720" cy="139" r="34" fill="#F3C57A"/>
+    <path d="M523 224C582 171 637 188 685 219C718 240 744 238 771 215V265H523Z" fill="#84A58E"/>
+
+    <rect x="100" y="370" width="330" height="154" rx="42" fill="#315C47"/>
+    <rect x="124" y="337" width="282" height="105" rx="36" fill="#47745D"/>
+    <rect x="92" y="488" width="36" height="68" rx="12" fill="#263F34"/>
+    <rect x="402" y="488" width="36" height="68" rx="12" fill="#263F34"/>
+
+    <rect x="142" y="142" width="276" height="74" rx="22" fill="#FFFFFF" stroke="#DAD4C8" stroke-width="8"/>
+    <rect x="171" y="172" width="185" height="11" rx="5.5" fill="#C9CEC8"/>
+    <circle cx="381" cy="179" r="8" fill="#D55F58"/>
+
+    <circle cx="522" cy="239" r="55" fill="#D6A783"/>
+    <path d="M470 225C479 174 523 157 562 180C578 189 589 207 592 228C564 213 513 209 470 225Z" fill="#28513D"/>
+
+    <path d="M440 306C467 272 514 267 554 287L605 313L575 468H407L397 348Z" fill="#F8F4EC"/>
+    <path d="M446 299L478 283L514 467H467Z" fill="#315C47"/>
+    <path d="M542 285L566 300L545 467H508Z" fill="#315C47"/>
+
+    <path d="M432 323L334 218" fill="none" stroke="#D6A783" stroke-width="34" stroke-linecap="round"/>
+    <path d="M559 314L644 219" fill="none" stroke="#D6A783" stroke-width="34" stroke-linecap="round"/>
+    <circle cx="327" cy="209" r="19" fill="#D6A783"/>
+    <circle cx="651" cy="209" r="19" fill="#D6A783"/>
+
+    <rect x="389" y="455" width="216" height="36" rx="18" fill="#D55F58"/>
+    <rect x="410" y="482" width="36" height="91" rx="16" fill="#244638"/>
+    <rect x="548" y="482" width="36" height="91" rx="16" fill="#244638"/>
+
+    <path d="M72 586C173 546 255 561 337 590" fill="none" stroke="#DCE7DD" stroke-width="22" stroke-linecap="round"/>
+</svg>

@@ -12,7 +12,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <a href="{{ route('listings.index') }}" class="text-2xl font-bold text-orange-600">
+                    <a href="{{ route('listings.index') }}" class="text-2xl font-bold text-[#fe0000]">
                         Baano
                     </a>
                 </div>
@@ -46,7 +46,7 @@
                 <!-- Категория -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Категория</label>
-                    <select name="category_id" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500">
+                    <select name="category_id" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#fe0000] focus:border-[#fe0000]">
                         <option value="">Выберите категорию</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ $listing->category_id === $category->id ? 'selected' : '' }}>
@@ -63,7 +63,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Заголовок</label>
                     <input type="text" name="title" value="{{ old('title', $listing->title) }}" required maxlength="255"
-                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500">
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#fe0000] focus:border-[#fe0000]">
                     @error('title')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -73,7 +73,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Описание</label>
                     <textarea name="description" rows="6" required
-                              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500">{{ old('description', $listing->description) }}</textarea>
+                              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#fe0000] focus:border-[#fe0000]">{{ old('description', $listing->description) }}</textarea>
                     @error('description')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -88,7 +88,7 @@
                         id="address-input"
                         value="{{ old('location', $listing->location) }}" 
                         placeholder="Начните вводить адрес..."
-                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#fe0000] focus:border-[#fe0000]"
                         autocomplete="off"
                     >
                     <p class="mt-1 text-sm text-gray-500">Начните вводить адрес — подсказки появятся автоматически</p>
@@ -102,14 +102,14 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Цена</label>
                         <input type="number" name="price" value="{{ old('price', $listing->price) }}" required min="0" step="0.01"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500">
+                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#fe0000] focus:border-[#fe0000]">
                         @error('price')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Тип цены</label>
-                        <select name="price_type" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500">
+                        <select name="price_type" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#fe0000] focus:border-[#fe0000]">
                             <option value="fixed" {{ old('price_type', $listing->price_type) === 'fixed' ? 'selected' : '' }}>Фиксированная</option>
                             <option value="hourly" {{ old('price_type', $listing->price_type) === 'hourly' ? 'selected' : '' }}>За час</option>
                             <option value="daily" {{ old('price_type', $listing->price_type) === 'daily' ? 'selected' : '' }}>За сутки</option>
@@ -141,7 +141,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Новые фотографии (максимум 10)</label>
                     <input type="file" name="images[]" multiple accept="image/*"
-                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500">
+                           class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#fe0000] focus:border-[#fe0000]">
                     <p class="mt-1 text-sm text-gray-500">Поддерживаются форматы: JPG, PNG, GIF. Максимальный размер: 2MB</p>
                     @error('images.*')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -151,10 +151,10 @@
 
             <!-- Кнопки -->
             <div class="mt-8 flex space-x-4">
-                <button type="submit" class="flex-1 bg-orange-600 text-white px-6 py-3 rounded-md hover:bg-orange-700 font-semibold">
+                <button type="submit" class="flex-1 bg-[#fe0000] text-white px-6 py-3 rounded-md hover:bg-[#C9564E] font-semibold confirm-action action-green">
                     Сохранить изменения
                 </button>
-                <a href="{{ route('user.listings.index') }}" class="px-6 py-3 border border-gray-300 rounded-md hover:bg-gray-50 text-center">
+                <a href="{{ route('user.listings.index') }}" class="px-6 py-3 border border-gray-300 rounded-md hover:bg-gray-50 text-center cancel-action action-red">
                     Отмена
                 </a>
             </div>

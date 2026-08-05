@@ -12,30 +12,65 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $parentCategories = Category::with('children.children')
-            ->whereNull('parent_id')
-            ->get();
-
-        $iconMap = [
-            'Услуги' => ['icon' => 'services', 'color' => 'green'],
-            'Аренда жилая' => ['icon' => 'residential', 'color' => 'red'],
-            'Недвижимость' => ['icon' => 'residential', 'color' => 'red'],
-            'Коммерческая недвижимость' => ['icon' => 'commercial', 'color' => 'blue'],
-            'Транспорт' => ['icon' => 'transport', 'color' => 'orange'],
-            'Оборудование' => ['icon' => 'equipment', 'color' => 'purple'],
+        // Категории главной страницы в заданном порядке.
+        $categoryDefinitions = [
+            [
+                'id' => 2,
+                'name' => 'Аренда жилья',
+                'icon' => 'residential',
+                'color' => 'red',
+            ],
+            [
+                'id' => 19,
+                'name' => 'Аренда техники и оборудования',
+                'icon' => 'equipment',
+                'color' => 'green',
+            ],
+            [
+                'id' => 6,
+                'name' => 'Коммерческая аренда',
+                'icon' => 'commercial',
+                'color' => 'red',
+            ],
+            [
+                'id' => 24,
+                'name' => 'Услуги и специалисты',
+                'icon' => 'services',
+                'color' => 'green',
+            ],
+            [
+                'id' => 14,
+                'name' => 'Транспорт',
+                'icon' => 'transport',
+                'color' => 'red',
+            ],
         ];
 
+        $categories = Category::with('children.children')
+            ->whereIn(
+                'id',
+                collect($categoryDefinitions)->pluck('id')
+            )
+            ->get()
+            ->keyBy('id');
+
         $parentCategoriesData = [];
-        foreach ($parentCategories as $category) {
-            $count = $this->countListingsInCategory($category->id);
-            $iconInfo = $iconMap[$category->name] ?? ['icon' => 'services', 'color' => 'green'];
+
+        foreach ($categoryDefinitions as $definition) {
+            $category = $categories->get($definition['id']);
+
+            if (!$category) {
+                continue;
+            }
 
             $parentCategoriesData[] = [
                 'id' => $category->id,
-                'name' => $category->name,
-                'listings_count' => $count,
-                'icon' => $iconInfo['icon'],
-                'color' => $iconInfo['color'],
+                'name' => $definition['name'],
+                'listings_count' => $this->countListingsInCategory(
+                    $category->id
+                ),
+                'icon' => $definition['icon'],
+                'color' => $definition['color'],
             ];
         }
 

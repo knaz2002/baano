@@ -1,7 +1,7 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center" style="background-color: #E8E6E1;">
+    <div class="min-h-screen flex items-center justify-center" style="background-color: #F7F3EC;">
         <div class="glass p-8 rounded-2xl w-full max-w-md">
-            <h1 class="text-3xl font-bold mb-6 text-center" style="color: #3D4449;">Подтверждение телефона</h1>
+            <h1 class="text-3xl font-bold mb-6 text-center" style="color: #1F4234;">Подтверждение телефона</h1>
 
             <div v-if="success" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-md">
                 {{ success }}
@@ -11,7 +11,7 @@
                 {{ error }}
             </div>
 
-            <div class="mb-6 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded-md">
+            <div class="mb-6 p-4 bg-[#DDE8DC] border border-[#4F8069] text-[#315C47] rounded-md">
                 <p class="text-sm">
                     Код отправлен на номер
                     <span class="font-medium">{{ phoneMasked || 'ваш телефон' }}</span>
@@ -29,7 +29,7 @@
 
             <form @submit.prevent="verify">
                 <div class="mb-6">
-                    <label class="block text-sm font-medium mb-2" style="color: #3D4449;">
+                    <label class="block text-sm font-medium mb-2" style="color: #1F4234;">
                         Код подтверждения
                     </label>
                     <input
@@ -39,13 +39,13 @@
                         autocomplete="one-time-code"
                         maxlength="4"
                         required
-                        class="w-full px-4 py-3 text-center text-3xl tracking-widest rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        class="w-full px-4 py-3 text-center text-3xl tracking-widest rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#315C47]"
                         placeholder="0000"
                         @input="onCodeInput"
                     >
                 </div>
 
-                <button type="submit" :disabled="processing || code.length !== 4" class="btn-gradient w-full">
+                <button type="submit" :disabled="processing || code.length !== 4" class="btn-gradient w-full action-green">
                     Подтвердить телефон
                 </button>
 
@@ -54,7 +54,7 @@
                     @click="resend"
                     :disabled="processing || cooldown > 0"
                     class="mt-4 w-full text-center text-sm"
-                    :class="cooldown > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-purple-600 hover:underline'"
+                    :class="cooldown > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-[#315C47] hover:underline'"
                 >
                     <template v-if="cooldown > 0">
                         Отправить повторно через {{ cooldown }} сек

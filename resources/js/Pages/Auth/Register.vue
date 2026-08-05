@@ -1,7 +1,7 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center" style="background-color: #E8E6E1;">
+    <div class="min-h-screen flex items-center justify-center" style="background-color: #F7F3EC;">
         <div class="glass p-8 rounded-2xl w-full max-w-md">
-            <h1 class="text-3xl font-bold mb-6 text-center" style="color: #3D4449;">Регистрация</h1>
+            <h1 class="text-3xl font-bold mb-6 text-center" style="color: #1F4234;">Регистрация</h1>
             
             <div v-if="errors.error" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
                 {{ Array.isArray(errors.error) ? errors.error[0] : errors.error }}
@@ -9,45 +9,45 @@
             
             <form @submit.prevent="register" autocomplete="off">
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2" style="color: #3D4449;">Имя</label>
+                    <label class="block text-sm font-medium mb-2" style="color: #1F4234;">Имя</label>
                     <input v-model="form.name" type="text" required autocomplete="off"
-                           class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                           class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#315C47]">
                     <p v-if="errors.name" class="mt-1 text-sm text-red-600">{{ Array.isArray(errors.name) ? errors.name[0] : errors.name }}</p>
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2" style="color: #3D4449;">Телефон</label>
+                    <label class="block text-sm font-medium mb-2" style="color: #1F4234;">Телефон</label>
                     <input v-model="form.phone" type="tel" required @input="formatPhone" placeholder="+7 (___) ___-__-__" autocomplete="off"
-                           class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                           class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#315C47]">
                     <p v-if="errors.phone" class="mt-1 text-sm text-red-600 font-semibold">{{ Array.isArray(errors.phone) ? errors.phone[0] : errors.phone }}</p>
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2" style="color: #3D4449;">Email</label>
+                    <label class="block text-sm font-medium mb-2" style="color: #1F4234;">Email</label>
                     <input v-model="form.email" type="email" required autocomplete="off"
-                           class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                           class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#315C47]">
                     <p v-if="errors.email" class="mt-1 text-sm text-red-600 font-semibold">{{ Array.isArray(errors.email) ? errors.email[0] : errors.email }}</p>
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2" style="color: #3D4449;">Пароль</label>
+                    <label class="block text-sm font-medium mb-2" style="color: #1F4234;">Пароль</label>
                     <input v-model="form.password" type="password" required autocomplete="new-password"
-                           class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                           class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#315C47]">
                     <p v-if="errors.password" class="mt-1 text-sm text-red-600 font-semibold">{{ Array.isArray(errors.password) ? errors.password[0] : errors.password }}</p>
                 </div>
 
                 <div class="mb-6">
-                    <label class="block text-sm font-medium mb-2" style="color: #3D4449;">Подтверждение пароля</label>
+                    <label class="block text-sm font-medium mb-2" style="color: #1F4234;">Подтверждение пароля</label>
                     <input v-model="form.password_confirmation" type="password" required autocomplete="new-password"
-                           class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                           class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#315C47]">
                 </div>
 
                 <button type="submit" :disabled="form.processing" class="btn-gradient w-full">
                     Зарегистрироваться
                 </button>
 
-                <p class="mt-4 text-center text-sm" style="color: #5A6268;">
-                    Уже есть аккаунт? <Link href="/login" class="text-purple-600 hover:underline">Войти</Link>
+                <p class="mt-4 text-center text-sm" style="color: #68736B;">
+                    Уже есть аккаунт? <Link href="/login" class="text-[#315C47] hover:underline">Войти</Link>
                 </p>
             </form>
         </div>
