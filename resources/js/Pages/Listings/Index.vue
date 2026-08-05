@@ -2,8 +2,8 @@
     <AppLayout>
         <div class="max-w-7xl mx-auto px-4 py-4 md:py-8">
             <!-- Хлебные крошки -->
-            <nav class="mb-4 md:mb-6 text-sm" style="color: #49454F;">
-                <Link href="/" class="hover:underline" style="color: #6750A4;">Главная</Link>
+            <nav class="mb-4 md:mb-6 text-sm" style="color: #68736B;">
+                <Link href="/" class="hover:underline" style="color: #315C47;">Главная</Link>
                 <span class="mx-2">›</span>
                 <span v-if="currentCategory">{{ currentCategory.name }}</span>
                 <span v-else>Все объявления</span>
@@ -11,10 +11,10 @@
 
             <!-- Заголовок -->
             <div class="flex items-center justify-between mb-4 md:mb-6">
-                <h1 class="text-xl md:text-3xl font-bold" style="color: #1D1B20;">
+                <h1 class="text-xl md:text-3xl font-bold" style="color: #1F4234;">
                     {{ currentCategory ? currentCategory.name : 'Все объявления' }}
                 </h1>
-                <span class="text-sm md:text-lg" style="color: #49454F;">{{ pagination.total }} объявлений</span>
+                <span class="text-sm md:text-lg" style="color: #68736B;">{{ pagination.total }} объявлений</span>
             </div>
 
             <!-- Мобильная кнопка фильтров -->
@@ -22,10 +22,10 @@
                 @click="openFilters"
                 class="md:hidden mb-4 w-full py-3 rounded-xl bg-white shadow flex items-center justify-center gap-2"
             >
-                <svg class="w-5 h-5" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5" style="color: #315C47;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                 </svg>
-                <span style="color: #1D1B20;">Фильтры</span>
+                <span style="color: #1F4234;">Фильтры</span>
             </button>
 
             <div class="flex gap-4 md:gap-6">
@@ -39,7 +39,7 @@
                     >
                         <div class="min-h-full md:min-h-0 bg-white md:rounded-2xl md:shadow-lg p-4 md:p-6">
                             <div class="sticky top-0 z-10 flex items-center justify-between mb-4 py-2 -mt-2 bg-white md:hidden">
-                                <h3 class="text-lg font-bold" style="color: #1D1B20;">Фильтры</h3>
+                                <h3 class="text-lg font-bold" style="color: #1F4234;">Фильтры</h3>
                                 <button @click="closeFilters" class="p-2 rounded-lg hover:bg-gray-100">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -47,15 +47,15 @@
                                 </button>
                             </div>
 
-                            <h3 class="text-lg font-bold mb-4 hidden md:block" style="color: #1D1B20;">Фильтры</h3>
+                            <h3 class="text-lg font-bold mb-4 hidden md:block" style="color: #1F4234;">Фильтры</h3>
 
                             <!-- Категория -->
                             <div class="mb-4 md:mb-6">
-                                <label class="block text-sm font-medium mb-2" style="color: #49454F;">Категория</label>
+                                <label class="block text-sm font-medium mb-2" style="color: #68736B;">Категория</label>
                                 <select 
                                     v-model="filters.category"
                                     class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white"
-                                    style="border-color: #E7E0EC; color: #1D1B20;"
+                                    style="border-color: #E8E3DA; color: #1F4234;"
                                     @change="onCategoryChange"
                                 >
                                     <option value="">Все категории</option>
@@ -92,7 +92,7 @@
                             <div class="mb-4 md:mb-6">
                                 <label
                                     class="block text-sm font-medium mb-2"
-                                    style="color: #49454F;"
+                                    style="color: #68736B;"
                                 >
                                     Город
                                 </label>
@@ -105,14 +105,14 @@
 
                             <!-- Цена -->
                             <div class="mb-4 md:mb-6">
-                                <label class="block text-sm font-medium mb-2" style="color: #49454F;">Цена, ₽</label>
+                                <label class="block text-sm font-medium mb-2" style="color: #68736B;">Цена, ₽</label>
                                 <div class="flex gap-2 mb-3">
                                     <input 
                                         type="number" 
                                         v-model.number="priceMin"
                                         placeholder="от"
                                         class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm"
-                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        style="border-color: #E8E3DA; color: #1F4234;"
                                         @change="applyFilters"
                                     >
                                     <input 
@@ -120,7 +120,7 @@
                                         v-model.number="priceMax"
                                         placeholder="до"
                                         class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm"
-                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        style="border-color: #E8E3DA; color: #1F4234;"
                                         @change="applyFilters"
                                     >
                                 </div>
@@ -136,7 +136,7 @@
 
                                 <div
                                     class="mt-2 text-center text-xs font-medium"
-                                    style="color: #6750A4;"
+                                    style="color: #315C47;"
                                 >
                                     {{ formatPrice(priceMax) }} ₽
                                 </div>
@@ -149,7 +149,7 @@
                             >
                                 <label
                                     class="block text-sm font-medium mb-2"
-                                    style="color: #49454F;"
+                                    style="color: #68736B;"
                                 >
                                     Площадь, м²
                                 </label>
@@ -163,7 +163,7 @@
                                         :step="getAreaStep()"
                                         placeholder="от"
                                         class="w-full min-w-0 px-3 py-2 rounded-lg border-2 focus:outline-none text-sm"
-                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        style="border-color: #E8E3DA; color: #1F4234;"
                                         @change="applyAreaFilters"
                                     >
 
@@ -175,7 +175,7 @@
                                         :step="getAreaStep()"
                                         placeholder="до"
                                         class="w-full min-w-0 px-3 py-2 rounded-lg border-2 focus:outline-none text-sm"
-                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        style="border-color: #E8E3DA; color: #1F4234;"
                                         @change="applyAreaFilters"
                                     >
                                 </div>
@@ -192,7 +192,7 @@
 
                                 <div
                                     class="mt-2 text-center text-xs font-medium"
-                                    style="color: #6750A4;"
+                                    style="color: #315C47;"
                                 >
                                     {{ filters.area_max }} м²
                                 </div>
@@ -207,7 +207,7 @@
                                 <div>
                                     <label
                                         class="block text-sm font-medium mb-2"
-                                        style="color: #49454F;"
+                                        style="color: #68736B;"
                                     >
                                         Количество комнат
                                     </label>
@@ -216,8 +216,8 @@
                                         <label
                                             v-for="room in filterConfig.options.rooms || []"
                                             :key="room"
-                                            class="flex flex-col items-center gap-1 px-1 py-2 rounded-lg border cursor-pointer hover:bg-purple-50"
-                                            style="border-color: #E7E0EC;"
+                                            class="flex flex-col items-center gap-1 px-1 py-2 rounded-lg border cursor-pointer hover:bg-[#F1F6F2]"
+                                            style="border-color: #E8E3DA;"
                                         >
                                             <input
                                                 v-model="filters.rooms"
@@ -236,7 +236,7 @@
                                 <div>
                                     <label
                                         class="block text-sm font-medium mb-2"
-                                        style="color: #49454F;"
+                                        style="color: #68736B;"
                                     >
                                         Этаж
                                     </label>
@@ -244,7 +244,7 @@
                                     <select
                                         v-model="filters.floor"
                                         class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white"
-                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        style="border-color: #E8E3DA; color: #1F4234;"
                                         @change="applyFilters"
                                     >
                                         <option value="">
@@ -273,7 +273,7 @@
                                 <div>
                                     <label
                                         class="block text-sm font-medium mb-2"
-                                        style="color: #49454F;"
+                                        style="color: #68736B;"
                                     >
                                         {{
                                             filterConfig.type === 'equipment'
@@ -285,7 +285,7 @@
                                     <select
                                         v-model="filters.brand"
                                         class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white"
-                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        style="border-color: #E8E3DA; color: #1F4234;"
                                         @change="onBrandChange"
                                     >
                                         <option value="">
@@ -305,7 +305,7 @@
                                 <div>
                                     <label
                                         class="block text-sm font-medium mb-2"
-                                        style="color: #49454F;"
+                                        style="color: #68736B;"
                                     >
                                         Модель
                                     </label>
@@ -314,7 +314,7 @@
                                         v-model="filters.model"
                                         :disabled="!filters.brand"
                                         class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        style="border-color: #E8E3DA; color: #1F4234;"
                                         @change="applyFilters"
                                     >
                                         <option value="">
@@ -336,7 +336,7 @@
                                 >
                                     <label
                                         class="block text-sm font-medium mb-2"
-                                        style="color: #49454F;"
+                                        style="color: #68736B;"
                                     >
                                         Год выпуска
                                     </label>
@@ -344,7 +344,7 @@
                                     <select
                                         v-model="filters.year"
                                         class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white"
-                                        style="border-color: #E7E0EC; color: #1D1B20;"
+                                        style="border-color: #E8E3DA; color: #1F4234;"
                                         @change="applyFilters"
                                     >
                                         <option value="">
@@ -364,11 +364,11 @@
 
                             <!-- Сортировка -->
                             <div class="mb-4">
-                                <label class="block text-sm font-medium mb-2" style="color: #49454F;">Сортировка</label>
+                                <label class="block text-sm font-medium mb-2" style="color: #68736B;">Сортировка</label>
                                 <select 
                                     v-model="filters.sort"
                                     class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white"
-                                    style="border-color: #E7E0EC; color: #1D1B20;"
+                                    style="border-color: #E8E3DA; color: #1F4234;"
                                     @change="applyFilters"
                                 >
                                     <option value="latest">Сначала новые</option>
@@ -382,19 +382,19 @@
                             <button 
                                 @click="resetFilters"
                                 class="w-full py-2 rounded-lg text-sm font-medium border-2 transition-all hover:shadow-md"
-                                style="border-color: #6750A4; color: #6750A4;"
+                                style="border-color: #315C47; color: #315C47;"
                             >
                                 Сбросить фильтры
                             </button>
 
                             <div
                                 class="fixed left-0 right-0 z-[110] p-4 bg-white border-t md:hidden"
-                                style="bottom: calc(72px + env(safe-area-inset-bottom)); border-color: #E7E0EC;"
+                                style="bottom: calc(72px + env(safe-area-inset-bottom)); border-color: #E8E3DA;"
                             >
                                 <button
                                     type="button"
-                                    class="w-full py-3.5 rounded-xl text-white font-semibold shadow-lg"
-                                    style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
+                                    class="w-full py-3.5 rounded-xl text-white font-semibold shadow-lg action-green"
+                                    style="background-color: #315C47;"
                                     @click="applyFilters(true)"
                                 >
                                     Применить
@@ -411,7 +411,7 @@
                             v-for="listing in listings" 
                             :key="listing.id"
                             :href="`/listings/${listing.id}`"
-                            class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group"
+                            class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group listing-card"
                         >
                             <div class="relative overflow-hidden">
                                 <img 
@@ -437,7 +437,7 @@
 
                             <div class="p-3">
                                 <div class="flex items-start justify-between mb-2">
-                                    <h3 class="font-bold text-sm sm:text-base text-gray-900 line-clamp-1" :title="listing.title">{{ listing.title }}</h3>
+                                    <h3 class="font-bold text-sm sm:text-base text-gray-900 line-clamp-1 listing-card-title" :title="listing.title">{{ listing.title }}</h3>
                                     <div class="flex items-center gap-1 flex-shrink-0 ml-2">
                                         <span class="text-yellow-400 text-sm">★</span>
                                         <span class="text-xs md:text-sm text-gray-600 font-medium">{{ listing.rating }}</span>
@@ -447,7 +447,7 @@
                                 <p class="text-xs md:text-sm text-gray-600 mb-2 md:mb-3 line-clamp-2">{{ listing.description }}</p>
 
                                 <div class="mb-3 md:mb-4">
-                                    <span class="text-base sm:text-lg md:text-xl font-bold" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</span>
+                                    <span class="text-base sm:text-lg md:text-xl font-bold price-red">{{ formatPrice(listing.price) }} ₽</span>
                                 </div>
 
                                 <div class="flex items-center gap-1 text-gray-600">
@@ -469,7 +469,7 @@
                             :href="`/listings?${buildQueryString(page)}`"
                             class="px-3 md:px-4 py-2 rounded-lg font-medium transition-all flex-shrink-0"
                             :class="page === pagination.current_page ? 'text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
-                            :style="page === pagination.current_page ? 'background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);' : ''"
+                            :style="page === pagination.current_page ? 'background-color: #315C47;' : ''"
                         >
                             {{ page }}
                         </Link>
@@ -479,8 +479,8 @@
                         <svg class="w-16 h-16 md:w-24 md:h-24 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <p class="text-lg md:text-xl font-medium" style="color: #49454F;">Ничего не найдено</p>
-                        <p class="text-sm mt-2" style="color: #79747E;">Попробуйте изменить параметры поиска</p>
+                        <p class="text-lg md:text-xl font-medium" style="color: #68736B;">Ничего не найдено</p>
+                        <p class="text-sm mt-2" style="color: #7B817D;">Попробуйте изменить параметры поиска</p>
                     </div>
                 </div>
             </div>
@@ -810,7 +810,7 @@ const buildQueryString = (page) => {
     -webkit-appearance: none;
     appearance: none;
     height: 6px;
-    background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);
+    background-color: #315C47;
     border-radius: 3px;
     outline: none;
 }
@@ -820,7 +820,7 @@ const buildQueryString = (page) => {
     appearance: none;
     width: 18px;
     height: 18px;
-    background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);
+    background-color: #315C47;
     border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -834,7 +834,7 @@ const buildQueryString = (page) => {
 .custom-range-slider::-moz-range-thumb {
     width: 18px;
     height: 18px;
-    background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);
+    background-color: #315C47;
     border-radius: 50%;
     cursor: pointer;
     border: none;
@@ -843,7 +843,7 @@ const buildQueryString = (page) => {
 
 .custom-range-slider::-moz-range-track {
     height: 6px;
-    background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);
+    background-color: #315C47;
     border-radius: 3px;
 }
 </style>

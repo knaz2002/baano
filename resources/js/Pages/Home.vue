@@ -1,67 +1,116 @@
 <template>
     <AppLayout>
         <div class="max-w-7xl mx-auto px-4 py-8">
-            <!-- 1. Плитки категорий (КОМПАКТНЫЕ) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8 md:mb-12">
-                <div 
-                    v-for="cat in parentCategories" 
-                    :key="cat.id"
-                    class="bg-white rounded-2xl shadow-lg p-3 md:p-4 hover:shadow-xl transition-shadow"
-                >
-                    <!-- Иконка + Название в одну строку -->
-                    <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
-                        <div class="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg" :class="getCategoryIconBgColor(cat.color)">
-                            <!-- УСЛУГИ -->
-                            <svg v-if="cat.icon === 'services'" class="w-5 h-5 md:w-6 md:h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/>
-                                <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/>
-                                <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/>
-                                <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
-                            </svg>
-                            <!-- НЕДВИЖИМОСТЬ -->
-                            <svg v-else-if="cat.icon === 'residential'" class="w-5 h-5 md:w-6 md:h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                                <polyline points="9 22 9 12 15 12 15 22"/>
-                            </svg>
-                            <!-- КОММЕРЧЕСКАЯ -->
-                            <svg v-else-if="cat.icon === 'commercial'" class="w-5 h-5 md:w-6 md:h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
-                                <path d="M9 22v-4h6v4"/>
-                            </svg>
-                            <!-- ТРАНСПОРТ -->
-                            <svg v-else-if="cat.icon === 'transport'" class="w-5 h-5 md:w-6 md:h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="1" y="3" width="15" height="13"/>
-                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-                                <circle cx="5.5" cy="18.5" r="2.5"/>
-                                <circle cx="18.5" cy="18.5" r="2.5"/>
-                            </svg>
-                            <!-- ОБОРУДОВАНИЕ (ШЕСТЕРЁНКА) -->
-                            <svg v-else-if="cat.icon === 'equipment'" class="w-5 h-5 md:w-6 md:h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <h3 class="font-bold text-xs md:text-sm leading-tight truncate" style="color: #1D1B20;">{{ cat.name }}</h3>
-                        </div>
+            <!-- Главный экран портала -->
+            <section class="py-5 md:py-8 mb-8 md:mb-10">
+                <div class="grid lg:grid-cols-[0.72fr_1.28fr] gap-8 lg:gap-10 items-center">
+                    <div class="relative z-10">
+                        <h1
+                            class="text-[34px] sm:text-[42px] lg:text-[48px] font-extrabold leading-[1.03] tracking-tight mb-5"
+                            style="color: #1F4234;"
+                        >
+                            Услуги и аренда
+                            <span class="block">
+                                <span style="color: #fe0000;">рядом.</span>
+                                Всегда.
+                            </span>
+                        </h1>
+
+                        <p
+                            class="max-w-md text-sm sm:text-base leading-relaxed"
+                            style="color: #68736B;"
+                        >
+                            Найдите проверенных специалистов и качественные
+                            предложения для вашего комфорта.
+                        </p>
                     </div>
-                    
-                    <!-- Количество предложений -->
-                    <p class="text-xs text-gray-500 mb-3 md:mb-4">{{ cat.listings_count }} предложений</p>
-                    
-                    <!-- Кнопка -->
-                    <Link 
-                        :href="`/listings?category=${cat.id}`"
-                        class="w-full inline-flex items-center justify-center gap-1 md:gap-2 px-3 md:px-4 py-2 rounded-xl text-xs md:text-sm font-medium text-white transition-all hover:shadow-lg"
-                        style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
+
+<!-- Фотографический коллаж -->
+<div class="flex items-center justify-center lg:justify-end">
+    <div class="relative w-full max-w-[760px] h-[175px] sm:h-[205px] lg:h-[225px] overflow-hidden rounded-[34px]">
+        <img
+            src="/images/home/hero-collage-baano.png"
+            alt="Услуги, аренда автомобиля и репетитор по математике"
+            class="block w-full h-full object-contain object-center scale-[1.08]"
+        >
+
+        <!-- Изображение оборудования поверх коллажа -->
+        <img
+            src="/images/home/hero-drill.png"
+            alt="Оборудование"
+            class="absolute z-10 w-[72px] sm:w-[92px] lg:w-[108px] right-[24%] top-1/2 -translate-y-1/2 drop-shadow-[0_10px_24px_rgba(0,0,0,0.18)]"
+        >
+    </div>
+</div>
+                </div>
+            </section>
+
+            <!-- Категории -->
+            <section id="categories" class="scroll-mt-28 mb-10 md:mb-14">
+                <div class="flex items-center justify-end gap-4 mb-5">
+                    <Link
+                        href="/listings"
+                        class="text-sm font-semibold transition-opacity hover:opacity-70"
+                        style="color: #315C47;"
                     >
-                        Перейти
-                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
+                        Все объявления
                     </Link>
                 </div>
-            </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+                    <article
+                        v-for="(cat, index) in orderedParentCategories"
+                        :key="cat.id"
+                        class="group flex flex-col min-h-[185px] p-4 md:p-5 rounded-[20px] border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                        style="background-color: #FFFFFF; border-color: #E8E3DA;"
+                    >
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="flex-shrink-0 flex items-center justify-center w-14 h-14">
+                                <img
+                                    :src="`/images/categories/category-${cat.icon}.svg`"
+                                    :alt="cat.name"
+                                    class="block w-full h-full object-contain"
+                                >
+                            </div>
+
+                            <div class="min-w-0">
+                                <h3
+                                    class="text-[15px] md:text-base font-extrabold leading-tight mb-2"
+                                    :style="{
+                                        color: index % 2 === 0
+                                            ? '#fe0000'
+                                            : '#315C47'
+                                    }"
+                                >
+                                    {{ cat.name }}
+                                </h3>
+
+                                <p
+                                    class="text-xs leading-relaxed"
+                                    style="color: #7B817D;"
+                                >
+                                    {{ cat.listings_count }} объявлений
+                                </p>
+                            </div>
+                        </div>
+
+                        <Link
+                            :href="`/listings?category=${cat.id}`"
+                            class="mt-auto inline-flex items-center justify-center min-h-9 px-4 rounded-full border text-xs font-bold transition-all hover:opacity-70"
+                            :style="{
+                                color: index % 2 === 0
+                                    ? '#fe0000'
+                                    : '#315C47',
+                                borderColor: index % 2 === 0
+                                    ? '#fe0000'
+                                    : '#315C47'
+                            }"
+                        >
+                            Смотреть
+                        </Link>
+                    </article>
+                </div>
+            </section>
 
             <!-- 2. VIP объявления -->
             <div class="mb-12">
@@ -73,10 +122,10 @@
                         v-for="listing in vipListings" 
                         :key="listing.id"
                         :href="`/listings/${listing.id}`"
-                        class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all border-2 group relative h-full flex flex-col"
-                        style="border-color: #FFD8E4;"
+                        class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all border-2 group relative h-full flex flex-col listing-card"
+                        style="border-color: #F7DEDA;"
                     >
-                        <div class="absolute top-2 md:top-3 right-2 md:right-3 text-white px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-bold shadow-lg z-10" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);">
+                        <div class="absolute top-2 md:top-3 right-2 md:right-3 text-white px-2 md:px-3 py-0.5 md:py-1 rounded-full text-[10px] md:text-xs font-bold shadow-lg z-10 vip-accent vip-red" style="background-color: #315C47;">
                             VIP
                         </div>
 
@@ -89,8 +138,8 @@
                         </div>
                         
                         <div class="p-3 md:p-5 flex flex-col flex-1">
-                            <h3 class="font-bold text-sm md:text-base text-gray-900 mb-2 line-clamp-2">{{ listing.title }}</h3>
-                            <p class="text-base md:text-xl font-bold mb-2" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</p>
+                            <h3 class="font-bold text-sm md:text-base text-gray-900 mb-2 line-clamp-2 listing-card-title">{{ listing.title }}</h3>
+                            <p class="text-base md:text-xl font-bold mb-2 price-red">{{ formatPrice(listing.price) }} ₽</p>
                             <div class="mt-auto flex items-center gap-1">
                                 <span class="text-yellow-400 text-xs md:text-sm">★</span>
                                 <span class="text-xs md:text-sm text-gray-600">{{ listing.rating || '4.9' }}</span>
@@ -103,8 +152,8 @@
         <!-- 3. Сетка всех объявлений -->
                 <div class="mb-12">
                     <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-lg sm:text-xl md:text-2xl font-bold" style="color: #1D1B20;">Все объявления</h2>
-                    <span class="text-sm font-medium" style="color: #6750A4;">
+                    <h2 class="text-lg sm:text-xl md:text-2xl font-bold" style="color: #1F4234;">Все объявления</h2>
+                    <span class="text-sm font-medium" style="color: #315C47;">
                         {{ gridListings.length }} объявлений
                     </span>
                 </div>
@@ -114,7 +163,7 @@
                         v-for="listing in gridListings" 
                         :key="listing.id"
                         :href="`/listings/${listing.id}`"
-                        class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group h-full flex flex-col"
+                        class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group h-full flex flex-col listing-card"
                     >
                         <div class="relative overflow-hidden">
                             <img 
@@ -139,13 +188,13 @@
                         </div>
 
                         <div class="p-3 md:p-4 flex flex-col flex-1">
-                            <h3 class="font-bold text-sm md:text-base text-gray-900 mb-2 line-clamp-2" :title="listing.title">{{ listing.title }}</h3>
+                            <h3 class="font-bold text-sm md:text-base text-gray-900 mb-2 line-clamp-2 listing-card-title" :title="listing.title">{{ listing.title }}</h3>
                             
                             <p class="text-xs md:text-sm text-gray-600 mb-3 line-clamp-2 flex-1">{{ listing.description }}</p>
                             
                             <div class="mt-auto">
                                 <div class="mb-2">
-                                    <span class="text-sm md:text-lg font-bold" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ formatPrice(listing.price) }} ₽</span>
+                                    <span class="text-sm md:text-lg font-bold price-red">{{ formatPrice(listing.price) }} ₽</span>
                                 </div>
                                 <div class="flex items-center gap-1 text-gray-600">
                                     <svg class="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -164,6 +213,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { router, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
@@ -175,26 +225,49 @@ const props = defineProps({
 
 const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price || 0);
 
-const getCategoryIconColor = (color) => {
-    const colors = {
-        green: 'text-green-600',
-        red: 'text-red-600',
-        blue: 'text-blue-600',
-        orange: 'text-orange-600',
-        purple: 'text-purple-600'
+// Порядок категорий на главной странице.
+const orderedParentCategories = computed(() => {
+    const categoryOrder = {
+        residential: 1,
+        equipment: 2,
+        commercial: 3,
+        services: 4,
+        transport: 5,
     };
-    return colors[color] || 'text-gray-600';
-};
 
-const getCategoryIconBgColor = (color) => {
-    const colors = {
-        green: 'bg-green-500',
-        red: 'bg-red-500',
-        blue: 'bg-blue-500',
-        orange: 'bg-orange-500',
-        purple: 'bg-purple-500'
+    return [...props.parentCategories].sort((firstCategory, secondCategory) => {
+        const firstPosition = categoryOrder[firstCategory.icon] ?? 99;
+        const secondPosition = categoryOrder[secondCategory.icon] ?? 99;
+
+        return firstPosition - secondPosition;
+    });
+});
+
+const getCategoryPalette = (category) => {
+    const palettes = {
+        services: {
+            accent: '#315C47',
+            background: '#DDE8DC',
+        },
+        residential: {
+            accent: '#fe0000',
+            background: '#F7DEDA',
+        },
+        commercial: {
+            accent: '#315C47',
+            background: '#DDE8DC',
+        },
+        transport: {
+            accent: '#fe0000',
+            background: '#F7DEDA',
+        },
+        equipment: {
+            accent: '#315C47',
+            background: '#DDE8DC',
+        },
     };
-    return colors[color] || 'bg-gray-500';
+
+    return palettes[category.icon] || palettes.services;
 };
 
 const toggleFavorite = (listingId) => {

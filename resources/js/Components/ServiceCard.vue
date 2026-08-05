@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group listing-card">
         <!-- Изображение -->
         <div class="relative overflow-hidden">
             <img 
@@ -24,7 +24,7 @@
         <div class="p-5">
             <!-- Заголовок и рейтинг -->
             <div class="flex items-start justify-between mb-2">
-                <h3 class="font-bold text-lg text-gray-900 line-clamp-1" :title="listing.title">{{ listing.title }}</h3>
+                <h3 class="font-bold text-lg text-gray-900 line-clamp-1 listing-card-title" :title="listing.title">{{ listing.title }}</h3>
                 <div class="flex items-center gap-1 flex-shrink-0 ml-2">
                     <span class="text-yellow-400 text-sm">★</span>
                     <span class="text-sm text-gray-600 font-medium">{{ listing.rating || '4.8' }}</span>
@@ -36,7 +36,7 @@
 
             <!-- Цена -->
             <div class="mb-4">
-                <span class="text-2xl font-bold" style="color: #4A3B8F;">{{ formatPrice(listing.price) }} ₽</span>
+                <span class="text-2xl font-bold price-red">{{ formatPrice(listing.price) }} ₽</span>
                 <span v-if="listing.price_type" class="text-sm text-gray-500 ml-1">{{ getPriceType(listing.price_type) }}</span>
             </div>
 
@@ -51,7 +51,7 @@
                 </div>
                 
                 <div v-if="listing.user" class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold">
                         {{ getUserInitial(listing.user.name) }}
                     </div>
                     <span class="text-sm text-gray-700 truncate max-w-[100px]">{{ listing.user.name }}</span>
@@ -64,7 +64,7 @@
                     v-if="listing.user?.phone"
                     :href="`tel:${listing.user.phone}`"
                     class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium text-sm transition-all hover:shadow-lg active:scale-95"
-                    style="background: linear-gradient(135deg, #6B5CE7 0%, #A78BFA 100%);"
+                    style="background-color: #315C47;"
                 >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
@@ -81,7 +81,7 @@
                 <Link 
                     :href="`/listings/${listing.id}`"
                     class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white font-medium text-sm transition-all hover:shadow-lg active:scale-95"
-                    style="background: linear-gradient(135deg, #6B5CE7 0%, #A78BFA 100%);"
+                    style="background-color: #315C47;"
                 >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>

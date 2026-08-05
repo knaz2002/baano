@@ -6,7 +6,7 @@
             autocomplete="off"
             placeholder="Выберите город"
             class="w-full px-3 py-2 rounded-lg border-2 focus:outline-none text-sm bg-white"
-            style="border-color: #E7E0EC; color: #1D1B20;"
+            style="border-color: #E8E3DA; color: #1F4234;"
             @input="handleInput"
             @focus="handleFocus"
         >
@@ -24,7 +24,7 @@
         <div
             v-if="isOpen"
             class="absolute z-50 w-full mt-1 overflow-y-auto bg-white border rounded-xl shadow-xl max-h-64"
-            style="border-color: #E7E0EC;"
+            style="border-color: #E8E3DA;"
         >
             <div
                 v-if="loading"
@@ -37,8 +37,8 @@
                 v-for="city in displayedCities"
                 :key="city"
                 type="button"
-                class="block w-full px-3 py-2 text-sm text-left hover:bg-purple-50"
-                style="color: #1D1B20;"
+                class="block w-full px-3 py-2 text-sm text-left hover:bg-[#F1F6F2]"
+                style="color: #1F4234;"
                 @mousedown.prevent="selectCity(city)"
             >
                 {{ city }}

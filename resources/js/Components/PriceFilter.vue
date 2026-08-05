@@ -5,7 +5,7 @@
             <button @click="$emit('close')" class="close-btn">×</button>
         </div>
 
-        <div class="filter-section">
+        <div class="filter-section price-accent">
             <h4 class="section-title">{{ category }}</h4>
             
             <!-- Диапазон цен -->
@@ -15,7 +15,7 @@
             </div>
 
             <!-- Ползунок -->
-            <div class="slider-container">
+            <div class="slider-container price-accent">
                 <input 
                     type="range" 
                     :min="0" 
@@ -34,7 +34,7 @@
             </div>
 
             <!-- Кнопка применить -->
-            <button @click="applyFilter" class="apply-btn">
+            <button @click="applyFilter" class="apply-btn action-green">
                 Применить
             </button>
         </div>
@@ -126,7 +126,7 @@ onMounted(() => {
 .filter-title {
     font-size: 24px;
     font-weight: 700;
-    color: #2D3748;
+    color: #1F4234;
     margin: 0;
 }
 
@@ -134,7 +134,7 @@ onMounted(() => {
     background: none;
     border: none;
     font-size: 32px;
-    color: #718096;
+    color: #68736B;
     cursor: pointer;
     width: 32px;
     height: 32px;
@@ -147,7 +147,7 @@ onMounted(() => {
 
 .close-btn:hover {
     background: rgba(139, 154, 158, 0.1);
-    color: #2D3748;
+    color: #1F4234;
 }
 
 .filter-section {
@@ -159,7 +159,7 @@ onMounted(() => {
 .section-title {
     font-size: 16px;
     font-weight: 600;
-    color: #4A5568;
+    color: #68736B;
     margin: 0;
 }
 
@@ -168,7 +168,7 @@ onMounted(() => {
     justify-content: space-between;
     font-size: 14px;
     font-weight: 500;
-    color: #718096;
+    color: #68736B;
 }
 
 .slider-container {
@@ -182,7 +182,7 @@ onMounted(() => {
     width: 100%;
     height: 8px;
     border-radius: 4px;
-    background: linear-gradient(135deg, #E87A8B 0%, #B894D8 100%);
+    background-color: #315C47;
     outline: none;
     cursor: pointer;
 }
@@ -230,7 +230,7 @@ onMounted(() => {
     border-radius: 12px;
     font-size: 14px;
     font-weight: 600;
-    color: #2D3748;
+    color: #1F4234;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     white-space: nowrap;
     transition: left 0.1s ease;
@@ -238,7 +238,7 @@ onMounted(() => {
 }
 
 .apply-btn {
-    background: linear-gradient(135deg, #E87A8B 0%, #B894D8 100%);
+    background-color: #315C47;
     color: white;
     border: none;
     padding: 14px 32px;

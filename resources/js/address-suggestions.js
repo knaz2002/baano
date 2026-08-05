@@ -68,10 +68,10 @@ export function initAddressSuggestions() {
                         item.style.cssText = `
                             padding: 12px 16px;
                             cursor: pointer;
-                            border-bottom: 1px solid #f0f0f0;
+                            border-bottom: 1px solid #F7F3EC;
                             transition: background 0.2s;
                         `;
-                        item.onmouseover = () => item.style.background = '#f8f9fa';
+                        item.onmouseover = () => item.style.background = '#F7F3EC';
                         item.onmouseout = () => item.style.background = 'white';
                         item.textContent = suggestion.value;
                         

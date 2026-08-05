@@ -1,14 +1,14 @@
 <template>
     <DashboardLayout>
-        <div class="min-h-screen pb-24 md:pb-8" style="background-color: #E8E6E1;">
+        <div class="min-h-screen pb-24 md:pb-8" style="background-color: #F7F3EC;">
             <!-- Шапка -->
             <div class="bg-white p-4 md:p-6 shadow-sm">
                 <div class="flex items-center justify-between">
-                    <h1 class="text-xl md:text-2xl font-bold" style="color: #1D1B20;">Мои объявления</h1>
+                    <h1 class="text-xl md:text-2xl font-bold" style="color: #1F4234;">Мои объявления</h1>
                     <Link 
                         href="/user/listings/create" 
-                        class="px-4 py-2 rounded-xl text-white font-medium text-sm transition-all hover:shadow-lg whitespace-nowrap"
-                        style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
+                        class="px-4 py-2 rounded-xl text-white font-medium text-sm transition-all hover:shadow-lg whitespace-nowrap confirm-action action-green"
+                        style="background-color: #315C47;"
                     >
                         Создать новое
                     </Link>
@@ -20,7 +20,7 @@
                 <div 
                     v-for="listing in listings" 
                     :key="listing.id"
-                    class="bg-white rounded-xl shadow-md overflow-hidden"
+                    class="my-listings-text bg-white rounded-xl shadow-md overflow-hidden"
                 >
                     <div class="flex">
 <!-- Миниатюра -->
@@ -39,12 +39,12 @@
     </div>
 </div>
                         <!-- Контент -->
-                        <div class="flex-1 p-3 md:p-4 flex flex-col justify-between">
+                        <div class="flex-1 p-3 md:p-4 flex flex-col justify-between price-accent">
                             <div>
-                                <h3 class="font-semibold text-sm md:text-base mb-1" style="color: #1D1B20; line-height: 1.3;">
+                                <h3 class="font-semibold text-sm md:text-base mb-1" style="color: #1F4234; line-height: 1.3;">
                                     {{ listing.title }}
                                 </h3>
-                                <div class="text-lg md:text-xl font-bold" style="color: #6750A4;">
+                                <div class="text-lg md:text-xl font-bold" style="color: #315C47;">
                                     {{ formatPrice(listing.price) }} ₽
                                 </div>
                             </div>
@@ -52,10 +52,10 @@
                             <div class="flex items-end justify-between gap-3 mt-2">
                                 <div class="min-w-0">
                                     <div class="flex items-center gap-1 mb-1">
-                                        <svg class="w-4 h-4 md:w-5 md:h-5" style="color: #F08080;" fill="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 md:w-5 md:h-5" style="color: #fe0000;" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                                         </svg>
-                                        <span class="text-xs md:text-sm font-medium" style="color: #49454F;">
+                                        <span class="text-xs md:text-sm font-medium" style="color: #68736B;">
                                             {{ listing.favorites_count || 0 }}
                                         </span>
                                     </div>
@@ -72,9 +72,9 @@
                                     <Link
                                         :href="`/user/listings/${listing.id}/edit`"
                                         title="Редактировать"
-                                        class="p-1.5 md:p-2 rounded-lg hover:bg-purple-50 transition-colors"
+                                        class="p-1.5 md:p-2 rounded-lg hover:bg-[#F1F6F2] transition-colors"
                                     >
-                                        <svg class="w-5 h-5 md:w-6 md:h-6" style="color: #6750A4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 md:w-6 md:h-6" style="color: #315C47;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                                         </svg>
                                     </Link>
@@ -82,14 +82,14 @@
                                     <button
                                         type="button"
                                         :title="publicationDesired(listing) ? 'Снять с публикации' : 'Опубликовать'"
-                                        class="p-1.5 md:p-2 rounded-lg hover:bg-purple-50 transition-colors disabled:opacity-50"
+                                        class="p-1.5 md:p-2 rounded-lg hover:bg-[#F1F6F2] transition-colors disabled:opacity-50"
                                         :disabled="changingPublicationId === listing.id"
                                         @click="togglePublication(listing)"
                                     >
                                         <svg
                                             v-if="publicationDesired(listing)"
                                             class="w-5 h-5 md:w-6 md:h-6"
-                                            style="color: #6750A4;"
+                                            style="color: #315C47;"
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
@@ -100,7 +100,7 @@
                                         <svg
                                             v-else
                                             class="w-5 h-5 md:w-6 md:h-6"
-                                            style="color: #6750A4;"
+                                            style="color: #315C47;"
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
@@ -128,15 +128,15 @@
                 </div>
 
                 <!-- Пустое состояние -->
-                <div v-if="listings.length === 0" class="bg-white rounded-xl shadow-md p-8 text-center">
+                <div v-if="listings.length === 0" class="my-listings-text bg-white rounded-xl shadow-md p-8 text-center">
                     <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                     </svg>
                     <p class="text-gray-500 font-medium">У вас пока нет объявлений</p>
                     <Link 
                         href="/user/listings/create" 
-                        class="inline-block mt-4 px-6 py-2 rounded-xl text-white font-medium text-sm transition-all hover:shadow-lg"
-                        style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);"
+                        class="inline-block mt-4 px-6 py-2 rounded-xl text-white font-medium text-sm transition-all hover:shadow-lg confirm-action action-green"
+                        style="background-color: #315C47;"
                     >
                         Создать первое объявление
                     </Link>
@@ -151,11 +151,11 @@
             @click.self="closeDeleteModal"
         >
             <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-5 md:p-6">
-                <h2 class="text-lg md:text-xl font-bold mb-3" style="color: #1D1B20;">
+                <h2 class="text-lg md:text-xl font-bold mb-3" style="color: #1F4234;">
                     Удалить объявление?
                 </h2>
 
-                <p class="text-sm leading-relaxed mb-3" style="color: #49454F;">
+                <p class="text-sm leading-relaxed mb-3" style="color: #68736B;">
                     Объявление «{{ listingToDelete.title }}» будет удалено без возможности восстановления.
                 </p>
 
@@ -166,8 +166,8 @@
                 <div class="flex justify-end gap-3">
                     <button
                         type="button"
-                        class="px-4 py-2 rounded-xl font-medium hover:bg-gray-100"
-                        style="color: #49454F;"
+                        class="px-4 py-2 rounded-xl font-medium hover:bg-gray-100 cancel-action action-red"
+                        style="color: #68736B;"
                         :disabled="deletingListing"
                         @click="closeDeleteModal"
                     >
@@ -254,8 +254,8 @@ const statusStyle = (listing) => {
     }
 
     return {
-        backgroundColor: '#F3EDF7',
-        color: '#49454F',
+        backgroundColor: '#F1F6F2',
+        color: '#68736B',
     };
 };
 

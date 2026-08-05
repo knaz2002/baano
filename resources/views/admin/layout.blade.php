@@ -7,10 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .btn-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #315C47;
         }
         .btn-gradient:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #653a8f 100%);
+            background-color: #315C47;
         }
     </style>
 </head>

@@ -1,7 +1,7 @@
 <template>
     <DashboardLayout active-tab="profile">
         <div class="bg-white rounded-xl shadow-sm p-6">
-            <h1 class="text-2xl font-bold mb-6" style="color: #2C3E50;">Редактировать профиль</h1>
+            <h1 class="text-2xl font-bold mb-6" style="color: #1F4234;">Редактировать профиль</h1>
             
             <form @submit.prevent="updateProfile" class="space-y-6">
                 <div>
@@ -10,7 +10,7 @@
                         v-model="form.name"
                         type="text" 
                         required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#315C47]"
                     >
                     <p v-if="form.errors.name" class="text-red-500 text-sm mt-1">{{ form.errors.name }}</p>
                 </div>
@@ -21,7 +21,7 @@
                         v-model="form.email"
                         type="email" 
                         required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#315C47]"
                     >
                     <p v-if="form.errors.email" class="text-red-500 text-sm mt-1">{{ form.errors.email }}</p>
                 </div>
@@ -31,7 +31,7 @@
                     <input 
                         v-model="form.phone"
                         type="tel" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#315C47]"
                     >
                     <p v-if="form.errors.phone" class="text-red-500 text-sm mt-1">{{ form.errors.phone }}</p>
                 </div>
@@ -39,12 +39,12 @@
                 <div class="pt-4 flex gap-3">
                     <button 
                         type="submit" 
-                        class="btn-gradient px-6 py-2 rounded-lg"
+                        class="btn-gradient px-6 py-2 rounded-lg confirm-action action-green"
                         :disabled="form.processing"
                     >
                         {{ form.processing ? 'Сохранение...' : 'Сохранить' }}
                     </button>
-                    <Link href="/dashboard" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    <Link href="/dashboard" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 cancel-action action-red">
                         Отмена
                     </Link>
                 </div>

@@ -44,7 +44,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $user->email }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $user->phone }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <span class="px-2 py-1 rounded-full text-xs {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800' }}">
+                        <span class="px-2 py-1 rounded-full text-xs {{ $user->role === 'admin' ? 'bg-[#DDE8DC] text-[#1F4234]' : 'bg-gray-100 text-gray-800' }}">
                             {{ $user->role ?? 'user' }}
                         </span>
                     </td>
@@ -56,7 +56,7 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                        <a href="{{ route('admin.users.edit', $user) }}" class="text-blue-600 hover:underline">Редактировать</a>
+                        <a href="{{ route('admin.users.edit', $user) }}" class="text-[#315C47] hover:underline">Редактировать</a>
                         <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Удалить пользователя?')">
                             @csrf
                             @method('DELETE')

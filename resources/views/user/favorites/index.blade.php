@@ -12,7 +12,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <a href="{{ route('listings.index') }}" class="text-2xl font-bold text-orange-600">
+                    <a href="{{ route('listings.index') }}" class="text-2xl font-bold text-[#fe0000]">
                         Baano
                     </a>
                 </div>
@@ -60,11 +60,11 @@
                                         </svg>
                                     @endif
                                 </div>
-                                <div class="p-4">
+                                <div class="p-4 price-accent">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $listing->title }}</h3>
                                     <p class="text-sm text-gray-600 mb-2">{{ $listing->category->name }}</p>
                                     <div class="flex justify-between items-center">
-                                        <span class="text-xl font-bold text-orange-600">
+                                        <span class="text-xl font-bold text-[#fe0000]">
                                             {{ number_format($listing->price, 0, ',', ' ') }} ₽
                                             @if($listing->price_type === 'daily')
                                                 <span class="text-sm text-gray-500">/сутки</span>
@@ -97,7 +97,7 @@
                 <h3 class="mt-2 text-sm font-medium text-gray-900">Нет избранных объявлений</h3>
                 <p class="mt-1 text-sm text-gray-500">Начните добавлять объявления в избранное, чтобы сохранить их здесь.</p>
                 <div class="mt-6">
-                    <a href="{{ route('listings.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700">
+                    <a href="{{ route('listings.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#fe0000] hover:bg-[#C9564E]">
                         Смотреть объявления
                     </a>
                 </div>

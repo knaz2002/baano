@@ -2,14 +2,14 @@
     <AppLayout>
         <div class="max-w-4xl mx-auto px-4 py-8">
             <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h1 class="text-2xl font-bold mb-6" style="color: #1D1B20;">Редактировать объявление</h1>
+                <h1 class="text-2xl font-bold mb-6" style="color: #1F4234;">Редактировать объявление</h1>
 
                 <form @submit.prevent="updateListing">
                     <div class="space-y-6">
                         <!-- Категория -->
                         <div>
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Категория</label>
-                            <select v-model="form.category_id" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" required>
+                            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Категория</label>
+                            <select v-model="form.category_id" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" required>
                                 <option value="">Выберите категорию</option>
                                 <template v-for="cat in categories" :key="cat.id">
                                     <option :value="cat.id" :disabled="cat.children && cat.children.length > 0">{{ cat.name }}</option>
@@ -25,25 +25,25 @@
 
                         <!-- Заголовок -->
                         <div>
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Заголовок</label>
-                            <input v-model="form.title" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" required>
+                            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Заголовок</label>
+                            <input v-model="form.title" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" required>
                         </div>
 
                         <!-- Описание -->
                         <div>
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Описание</label>
-                            <textarea v-model="form.description" rows="6" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" required></textarea>
+                            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Описание</label>
+                            <textarea v-model="form.description" rows="6" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" required></textarea>
                         </div>
 
                         <!-- Цена и тип цены -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium mb-2" style="color: #49454F;">Цена</label>
-                                <input v-model.number="form.price" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" required>
+                                <label class="block text-sm font-medium mb-2" style="color: #68736B;">Цена</label>
+                                <input v-model.number="form.price" type="number" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" required>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium mb-2" style="color: #49454F;">Тип цены</label>
-                                <select v-model="form.price_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;" required>
+                                <label class="block text-sm font-medium mb-2" style="color: #68736B;">Тип цены</label>
+                                <select v-model="form.price_type" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;" required>
                                     <option value="fixed">Фиксированная</option>
                                     <option value="hourly">За час</option>
                                     <option value="daily">За день</option>
@@ -56,7 +56,7 @@
                           <div>
                               <label
                                   class="block text-sm font-medium mb-2"
-                                  style="color: #49454F;"
+                                  style="color: #68736B;"
                               >
                                   Город
                               </label>
@@ -67,7 +67,7 @@
                                   maxlength="120"
                                   placeholder="Например, Москва"
                                   class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none"
-                                  style="border-color: #E7E0EC;"
+                                  style="border-color: #E8E3DA;"
                               >
                           </div>
 
@@ -75,8 +75,8 @@
 
                         <!-- Локация -->
                         <div>
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Локация</label>
-                            <input v-model="form.location" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Локация</label>
+                            <input v-model="form.location" type="text" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                         </div>
 
                           <!-- Характеристики категории -->
@@ -90,7 +90,7 @@
                           <div v-if="form.images.length > 0">
                               <label
                                   class="block text-sm font-medium mb-2"
-                                  style="color: #49454F;"
+                                  style="color: #68736B;"
                               >
                                   Текущие фотографии
                               </label>
@@ -122,7 +122,7 @@
 
                               <p
                                   class="text-sm mt-2"
-                                  style="color: #79747E;"
+                                  style="color: #7B817D;"
                               >
                                   В объявлении должна оставаться минимум одна фотография
                               </p>
@@ -138,16 +138,16 @@
 
                         <!-- Новые фотографии -->
                         <div>
-                            <label class="block text-sm font-medium mb-2" style="color: #49454F;">Новые фотографии</label>
-                            <input type="file" multiple accept="image/*" @change="handleImageUpload" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E7E0EC;">
+                            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Новые фотографии</label>
+                            <input type="file" multiple accept="image/*" @change="handleImageUpload" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none" style="border-color: #E8E3DA;">
                         </div>
 
                         <!-- Кнопки -->
                         <div class="flex gap-4">
-                            <button type="submit" class="flex-1 px-4 py-3 rounded-xl text-white font-medium transition-all hover:shadow-lg" style="background: linear-gradient(135deg, #F08080 0%, #9B7FCF 100%);">
+                            <button type="submit" class="flex-1 px-4 py-3 rounded-xl text-white font-medium transition-all hover:shadow-lg confirm-action action-green" style="background-color: #315C47;">
                                 Сохранить изменения
                             </button>
-                            <Link href="/user/listings" class="flex-1 px-4 py-3 rounded-xl font-medium border-2 transition-all hover:shadow-md text-center" style="border-color: #6750A4; color: #6750A4;">
+                            <Link href="/user/listings" class="flex-1 px-4 py-3 rounded-xl font-medium border-2 transition-all hover:shadow-md text-center cancel-action action-red" style="border-color: #315C47; color: #315C47;">
                                 Отмена
                             </Link>
                         </div>

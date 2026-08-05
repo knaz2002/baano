@@ -33,7 +33,7 @@ h6,
 
 /* Baano Design System - Glass-morphism */
 body {
-    background: linear-gradient(135deg, #E8E6E1 0%, #D5D3CE 100%) !important;
+    background-color: #fefefe !important;
     font-family: var(--font-text) !important;
     min-height: 100vh;
 }
@@ -82,7 +82,7 @@ header {
 
 /* Buttons */
 .btn-gradient {
-    background: linear-gradient(135deg, #E87A8B 0%, #C9A8D8 50%, #B894D8 100%) !important;
+    background-color: #315C47 !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
     color: white !important;
@@ -96,7 +96,7 @@ header {
 }
 
 .btn-gradient:hover {
-    background: linear-gradient(135deg, rgba(135, 153, 188, 0.95) 0%, rgba(162, 163, 189, 0.95) 100%) !important;
+    background-color: #315C47 !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 8px 24px rgba(135, 153, 188, 0.5) !important;
 }
@@ -140,3 +140,344 @@ input[type="text"]:focus {
     background: rgba(255, 255, 255, 0.6) !important;
     transform: scale(1.1) !important;
 }
+
+
+/* Семантические цвета интерфейса Baano */
+.coral-action {
+    background-color: #fe0000 !important;
+    background-image: none !important;
+    border-color: #fe0000 !important;
+    color: #FFFFFF !important;
+}
+
+.confirm-action,
+.btn-gradient {
+    background-color: #315C47 !important;
+    background-image: none !important;
+    border-color: #315C47 !important;
+    color: #FFFFFF !important;
+}
+
+.cancel-action {
+    background-color: transparent !important;
+    background-image: none !important;
+    border-color: #fe0000 !important;
+    color: #fe0000 !important;
+}
+
+.price-accent {
+    background: none !important;
+    background-image: none !important;
+    color: #fe0000 !important;
+    -webkit-text-fill-color: #fe0000 !important;
+}
+
+.vip-accent {
+    background-color: #fe0000 !important;
+    background-image: none !important;
+    border-color: #fe0000 !important;
+    color: #FFFFFF !important;
+}
+
+input[type="file"]::file-selector-button {
+    margin-right: 1rem;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background-color: #fe0000;
+    color: #FFFFFF;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    margin-right: 1rem;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background-color: #fe0000;
+    color: #FFFFFF;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.dashboard-menu-link {
+    color: var(--menu-accent) !important;
+    border-color: var(--menu-accent) !important;
+}
+
+.dashboard-menu-link svg,
+.dashboard-menu-link span {
+    color: inherit !important;
+}
+
+/* Начало семантических цветов Baano */
+.action-red {
+    background-color: #fe0000 !important;
+    background-image: none !important;
+    border-color: #fe0000 !important;
+    color: #ffffff !important;
+}
+
+.action-green,
+.btn-gradient {
+    background-color: #315C47 !important;
+    background-image: none !important;
+    border-color: #315C47 !important;
+    color: #ffffff !important;
+}
+
+.price-red,
+.vip-red {
+    background: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    color: #fe0000 !important;
+    -webkit-text-fill-color: #fe0000 !important;
+}
+
+.vip-red {
+    background-color: #fe0000 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+input[type="file"]::file-selector-button {
+    margin-right: 1rem;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background-color: #fe0000;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    margin-right: 1rem;
+    padding: 0.65rem 1rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background-color: #fe0000;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.dashboard-menu > *:nth-child(odd),
+.dashboard-menu > *:nth-child(odd) * {
+    color: #fe0000 !important;
+}
+
+.dashboard-menu > *:nth-child(even),
+.dashboard-menu > *:nth-child(even) * {
+    color: #315C47 !important;
+}
+
+.listing-tabs > button:nth-child(odd) {
+    color: #fe0000 !important;
+}
+
+.listing-tabs > button:nth-child(even) {
+    color: #315C47 !important;
+}
+
+.listing-tabs > button:nth-child(odd):not(.border-transparent) {
+    border-color: #fe0000 !important;
+}
+
+.listing-tabs > button:nth-child(even):not(.border-transparent) {
+    border-color: #315C47 !important;
+}
+/* Конец семантических цветов Baano */
+
+
+
+/* Начало цветов карточек объявлений */
+.listing-card {
+    color: #000000 !important;
+}
+
+.listing-card p,
+.listing-card span {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+.listing-card .listing-card-title {
+    color: #315C47 !important;
+    -webkit-text-fill-color: #315C47 !important;
+}
+
+.listing-card .price-red {
+    background: none !important;
+    background-color: transparent !important;
+    color: #fe0000 !important;
+    -webkit-text-fill-color: #fe0000 !important;
+}
+/* Конец цветов карточек объявлений */
+
+
+/* Начало точечных цветов текста */
+/* В карточке объявления весь дополнительный текст чёрный. */
+.listing-detail-card :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    span,
+    a,
+    button,
+    label
+),
+.listing-detail-tabs :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    span,
+    a,
+    button,
+    label
+) {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+/* Заголовок объявления сохраняет текущий цвет. */
+.listing-detail-card .listing-detail-title {
+    color: #1F4234 !important;
+    -webkit-text-fill-color: #1F4234 !important;
+}
+
+/* Цена объявления сохраняет текущий цвет. */
+.listing-detail-card .listing-detail-price {
+    color: #fe0000 !important;
+    -webkit-text-fill-color: #fe0000 !important;
+}
+
+.listing-detail-card .listing-detail-price-unit {
+    color: #68736B !important;
+    -webkit-text-fill-color: #68736B !important;
+}
+
+/* Кнопку сообщения не перекрашиваем. */
+.listing-detail-card .listing-message-button {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Пункты меню личного кабинета полностью чёрные. */
+.dashboard-menu .dashboard-menu-link,
+.dashboard-menu .dashboard-menu-link * {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+/* Все надписи непосредственно в списках объявлений чёрные. */
+.my-listings-text,
+.my-listings-text :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    span,
+    td,
+    th,
+    a,
+    button
+) {
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+}
+
+/* Основные зелёные кнопки сохраняют белые надписи. */
+.my-listings-text .action-green,
+.my-listings-text .confirm-action {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+/* Конец точечных цветов текста */
+
+/* Единый размер логотипа в шапке и личном кабинете */
+.site-logo {
+    width: 130px !important;
+    height: auto !important;
+    max-width: none !important;
+    object-fit: contain;
+}
+
+@media (min-width: 768px) {
+    .site-logo {
+        width: 210px !important;
+    }
+}
+
+/* Единый размер кнопок проекта */
+:where(
+    .coral-action,
+    .confirm-action,
+    .cancel-action,
+    .action-red,
+    .action-green,
+    .btn-gradient,
+    .listing-message-button
+) {
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    font-weight: 500 !important;
+    white-space: nowrap;
+}
+
+/* Кнопка выбора файлов */
+input[type="file"]::file-selector-button,
+input[type="file"]::-webkit-file-upload-button {
+    box-sizing: border-box !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    font-weight: 500 !important;
+    background-color: #315C47 !important;
+    color: #ffffff !important;
+    border: 0 !important;
+    border-radius: 0.75rem !important;
+    cursor: pointer;
+}
+
+@media (min-width: 768px) {
+    :where(
+        .coral-action,
+        .confirm-action,
+        .cancel-action,
+        .action-red,
+        .action-green,
+        .btn-gradient,
+        .listing-message-button
+    ) {
+        height: 40px !important;
+        min-height: 40px !important;
+        padding: 0 16px !important;
+        font-size: 16px !important;
+    }
+
+    input[type="file"]::file-selector-button,
+    input[type="file"]::-webkit-file-upload-button {
+        height: 40px !important;
+        min-height: 40px !important;
+        padding: 0 16px !important;
+        font-size: 16px !important;
+    }
+}
+/* Конец единого размера кнопок проекта */

@@ -7,17 +7,17 @@
                     
                     <!-- Статистика -->
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div class="p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                            <p class="text-sm text-blue-600">Пользователей</p>
-                            <p class="text-3xl font-bold text-blue-900">{{ $stats['users'] }}</p>
+                        <div class="p-6 bg-[#F1F6F2] border border-[#DDE8DC] rounded-lg">
+                            <p class="text-sm text-[#315C47]">Пользователей</p>
+                            <p class="text-3xl font-bold text-[#1F4234]">{{ $stats['users'] }}</p>
                         </div>
                         <div class="p-6 bg-green-50 border border-green-200 rounded-lg">
                             <p class="text-sm text-green-600">Объявлений</p>
                             <p class="text-3xl font-bold text-green-900">{{ $stats['listings'] }}</p>
                         </div>
-                        <div class="p-6 bg-purple-50 border border-purple-200 rounded-lg">
-                            <p class="text-sm text-purple-600">Категорий</p>
-                            <p class="text-3xl font-bold text-purple-900">{{ $stats['categories'] }}</p>
+                        <div class="p-6 bg-[#F1F6F2] border border-[#DDE8DC] rounded-lg">
+                            <p class="text-sm text-[#315C47]">Категорий</p>
+                            <p class="text-3xl font-bold text-[#1F4234]">{{ $stats['categories'] }}</p>
                         </div>
                         <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
                             <p class="text-sm text-yellow-600">На модерации</p>

@@ -5,10 +5,10 @@
                 <div class="p-6 text-gray-900">
                     <div class="flex justify-between items-center mb-6">
                         <h1 class="text-2xl font-bold">📋 Модерация объявлений</h1>
-                        <a href="{{ route('admin.dashboard') }}" class="text-blue-600 hover:underline">← Назад в админку</a>
+                        <a href="{{ route('admin.dashboard') }}" class="text-[#315C47] hover:underline">← Назад в админку</a>
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto price-accent">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -32,7 +32,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ $listing->user ? $listing->user->name : '—' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 price-red">
                                         {{ number_format($listing->price, 0, ',', ' ') }} ₽
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
