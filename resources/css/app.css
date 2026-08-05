@@ -410,6 +410,12 @@ input[type="file"]::-webkit-file-upload-button {
     object-fit: contain;
 }
 
+@media (min-width: 340px) and (max-width: 767px) {
+    .site-logo {
+        width: 90px !important;
+    }
+}
+
 @media (min-width: 768px) {
     .site-logo {
         width: 210px !important;

@@ -4,7 +4,7 @@
             <!-- Главный экран портала -->
             <section class="py-5 md:py-8 mb-8 md:mb-10">
                 <div class="grid lg:grid-cols-[0.72fr_1.28fr] gap-8 lg:gap-10 items-center">
-                    <div class="relative z-10">
+                    <div class="relative z-10 order-3 lg:order-1">
                         <h1
                             class="text-[34px] sm:text-[42px] lg:text-[48px] font-extrabold leading-[1.03] tracking-tight mb-5"
                             style="color: #1F4234;"
@@ -23,10 +23,11 @@
                             Найдите проверенных специалистов и качественные
                             предложения для вашего комфорта.
                         </p>
+
                     </div>
 
 <!-- Фотографический коллаж -->
-<div class="flex items-center justify-center lg:justify-end">
+<div class="flex items-center justify-center order-1 lg:order-2 lg:justify-end">
     <div class="relative w-full max-w-[760px] h-[175px] sm:h-[205px] lg:h-[225px] overflow-hidden rounded-[34px]">
         <img
             src="/images/home/hero-collage-baano.png"
@@ -42,11 +43,40 @@
         >
     </div>
 </div>
+
+                        <!-- Компактные категории для мобильной версии -->
+                        <div id="mobile-categories" class="order-2 grid grid-cols-5 gap-2 scroll-mt-28 md:hidden">
+                            <Link
+                                v-for="cat in orderedParentCategories"
+                                :key="`mobile-${cat.id}`"
+                                :href="`/listings?category=${cat.id}`"
+                                class="flex min-w-0 flex-col items-center gap-1.5 text-center"
+                            >
+                                <span
+                                    class="flex h-12 w-12 items-center justify-center rounded-2xl border bg-white shadow-md"
+                                    style="border-color: #E8E3DA;"
+                                >
+                                    <img
+                                        :src="`/images/categories/category-${cat.icon}.svg`"
+                                        :alt="shortCategoryNames[cat.icon] || cat.name"
+                                        class="h-8 w-8 object-contain"
+                                    >
+                                </span>
+
+                                <span
+                                    class="w-full truncate text-[10px] font-medium leading-tight"
+                                    style="color: #315C47;"
+                                >
+                                    {{ shortCategoryNames[cat.icon] || cat.name }}
+                                </span>
+                            </Link>
+                        </div>
+
                 </div>
             </section>
 
             <!-- Категории -->
-            <section id="categories" class="scroll-mt-28 mb-10 md:mb-14">
+            <section id="desktop-categories" class="hidden scroll-mt-28 mb-10 md:mb-14 md:block">
                 <div class="flex items-center justify-end gap-4 mb-5">
                     <Link
                         href="/listings"
@@ -224,6 +254,15 @@ const props = defineProps({
 });
 
 const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price || 0);
+
+// Короткие названия категорий для мобильной версии.
+const shortCategoryNames = {
+    residential: 'Жильё',
+    equipment: 'Техника',
+    commercial: 'Коммерция',
+    services: 'Услуги',
+    transport: 'Транспорт',
+};
 
 // Порядок категорий на главной странице.
 const orderedParentCategories = computed(() => {
