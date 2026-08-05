@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
@@ -17,13 +18,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
+
+        // Nuxt SPA: session cookies на /api/* (Sanctum stateful)
+        $middleware->statefulApi();
         
         $middleware->alias([
             'phone.verified' => \App\Http\Middleware\EnsurePhoneVerified::class,
             'email.verified' => \App\Http\Middleware\EnsureEmailVerified::class,
         ]);
-        
-        $middleware->append(\App\Http\Middleware\CorsHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
