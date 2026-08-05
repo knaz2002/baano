@@ -4,7 +4,13 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@pinia/nuxt',
+    '@nuxtjs/tailwindcss',
   ],
+  css: ['~/assets/css/main.css'],
+  tailwindcss: {
+    cssPath: '~/assets/css/main.css',
+    configPath: 'tailwind.config.ts',
+  },
   // Dev: один host с Laravel (вариант A) — не смешивать с localhost
   devServer: {
     host: '127.0.0.1',
