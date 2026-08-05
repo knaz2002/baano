@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\ModerationStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Review extends Model
 {
@@ -14,11 +16,16 @@ class Review extends Model
         'rating',
         'comment',
         'is_active',
+        'moderation_status',
+        'moderation_reason',
+        'moderated_at',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'rating' => 'integer',
+        'moderated_at' => 'datetime',
+        'moderation_status' => ModerationStatus::class,
     ];
 
     public function listing(): BelongsTo
@@ -34,5 +41,10 @@ class Review extends Model
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);
+    }
+
+    public function moderationChecks(): MorphMany
+    {
+        return $this->morphMany(ModerationCheck::class, 'moderatable');
     }
 }

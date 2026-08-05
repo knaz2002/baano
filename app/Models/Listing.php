@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ModerationStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -27,6 +28,9 @@ class Listing extends Model implements HasMedia
         'status',
         'is_active',
         'requested_is_active',
+        'moderation_status',
+        'moderation_reason',
+        'moderated_at',
     ];
 
     protected $casts = [
@@ -34,6 +38,8 @@ class Listing extends Model implements HasMedia
         'is_active' => 'boolean',
         'requested_is_active' => 'boolean',
         'listing_attributes' => 'array',
+        'moderated_at' => 'datetime',
+        'moderation_status' => ModerationStatus::class,
     ];
 
     protected $appends = ['image'];
@@ -56,6 +62,11 @@ class Listing extends Model implements HasMedia
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function moderationChecks(): MorphMany
+    {
+        return $this->morphMany(ModerationCheck::class, 'moderatable');
     }
 
     public function favorites()

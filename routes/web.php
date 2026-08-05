@@ -290,6 +290,9 @@ Route::middleware(['auth'])->group(function () {
                 'city' => $validated['city'] ?? null,
                 'listing_attributes' => $request->filled('attributes') ? json_decode($request->input('attributes'), true) : null, // <-- ДОБАВЛЕНО
                 'status' => 'pending',
+                'moderation_status' => \App\Enums\ModerationStatus::PendingModeration,
+                'moderation_reason' => null,
+                'moderated_at' => null,
                 'is_active' => false,
                 'requested_is_active' => true,
             ]);
@@ -398,6 +401,9 @@ Route::middleware(['auth'])->group(function () {
                 'city' => $validated['city'] ?? null,
                 'listing_attributes' => $request->filled('attributes') ? json_decode($request->input('attributes'), true) : null, // <-- ДОБАВЛЕНО
                 'status' => 'pending',
+                'moderation_status' => \App\Enums\ModerationStatus::PendingModeration,
+                'moderation_reason' => null,
+                'moderated_at' => null,
                 'is_active' => false,
                 'requested_is_active' => $requestedIsActive,
             ]);
@@ -429,6 +435,9 @@ Route::middleware(['auth'])->group(function () {
 
             $listing->update([
                 'status' => 'pending',
+                'moderation_status' => \App\Enums\ModerationStatus::PendingModeration,
+                'moderation_reason' => null,
+                'moderated_at' => null,
                 'is_active' => false,
                 'requested_is_active' => $publish,
             ]);

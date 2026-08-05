@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Jobs\ModerateReview;
 use App\Http\Controllers\Controller;
 use App\Models\Listing;
 use App\Models\Review;
@@ -26,13 +27,18 @@ class ReviewController extends Controller
             return back()->with('error', 'Вы уже оставили комментарий к этому объявлению');
         }
 
-        Review::create([
+        $review = Review::create([
             'listing_id' => $listing->id,
             'user_id' => Auth::id(),
             'rating' => $request->rating,
             'comment' => $request->comment,
+            'moderation_status' => \App\Enums\ModerationStatus::PendingModeration,
+            'moderation_reason' => null,
+            'moderated_at' => null,
             'is_active' => false, // На модерации
         ]);
+
+        ModerateReview::dispatch($review->id);
 
         return back()->with('success', 'Комментарий отправлен на модерацию');
     }
@@ -51,8 +57,13 @@ class ReviewController extends Controller
         $review->update([
             'rating' => $request->rating,
             'comment' => $request->comment,
+            'moderation_status' => \App\Enums\ModerationStatus::PendingModeration,
+            'moderation_reason' => null,
+            'moderated_at' => null,
             'is_active' => false, // Снова на модерацию
         ]);
+
+        ModerateReview::dispatch($review->id);
 
         return back()->with('success', 'Комментарий обновлен и отправлен на модерацию');
     }

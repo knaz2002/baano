@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\ModerationStatus;
 use App\Notifications\VerifyEmail;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -29,6 +31,10 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'subscription_expires_at',
         'subscription_listings_limit',
         'subscription_listings_used',
+        'moderation_status',
+        'pending_name',
+        'moderation_reason',
+        'moderated_at',
     ];
 
     protected $hidden = [
@@ -49,6 +55,11 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return $this->hasMany(Message::class, 'sender_id');
     }
 
+    public function moderationChecks(): MorphMany
+    {
+        return $this->morphMany(ModerationCheck::class, 'moderatable');
+    }
+
     protected function casts(): array
     {
         return [
@@ -59,6 +70,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
             'is_subscribed' => 'boolean',
             'subscription_expires_at' => 'datetime',
             'password' => 'hashed',
+            'moderated_at' => 'datetime',
+            'moderation_status' => ModerationStatus::class,
         ];
     }
 
