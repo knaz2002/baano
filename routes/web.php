@@ -146,28 +146,49 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/register', function (Request $request) {
         try {
-            $phone = preg_replace('/\D/', '', $request->phone);
+            $validated = $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'phone' => [
+                    'required',
+                    'string',
+                    'regex:/^\\+7 \\(\\d{3}\\) \\d{3}-\\d{2}-\\d{2}$/',
+                ],
+                'email' => ['required', 'string', 'email', 'max:255'],
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'confirmed',
+                ],
+                'password_confirmation' => [
+                    'required',
+                    'string',
+                ],
+            ], [
+                'phone.regex' => 'Введите телефон полностью.',
+                'password.confirmed' => 'Пароли не совпадают.',
+            ]);
+
+            $phone = preg_replace('/\\D/', '', $validated['phone']);
             $formattedPhone = '+' . $phone;
 
             if (User::where('phone', $formattedPhone)->exists()) {
-                return back()->withErrors(['phone' => 'Этот телефон уже зарегистрирован']);
-            }
-            if (User::where('email', $request->email)->exists()) {
-                return back()->withErrors(['email' => 'Этот email уже зарегистрирован']);
-            }
-            if ($request->password !== $request->password_confirmation) {
-                return back()->withErrors(['password' => 'Пароли не совпадают']);
+                return back()->withErrors([
+                    'phone' => 'Этот телефон уже зарегистрирован',
+                ]);
             }
 
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255',
-                'password' => 'required|string|min:8',
-            ]);
+            if (User::where('email', $validated['email'])->exists()) {
+                return back()->withErrors([
+                    'email' => 'Этот email уже зарегистрирован',
+                ]);
+            }
 
             $user = User::create([
-                'name' => $validated['name'], 'phone' => $formattedPhone,
-                'email' => $validated['email'], 'password' => bcrypt($validated['password']),
+                'name' => $validated['name'],
+                'phone' => $formattedPhone,
+                'email' => $validated['email'],
+                'password' => bcrypt($validated['password']),
             ]);
 
             Auth::login($user);
