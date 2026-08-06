@@ -50,6 +50,19 @@ class ModerationResultAggregatorTest extends TestCase
         );
     }
 
+    public function test_rejected_has_priority_over_manual_review(): void
+    {
+        $result = app(ModerationResultAggregator::class)->aggregate([
+            ModerationResult::rejected(['direct_threat']),
+            ModerationResult::manualReview(['violence']),
+        ]);
+
+        $this->assertSame(
+            ModerationStatus::Rejected,
+            $result->status
+        );
+    }
+
     public function test_conflicting_results_require_manual_review(): void
     {
         $result = app(ModerationResultAggregator::class)->aggregate([

@@ -77,21 +77,21 @@ class ModerationResultAggregator
             );
         }
 
-        if ($hasManualReview) {
-            return ModerationResult::manualReview(
-                categories: $categories,
-                scores: $scores,
-                reason: $this->combineReasons($reasons)
-                    ?? 'Требуется ручная проверка.',
-            );
-        }
-
         if ($hasRejected) {
             return ModerationResult::rejected(
                 categories: $categories,
                 scores: $scores,
                 reason: $this->combineReasons($reasons)
                     ?? 'Обнаружено явное нарушение.',
+            );
+        }
+
+        if ($hasManualReview) {
+            return ModerationResult::manualReview(
+                categories: $categories,
+                scores: $scores,
+                reason: $this->combineReasons($reasons)
+                    ?? 'Требуется ручная проверка.',
             );
         }
 
