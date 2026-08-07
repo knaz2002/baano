@@ -63,6 +63,15 @@ export const useAuthStore = defineStore('auth', {
       await apiFetch('/api/logout', { method: 'POST' })
       this.user = null
     },
+    async updateProfile(payload: { name: string; email: string; phone: string | null }) {
+      const { apiFetch } = useApi()
+      const res = await apiFetch<UserResponse>('/api/profile', {
+        method: 'PUT',
+        body: payload,
+      })
+      this.user = res.data
+      return res.data
+    },
     async resendVerification() {
       const { apiFetch } = useApi()
       return apiFetch<{ ok: boolean; message: string }>('/api/email/verification-notification', {

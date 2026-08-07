@@ -3,6 +3,7 @@ import type { HomeCategory, HomeListingCard, HomePayload } from '~/types/home'
 
 const { apiFetch } = useApi()
 const auth = useAuthStore()
+const { toggleFavorite: toggleFavoriteApi } = useFavorites()
 
 const parentCategories = ref<HomeCategory[]>([])
 const gridListings = ref<HomeListingCard[]>([])
@@ -47,22 +48,25 @@ async function loadHome() {
 }
 
 async function toggleFavorite(listingId: number) {
-  if (!auth.isAuthenticated) {
-    await navigateTo('/login')
-    return
-  }
-  if (!auth.isEmailVerified) {
-    await navigateTo('/verify-email')
-    return
-  }
-
   const listing = gridListings.value.find(item => item.id === listingId)
   if (!listing) {
     return
   }
 
-  // API избранного подключим следующим шагом — пока только UI-заглушка
-  listing.is_favorited = !listing.is_favorited
+  const previous = !!listing.is_favorited
+  listing.is_favorited = !previous
+
+  try {
+    const next = await toggleFavoriteApi(listingId)
+    if (next === null) {
+      listing.is_favorited = previous
+      return
+    }
+    listing.is_favorited = next
+  } catch (e) {
+    listing.is_favorited = previous
+    console.error(e)
+  }
 }
 
 onMounted(() => {
