@@ -27,6 +27,9 @@ class Listing extends Model implements HasMedia
         'listing_attributes',
         'status',
         'is_active',
+        'is_premium',
+        'premium_days',
+        'premium_until',
         'requested_is_active',
         'moderation_status',
         'moderation_reason',
@@ -36,6 +39,9 @@ class Listing extends Model implements HasMedia
     protected $casts = [
         'price' => 'decimal:2',
         'is_active' => 'boolean',
+        'is_premium' => 'boolean',
+        'premium_days' => 'integer',
+        'premium_until' => 'datetime',
         'requested_is_active' => 'boolean',
         'listing_attributes' => 'array',
         'moderated_at' => 'datetime',
@@ -43,6 +49,28 @@ class Listing extends Model implements HasMedia
     ];
 
     protected $appends = ['image'];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Listing $listing): void {
+            if (! $listing->is_premium) {
+                $listing->premium_until = null;
+
+                return;
+            }
+
+            if (
+                $listing->premium_days !== null
+                && (
+                    $listing->isDirty('is_premium')
+                    || $listing->isDirty('premium_days')
+                    || $listing->premium_until === null
+                )
+            ) {
+                $listing->premium_until = now()->addDays($listing->premium_days);
+            }
+        });
+    }
 
     public function user(): BelongsTo
     {
