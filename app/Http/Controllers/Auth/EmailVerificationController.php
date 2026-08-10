@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -14,17 +15,13 @@ class EmailVerificationController extends Controller
         return Inertia::render('Auth/VerifyEmail');
     }
 
-    public function verify(Request $request)
+    public function verify(EmailVerificationRequest $request)
     {
-        $user = Auth::user();
-
-        if ($user->hasVerifiedEmail()) {
+        if ($request->user()->hasVerifiedEmail()) {
             return redirect('/');
         }
 
-        if ($request->user()->markEmailAsVerified()) {
-            event(new \Illuminate\Auth\Events\Verified($request->user()));
-        }
+        $request->fulfill();
 
         return redirect('/')->with('success', 'Email подтвержден');
     }

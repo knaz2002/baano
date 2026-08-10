@@ -2,8 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Enums\ModerationStatus;
+use App\Jobs\ModerateProfile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -16,84 +19,73 @@ class ProfileTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->get('/profile');
+            ->get('/profile/edit');
 
         $response->assertOk();
     }
 
-    public function test_profile_information_can_be_updated(): void
+    public function test_changed_name_is_sent_to_moderation(): void
     {
-        $user = User::factory()->create();
+        Queue::fake();
+
+        $user = User::factory()->create([
+            'name' => 'Иван Иванов',
+        ]);
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
+            ->from('/profile/edit')
+            ->put('/profile', [
+                'name' => 'Пётр Петров',
                 'email' => 'test@example.com',
+                'phone' => '+79991234567',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect('/profile/edit');
 
         $user->refresh();
 
-        $this->assertSame('Test User', $user->name);
+        $this->assertSame('Иван Иванов', $user->name);
+        $this->assertSame('Пётр Петров', $user->pending_name);
         $this->assertSame('test@example.com', $user->email);
-        $this->assertNull($user->email_verified_at);
+        $this->assertSame('+79991234567', $user->phone);
+        $this->assertSame(
+            ModerationStatus::PendingModeration,
+            $user->moderation_status
+        );
+
+        Queue::assertPushed(
+            ModerateProfile::class,
+            fn (ModerateProfile $job) => $job->userId === $user->id
+        );
     }
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
+    public function test_unchanged_name_does_not_start_moderation(): void
     {
+        Queue::fake();
+
         $user = User::factory()->create();
 
         $response = $this
             ->actingAs($user)
-            ->patch('/profile', [
-                'name' => 'Test User',
+            ->from('/profile/edit')
+            ->put('/profile', [
+                'name' => $user->name,
                 'email' => $user->email,
+                'phone' => '+79991234567',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect('/profile/edit');
 
-        $this->assertNotNull($user->refresh()->email_verified_at);
-    }
+        $user->refresh();
 
-    public function test_user_can_delete_their_account(): void
-    {
-        $user = User::factory()->create();
+        $this->assertNull($user->pending_name);
+        $this->assertNotNull($user->email_verified_at);
 
-        $response = $this
-            ->actingAs($user)
-            ->delete('/profile', [
-                'password' => 'password',
-            ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect('/');
-
-        $this->assertGuest();
-        $this->assertNull($user->fresh());
-    }
-
-    public function test_correct_password_must_be_provided_to_delete_account(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this
-            ->actingAs($user)
-            ->from('/profile')
-            ->delete('/profile', [
-                'password' => 'wrong-password',
-            ]);
-
-        $response
-            ->assertSessionHasErrorsIn('userDeletion', 'password')
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->fresh());
+        Queue::assertNotPushed(ModerateProfile::class);
     }
 }
