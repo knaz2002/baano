@@ -21,8 +21,69 @@ class ListingsTable
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('moderation_status')
+                    ->label('Модерация')
+                    ->badge()
+                    ->formatStateUsing(
+                        fn (?ModerationStatus $state): string =>
+                            $state?->label() ?? 'Не задан'
+                    )
+                    ->color(
+                        fn (?ModerationStatus $state): string =>
+                            match ($state) {
+                                ModerationStatus::Draft => 'gray',
+                                ModerationStatus::PendingModeration => 'warning',
+                                ModerationStatus::Approved => 'success',
+                                ModerationStatus::ManualReview => 'info',
+                                ModerationStatus::Rejected => 'danger',
+                                default => 'gray',
+                            }
+                    ),
+
+                TextColumn::make('status')
+                    ->label('Публикация')
+                    ->badge()
+                    ->formatStateUsing(
+                        fn (string $state): string => match ($state) {
+                            'draft' => 'Черновик',
+                            'pending' => 'Ожидает решения',
+                            'active' => 'Активно',
+                            'inactive' => 'Неактивно',
+                            'sold' => 'Завершено',
+                            default => $state,
+                        }
+                    )
+                    ->color(
+                        fn (string $state): string => match ($state) {
+                            'draft' => 'gray',
+                            'pending' => 'warning',
+                            'active' => 'success',
+                            'inactive' => 'gray',
+                            'sold' => 'info',
+                            default => 'gray',
+                        }
+                    ),
+
+                IconColumn::make('is_active')
+                    ->label('Опубликовано')
+                    ->boolean(),
+
+                TextColumn::make('moderation_reason')
+                    ->label('Причина')
+                    ->limit(40)
+                    ->placeholder('—')
+                    ->tooltip(
+                        fn (Listing $record): ?string =>
+                            $record->moderation_reason
+                    ),
+
                 TextColumn::make('title')
-                    ->label('Заголовок')
+                    ->label('Наименование')
                     ->searchable()
                     ->limit(30),
 
@@ -37,53 +98,6 @@ class ListingsTable
                     ->label('Цена')
                     ->money('RUB')
                     ->sortable(),
-
-                TextColumn::make('moderation_status')
-                    ->label('Модерация')
-                    ->badge()
-                    ->formatStateUsing(
-                        fn (?ModerationStatus $state): string =>
-                            $state?->label() ?? 'Не задан'
-                    )
-                    ->color(
-                        fn (?ModerationStatus $state): string =>
-                            match ($state) {
-                                ModerationStatus::Draft => 'gray',
-                                ModerationStatus::PendingModeration =>
-                                    'warning',
-                                ModerationStatus::Approved => 'success',
-                                ModerationStatus::ManualReview => 'info',
-                                ModerationStatus::Rejected => 'danger',
-                                default => 'gray',
-                            }
-                    ),
-
-                TextColumn::make('status')
-                    ->label('Публикация')
-                    ->badge()
-                    ->color(
-                        fn (string $state): string => match ($state) {
-                            'draft' => 'gray',
-                            'pending' => 'warning',
-                            'active' => 'success',
-                            'inactive' => 'gray',
-                            'sold' => 'info',
-                            default => 'gray',
-                        }
-                    ),
-
-                TextColumn::make('moderation_reason')
-                    ->label('Причина')
-                    ->limit(40)
-                    ->placeholder('—')
-                    ->tooltip(
-                        fn (Listing $record): ?string =>
-                            $record->moderation_reason
-                    ),
-
-                IconColumn::make('is_active')
-                    ->label('Опубликовано')
-                    ->boolean(),
             ])
             ->filters([
                 SelectFilter::make('moderation_status')

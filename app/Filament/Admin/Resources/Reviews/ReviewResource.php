@@ -20,6 +20,10 @@ class ReviewResource extends Resource
 {
     protected static ?string $model = Review::class;
 
+    protected static ?string $modelLabel = 'Отзыв';
+
+    protected static ?string $pluralModelLabel = 'Отзывы';
+
     public static function getNavigationIcon(): string
     {
         return 'heroicon-o-chat-bubble-left-right';

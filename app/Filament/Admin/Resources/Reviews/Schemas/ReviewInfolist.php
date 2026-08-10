@@ -13,11 +13,11 @@ class ReviewInfolist
         return $schema
             ->components([
                 TextEntry::make('listing.title')
-                    ->label('Listing'),
+                    ->label('Объявление'),
                 TextEntry::make('user.name')
-                    ->label('User'),
+                    ->label('Пользователь'),
                 TextEntry::make('booking.id')
-                    ->label('Booking')
+                    ->label('Бронирование')
                     ->placeholder('-'),
                 TextEntry::make('rating')
                     ->numeric(),
