@@ -164,10 +164,16 @@ Route::middleware('guest')->group(function () {
                     'required',
                     'string',
                 ],
-            ], [
+                'personal_data_consent' => [
+                'required',
+                'accepted',
+            ],
+        ], [
                 'phone.regex' => 'Введите телефон полностью.',
                 'password.confirmed' => 'Пароли не совпадают.',
-            ]);
+                'personal_data_consent.required' => 'Необходимо согласие на обработку персональных данных.',
+            'personal_data_consent.accepted' => 'Необходимо согласие на обработку персональных данных.',
+        ]);
 
             $phone = preg_replace('/\\D/', '', $validated['phone']);
             $formattedPhone = '+' . $phone;

@@ -26,6 +26,7 @@ class RegistrationTest extends TestCase
             'email',
             'password',
             'password_confirmation',
+            'personal_data_consent',
         ]);
 
         $this->assertGuest();
@@ -39,6 +40,7 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'personal_data_consent' => true,
         ]);
 
         $this->assertAuthenticated();
