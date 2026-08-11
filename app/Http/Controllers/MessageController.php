@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversation;
+use App\Models\Listing;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -125,25 +126,42 @@ public function messageUser(Request $request, User $user)
         return back()->with('error', 'Нельзя написать себе');
     }
 
-    // Создаем или получаем диалог
-    $conversation = Conversation::getOrCreate($userId, $user->id);
+    $validated = $request->validate([
+        'listing_id' => ['required', 'integer', 'exists:listings,id'],
+        'body' => ['nullable', 'string', 'max:1000'],
+    ]);
 
-    // Если есть текст сообщения — создаем его
-    if ($request->filled('body')) {
-        $validated = $request->validate([
-            'body' => 'required|string|max:1000',
-        ]);
+    $listing = Listing::query()
+        ->whereKey($validated['listing_id'])
+        ->where('user_id', $user->id)
+        ->firstOrFail();
 
-        Message::create([
+    // Создаём или получаем диалог по конкретному объявлению
+    $conversation = Conversation::getOrCreate(
+        $listing->id,
+        $userId,
+        $user->id
+    );
+
+    // При наличии текста сразу создаём первое сообщение
+    if (!empty($validated['body'])) {
+        $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $userId,
             'body' => $validated['body'],
             'is_read' => false,
         ]);
+
+        $conversation->update([
+            'last_message_id' => $message->id,
+            'last_message_at' => now(),
+        ]);
     }
 
-    // Перенаправляем на страницу сообщений с этим диалогом
-    return redirect()->route('messages.show', ['conversation' => $conversation->id]);
+    return redirect()->route('dashboard.messages.show', [
+        'conversation' => $conversation->id,
+    ]);
 }
 
 }
+
