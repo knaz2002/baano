@@ -105,7 +105,21 @@
                                     <div class="max-w-[80%] md:max-w-md px-4 py-2 rounded-2xl"
                                         :class="msg.is_mine ? 'text-white rounded-br-sm' : 'bg-white text-gray-900 rounded-bl-sm shadow-sm'"
                                         :style="msg.is_mine ? 'background-color: #315C47;' : ''">
-                                        <p class="text-sm whitespace-pre-wrap break-words">{{ msg.body }}</p>
+                                        <p class="text-sm whitespace-pre-wrap break-words">
+                                            <template
+                                                v-for="(part, index) in splitMessageBody(msg.body)"
+                                                :key="`${msg.id}-${index}`"
+                                            >
+                                                <a
+                                                    v-if="part.isUrl"
+                                                    :href="part.text"
+                                                    class="underline break-all font-medium"
+                                                >
+                                                    {{ part.text }}
+                                                </a>
+                                                <span v-else>{{ part.text }}</span>
+                                            </template>
+                                        </p>
                                         <p class="text-xs mt-1 opacity-75 text-right">{{ msg.created_at }}</p>
                                     </div>
                                 </div>
@@ -182,12 +196,14 @@ import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 
 const page = usePage();
 const props = defineProps({
-    conversations: { type: Array, default: () => [] }
+    conversations: { type: Array, default: () => [] },
+    messages: { type: Array, default: () => [] },
+    selectedConversation: { type: Object, default: null },
 });
 
-const selectedConversationId = ref(null);
-const selectedConversation = ref(null);
-const messages = ref([]);
+const selectedConversationId = ref(props.selectedConversation?.id || null);
+const selectedConversation = ref(props.selectedConversation || null);
+const messages = ref(props.messages || []);
 const newMessage = ref('');
 const sending = ref(false);
 const loadingMessages = ref(false);
@@ -196,6 +212,17 @@ const conversationToDelete = ref(null);
 const deletingConversation = ref(false);
 
 const currentUserId = computed(() => page.props.auth?.user?.id || null);
+
+const splitMessageBody = (body = '') => {
+    const parts = String(body).split(/(https?:\/\/[^\s]+)/g);
+
+    return parts
+        .filter(Boolean)
+        .map(part => ({
+            text: part,
+            isUrl: /^https?:\/\//.test(part),
+        }));
+};
 
 const formatDate = (dateString) => {
     if (!dateString) return '';

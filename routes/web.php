@@ -538,6 +538,15 @@ Route::middleware(['auth'])->prefix('dashboard')->name('dashboard.')->group(func
     Route::get('/messages', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages');
     Route::get('/messages/{conversation?}', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages.show');
     Route::post('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'sendMessage'])->name('messages.send');
+Route::post('/messages/{conversation}/review-invite', [\App\Http\Controllers\ReviewInviteController::class, 'store'])
+    ->middleware('email.verified')
+    ->name('review-invites.store');
+Route::get('/review-invites/{reviewInvite:token}', [\App\Http\Controllers\ReviewInviteController::class, 'show'])
+    ->middleware(['email.verified', 'signed'])
+    ->name('review-invites.show');
+Route::post('/review-invites/{reviewInvite:token}', [\App\Http\Controllers\ReviewInviteController::class, 'submit'])
+    ->middleware(['email.verified', 'signed'])
+    ->name('review-invites.submit');
     Route::delete('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'hideConversation'])->name('messages.hide');
     Route::get('/reviews', [\App\Http\Controllers\DashboardController::class, 'reviews'])->name('reviews');
 });
