@@ -3,16 +3,16 @@
         <!-- Шапка -->
         <header class="bg-white shadow-md sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-2 md:px-4">
-                <div class="flex items-center justify-between h-24 gap-1 md:gap-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 py-3 min-[340px]:flex-nowrap md:h-24 md:gap-4 md:py-0">
                     <!-- Логотип -->
-                    <Link href="/" class="flex items-center gap-0 flex-shrink-0">
+                    <Link href="/" class="order-1 flex w-full items-center justify-center gap-0 flex-shrink-0 min-[340px]:w-auto min-[340px]:justify-start md:order-none">
                         <img src="/images/logo.png" alt="Baano" class="site-logo">
                     </Link>
 
                     <!-- Каталог -->
                     <button 
                         @click="handleCatalog"
-                        class="inline-flex px-3 md:px-4 py-2 rounded-xl text-white font-medium transition-all hover:shadow-lg flex-shrink-0 coral-action action-red"
+                        class="order-2 inline-flex w-[calc(50%_-_4px)] px-3 py-2 min-[340px]:w-[92px] md:order-none md:w-auto md:px-4 rounded-xl text-white font-medium transition-all hover:shadow-lg flex-shrink-0 coral-action action-red"
                         style="background-color: #315C47;"
                     >
                         Каталог
@@ -41,10 +41,10 @@
                     </div>
 
                     <!-- Правая часть -->
-                    <div class="flex items-center gap-2 md:gap-4 flex-shrink-0">
+                    <div class="order-3 flex w-[calc(50%_-_4px)] items-center justify-end gap-2 flex-shrink-0 min-[340px]:w-[92px] md:order-none md:w-auto md:gap-4">
                         <Link 
                             href="/user/listings/create"
-                            class="px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-white font-medium text-xs md:text-sm transition-all hover:shadow-lg confirm-action action-green"
+                            class="w-full px-3 py-1.5 md:w-auto md:px-4 md:py-2 rounded-xl text-white font-medium text-xs md:text-sm transition-all hover:shadow-lg confirm-action action-green"
                             style="background-color: #315C47;"
                         >
                             <span class="hidden sm:inline">Разместить объявление</span>
@@ -150,15 +150,19 @@ import { router, Link, usePage } from '@inertiajs/vue3';
 const searchQuery = ref('');
 
 const handleCatalog = () => {
+    const categorySectionId = window.innerWidth < 768
+        ? 'mobile-categories'
+        : 'desktop-categories';
+
     if (window.location.pathname === '/') {
         document
-            .getElementById('categories')
+            .getElementById(categorySectionId)
             ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         return;
     }
 
-    window.location.href = '/#categories';
+    window.location.href = `/#${categorySectionId}`;
 };
 
 const performSearch = () => {

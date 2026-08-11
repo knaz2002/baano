@@ -1,7 +1,20 @@
 <template>
     <div class="min-h-screen flex items-center justify-center" style="background-color: #F7F3EC;">
         <div class="glass p-8 rounded-2xl w-full max-w-md">
-            <h1 class="text-3xl font-bold mb-6 text-center" style="color: #1F4234;">Регистрация</h1>
+            <div class="flex justify-center mb-5">
+                <Link href="/" aria-label="На главную">
+                    <img
+                        src="/images/logo.png"
+                        alt="Baano"
+                        class="w-auto h-12 md:h-14"
+                    >
+                </Link>
+            </div>
+
+            <h1 class="text-3xl font-bold mb-2 text-center" style="color: #1F4234;">Регистрация</h1>
+            <p class="mb-6 text-center text-sm" style="color: #68736B;">
+                Создайте аккаунт, чтобы размещать объявления и пользоваться всеми возможностями Baano
+            </p>
             
             <div v-if="errors.error" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
                 {{ Array.isArray(errors.error) ? errors.error[0] : errors.error }}
@@ -36,13 +49,45 @@
                     <p v-if="errors.password" class="mt-1 text-sm text-red-600 font-semibold">{{ Array.isArray(errors.password) ? errors.password[0] : errors.password }}</p>
                 </div>
 
-                <div class="mb-6">
+                <div class="mb-5">
                     <label class="block text-sm font-medium mb-2" style="color: #1F4234;">Подтверждение пароля</label>
                     <input v-model="form.password_confirmation" type="password" required autocomplete="new-password"
                            class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#315C47]">
                 </div>
 
-                <button type="submit" :disabled="form.processing" class="btn-gradient w-full">
+                <div class="mb-6">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input
+                            v-model="form.personal_data_consent"
+                            type="checkbox"
+                            required
+                            class="mt-1 h-5 w-5 shrink-0 rounded border-gray-300 accent-[#315C47]"
+                        >
+
+                        <span class="text-sm leading-5" style="color: #1F4234;">
+                            Я даю согласие на обработку персональных данных и ознакомлен(а) с
+                            <a
+                                href="https://codeseven.ru/opd.pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="font-medium text-[#315C47] underline hover:text-red-600"
+                                @click.stop
+                            >
+                                Политикой обработки персональных данных
+                            </a>
+                        </span>
+                    </label>
+
+                    <p v-if="errors.personal_data_consent" class="mt-2 text-sm text-red-600 font-semibold">
+                        {{ Array.isArray(errors.personal_data_consent) ? errors.personal_data_consent[0] : errors.personal_data_consent }}
+                    </p>
+                </div>
+
+                <button
+                    type="submit"
+                    :disabled="form.processing || !form.personal_data_consent"
+                    class="btn-gradient w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                     Зарегистрироваться
                 </button>
 
@@ -67,6 +112,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
+    personal_data_consent: false,
 });
 
 const formatPhone = (e) => {

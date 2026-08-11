@@ -103,8 +103,10 @@ class HomeController extends Controller
 
         // === VIP ОБЪЯВЛЕНИЯ ===
         $vipListings = Listing::where('is_active', true)
+            ->where('is_premium', true)
+            ->where('premium_until', '>', now())
             ->with(['category', 'user'])
-            ->inRandomOrder()
+            ->orderByDesc('premium_until')
             ->take(4)
             ->get()
             ->map(fn($l) => [

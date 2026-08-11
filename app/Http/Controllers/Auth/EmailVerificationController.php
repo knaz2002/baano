@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class EmailVerificationController extends Controller
@@ -13,24 +15,15 @@ class EmailVerificationController extends Controller
         return Inertia::render('Auth/VerifyEmail');
     }
 
-    public function verify(Request $request)
+    public function verify(EmailVerificationRequest $request)
     {
-        $user = $request->user();
-
-        if (! hash_equals((string) $request->route('id'), (string) $user->getKey())
-            || ! hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
-            abort(403);
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect('/');
         }
 
-        if ($user->hasVerifiedEmail()) {
-            return $this->verifiedRedirect();
-        }
+        $request->fulfill();
 
-        if ($user->markEmailAsVerified()) {
-            event(new \Illuminate\Auth\Events\Verified($user));
-        }
-
-        return $this->verifiedRedirect(true);
+        return redirect('/')->with('success', 'Email подтвержден');
     }
 
     public function resend(Request $request)
@@ -42,18 +35,5 @@ class EmailVerificationController extends Controller
         $request->user()->sendEmailVerificationNotification();
 
         return back()->with('success', 'Ссылка отправлена повторно');
-    }
-
-    private function verifiedRedirect(bool $justVerified = false)
-    {
-        $frontend = rtrim((string) env('FRONTEND_URL', ''), '/');
-
-        if ($frontend !== '') {
-            $query = $justVerified ? '?verified=1' : '';
-
-            return redirect()->away($frontend.'/verify-email'.$query);
-        }
-
-        return redirect('/')->with('success', $justVerified ? 'Email подтвержден' : null);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\ModerationStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Listing;
 use App\Models\Category;
@@ -83,6 +84,9 @@ class AdminListingController extends Controller
             'is_active' => $publish,
             'status' => $publish ? 'active' : 'inactive',
             'requested_is_active' => null,
+            'moderation_status' => ModerationStatus::Approved,
+            'moderation_reason' => null,
+            'moderated_at' => now(),
         ]);
 
         return back()->with(

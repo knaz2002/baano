@@ -9,6 +9,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class ListingForm
@@ -65,7 +66,25 @@ class ListingForm
                         ->label('Статус'),
 
                     Toggle::make('is_premium')
+                        ->live()
                         ->label('Премиум размещение'),
+
+                    Select::make('premium_days')
+                        ->options(
+                            collect(range(1, 30))->mapWithKeys(
+                                fn (int $days): array => [
+                                    $days => $days . ' ' . match (true) {
+                                        $days === 1 || $days === 21 => 'день',
+                                        in_array($days % 10, [2, 3, 4], true) && ! in_array($days, [12, 13, 14], true) => 'дня',
+                                        default => 'дней',
+                                    },
+                                ],
+                            )->all()
+                        )
+                        ->visible(fn (Get $get): bool => $get->boolean('is_premium'))
+                        ->required(fn (Get $get): bool => $get->boolean('is_premium'))
+                        ->native(false)
+                        ->label('Срок размещения премиум'),
                 ]),
 
                 Textarea::make('description')

@@ -146,28 +146,55 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/register', function (Request $request) {
         try {
-            $phone = preg_replace('/\D/', '', $request->phone);
+            $validated = $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'phone' => [
+                    'required',
+                    'string',
+                    'regex:/^\\+7 \\(\\d{3}\\) \\d{3}-\\d{2}-\\d{2}$/',
+                ],
+                'email' => ['required', 'string', 'email', 'max:255'],
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'confirmed',
+                ],
+                'password_confirmation' => [
+                    'required',
+                    'string',
+                ],
+                'personal_data_consent' => [
+                'required',
+                'accepted',
+            ],
+        ], [
+                'phone.regex' => 'Введите телефон полностью.',
+                'password.confirmed' => 'Пароли не совпадают.',
+                'personal_data_consent.required' => 'Необходимо согласие на обработку персональных данных.',
+            'personal_data_consent.accepted' => 'Необходимо согласие на обработку персональных данных.',
+        ]);
+
+            $phone = preg_replace('/\\D/', '', $validated['phone']);
             $formattedPhone = '+' . $phone;
 
             if (User::where('phone', $formattedPhone)->exists()) {
-                return back()->withErrors(['phone' => 'Этот телефон уже зарегистрирован']);
-            }
-            if (User::where('email', $request->email)->exists()) {
-                return back()->withErrors(['email' => 'Этот email уже зарегистрирован']);
-            }
-            if ($request->password !== $request->password_confirmation) {
-                return back()->withErrors(['password' => 'Пароли не совпадают']);
+                return back()->withErrors([
+                    'phone' => 'Этот телефон уже зарегистрирован',
+                ]);
             }
 
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255',
-                'password' => 'required|string|min:8',
-            ]);
+            if (User::where('email', $validated['email'])->exists()) {
+                return back()->withErrors([
+                    'email' => 'Этот email уже зарегистрирован',
+                ]);
+            }
 
             $user = User::create([
-                'name' => $validated['name'], 'phone' => $formattedPhone,
-                'email' => $validated['email'], 'password' => bcrypt($validated['password']),
+                'name' => $validated['name'],
+                'phone' => $formattedPhone,
+                'email' => $validated['email'],
+                'password' => bcrypt($validated['password']),
             ]);
 
             Auth::login($user);
@@ -193,9 +220,7 @@ Route::post('/logout', function (Request $request) {
 // === ВЕРИФИКАЦИЯ EMAIL ===
 Route::middleware(['auth'])->group(function () {
     Route::get('/verify-email', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'notice'])->name('verification.notice');
-    Route::get('/email/verify/{id}/{hash}', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'verify'])
-        ->middleware(['signed'])
-        ->name('verification.verify');
+    Route::get('/email/verify/{id}/{hash}', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'verify'])->middleware('signed')->name('verification.verify');
     Route::post('/email/verification-notification', [\App\Http\Controllers\Auth\EmailVerificationController::class, 'resend'])->name('verification.send');
 });
 
@@ -292,6 +317,9 @@ Route::middleware(['auth'])->group(function () {
                 'city' => $validated['city'] ?? null,
                 'listing_attributes' => $request->filled('attributes') ? json_decode($request->input('attributes'), true) : null, // <-- ДОБАВЛЕНО
                 'status' => 'pending',
+                'moderation_status' => \App\Enums\ModerationStatus::PendingModeration,
+                'moderation_reason' => null,
+                'moderated_at' => null,
                 'is_active' => false,
                 'requested_is_active' => true,
             ]);
@@ -400,6 +428,9 @@ Route::middleware(['auth'])->group(function () {
                 'city' => $validated['city'] ?? null,
                 'listing_attributes' => $request->filled('attributes') ? json_decode($request->input('attributes'), true) : null, // <-- ДОБАВЛЕНО
                 'status' => 'pending',
+                'moderation_status' => \App\Enums\ModerationStatus::PendingModeration,
+                'moderation_reason' => null,
+                'moderated_at' => null,
                 'is_active' => false,
                 'requested_is_active' => $requestedIsActive,
             ]);
@@ -431,6 +462,9 @@ Route::middleware(['auth'])->group(function () {
 
             $listing->update([
                 'status' => 'pending',
+                'moderation_status' => \App\Enums\ModerationStatus::PendingModeration,
+                'moderation_reason' => null,
+                'moderated_at' => null,
                 'is_active' => false,
                 'requested_is_active' => $publish,
             ]);
@@ -504,6 +538,15 @@ Route::middleware(['auth'])->prefix('dashboard')->name('dashboard.')->group(func
     Route::get('/messages', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages');
     Route::get('/messages/{conversation?}', [\App\Http\Controllers\DashboardController::class, 'messages'])->name('messages.show');
     Route::post('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'sendMessage'])->name('messages.send');
+Route::post('/messages/{conversation}/review-invite', [\App\Http\Controllers\ReviewInviteController::class, 'store'])
+    ->middleware('email.verified')
+    ->name('review-invites.store');
+Route::get('/review-invites/{reviewInvite:token}', [\App\Http\Controllers\ReviewInviteController::class, 'show'])
+    ->middleware(['email.verified', 'signed'])
+    ->name('review-invites.show');
+Route::post('/review-invites/{reviewInvite:token}', [\App\Http\Controllers\ReviewInviteController::class, 'submit'])
+    ->middleware(['email.verified', 'signed'])
+    ->name('review-invites.submit');
     Route::delete('/messages/{conversation}', [\App\Http\Controllers\DashboardController::class, 'hideConversation'])->name('messages.hide');
     Route::get('/reviews', [\App\Http\Controllers\DashboardController::class, 'reviews'])->name('reviews');
 });

@@ -14,6 +14,10 @@ class ListingResource extends Resource
 {
     protected static ?string $model = Listing::class;
 
+    protected static ?string $modelLabel = 'Объявление';
+
+    protected static ?string $pluralModelLabel = 'Объявления';
+
     public static function getNavigationIcon(): ?string
     {
         return 'heroicon-o-briefcase';

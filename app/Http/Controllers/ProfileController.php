@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ModerationStatus;
+use App\Jobs\ModerateProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -15,7 +17,9 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Edit', [
             'user' => $user ? [
                 'id' => $user->id,
-                'name' => $user->name,
+                'name' => $user->pending_name ?? $user->name,
+                'approved_name' => $user->name,
+                'moderation_status' => $user->moderation_status,
                 'email' => $user->email,
                 'phone' => $user->phone,
             ] : null,
@@ -32,8 +36,31 @@ class ProfileController extends Controller
             'phone' => 'nullable|string|max:20',
         ]);
         
-        $user->update($validated);
-        
-        return redirect()->back()->with('success', 'Профиль обновлён');
+        $nameChanged = $validated['name'] !== $user->name;
+
+        $profileData = [
+            'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
+        ];
+
+        if ($nameChanged) {
+            $profileData['pending_name'] = $validated['name'];
+            $profileData['moderation_status'] = ModerationStatus::PendingModeration;
+            $profileData['moderation_reason'] = null;
+            $profileData['moderated_at'] = null;
+        }
+
+        $user->update($profileData);
+
+        if ($nameChanged) {
+            ModerateProfile::dispatch($user->id);
+        }
+
+        return redirect()->back()->with(
+            'success',
+            $nameChanged
+                ? 'Профиль обновлён. Новое имя отправлено на модерацию'
+                : 'Профиль обновлён'
+        );
     }
 }

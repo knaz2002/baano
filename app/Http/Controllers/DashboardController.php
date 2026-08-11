@@ -7,6 +7,7 @@ use App\Models\Favorite;
 use App\Models\Listing;
 use App\Models\Message;
 use App\Models\Review;
+use App\Models\ReviewInvite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -75,7 +76,7 @@ class DashboardController extends Controller
             ->with([
                 'userOne:id,name',
                 'userTwo:id,name',
-                'listing:id,title',
+                'listing:id,title,user_id,status,is_active',
                 'lastMessage:id,conversation_id,body,sender_id,created_at',
             ])
             ->orderByDesc('last_message_at')
@@ -133,7 +134,7 @@ class DashboardController extends Controller
                 ->with([
                     'userOne:id,name',
                     'userTwo:id,name',
-                    'listing:id,title',
+                    'listing:id,title,user_id,status,is_active',
                 ])
                 ->findOrFail($conversationId);
 
@@ -189,7 +190,7 @@ class DashboardController extends Controller
             ->with([
                 'userOne:id,name',
                 'userTwo:id,name',
-                'listing:id,title',
+                'listing:id,title,user_id,status,is_active',
             ])
             ->findOrFail($conversationId);
 
@@ -221,6 +222,29 @@ class DashboardController extends Controller
             ? $conversation->userTwo
             : $conversation->userOne;
 
+        $canRequestReview = false;
+
+        if (
+            $conversation->listing
+            && $conversation->listing->user_id === $userId
+            && $conversation->listing->status === 'active'
+            && $conversation->listing->is_active
+        ) {
+            $reviewExists = Review::query()
+                ->where('listing_id', $conversation->listing->id)
+                ->where('user_id', $otherUser->id)
+                ->exists();
+
+            $activeInviteExists = ReviewInvite::query()
+                ->where('listing_id', $conversation->listing->id)
+                ->where('recipient_id', $otherUser->id)
+                ->whereNull('used_at')
+                ->where('expires_at', '>', now())
+                ->exists();
+
+            $canRequestReview = !$reviewExists && !$activeInviteExists;
+        }
+
         return response()->json([
             'conversation' => [
                 'id' => $conversation->id,
@@ -232,6 +256,7 @@ class DashboardController extends Controller
                     'id' => $conversation->listing->id,
                     'title' => $conversation->listing->title,
                 ] : null,
+                'can_request_review' => $canRequestReview,
             ],
             'messages' => $messages,
         ]);
@@ -294,7 +319,7 @@ class DashboardController extends Controller
     public function reviews()
     {
         $reviews = Review::where('user_id', Auth::id())
-            ->with(['listing:id,title', 'user:id,name'])
+            ->with(['listing:id,title,user_id,status,is_active', 'user:id,name'])
             ->latest()
             ->get()
             ->map(fn($r) => [
