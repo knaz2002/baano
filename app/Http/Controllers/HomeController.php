@@ -97,7 +97,11 @@ class HomeController extends Controller
             'image' => $l->getFirstMediaUrl('images', 'thumb'),
 
             'images' => $l->getMedia('images')
-                ->map(fn($media) => $media->getUrl('thumb'))
+                ->map(fn($media) =>
+                    $media->hasGeneratedConversion('thumb')
+                        ? $media->getUrl('thumb')
+                        : $media->getUrl()
+                )
                 ->values()
                 ->all(),
 
