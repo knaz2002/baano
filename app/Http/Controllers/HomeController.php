@@ -116,9 +116,10 @@ class HomeController extends Controller
                 'price' => $l->price,
                 'location' => $l->location ?? '',
                 'city' => $l->city ?: ($l->location ?? ''),
-                // Для широкого мобильного баннера используем исходное изображение,
-                // чтобы оно не растягивалось из миниатюры 300x200.
-                'image' => $l->getFirstMediaUrl('images'),
+                // Старый источник оставляем для карточек > 480px без изменений.
+                'image' => $l->getFirstMediaUrl('images', 'thumb'),
+                // Исходник нужен только для широкого мобильного баннера.
+                'mobile_image' => $l->getFirstMediaUrl('images'),
                 'category' => $l->category ? ['name' => $l->category->name] : null,
                 'rating' => 4.9,
                 'reviews_count' => rand(100, 500),
