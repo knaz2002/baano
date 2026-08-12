@@ -10,7 +10,7 @@
                     </Link>
 
                     <!-- Каталог -->
-                    <button 
+                    <button
                         @click="handleCatalog"
                         class="order-2 inline-flex w-[calc(50%_-_4px)] px-3 py-2 min-[340px]:w-[92px] md:order-none md:w-auto md:px-4 rounded-xl text-white font-medium transition-all hover:shadow-lg flex-shrink-0 coral-action action-red"
                         style="background-color: #315C47;"
@@ -21,15 +21,15 @@
                     <!-- Поиск -->
                     <div class="hidden md:block flex-1 max-w-xl">
                         <div class="relative w-full">
-                            <input 
+                            <input
                                 v-model="searchQuery"
-                                type="text" 
+                                type="text"
                                 placeholder="Поиск объявлений..."
                                 class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none"
                                 style="border-color: #E8E3DA;"
                                 @keyup.enter="performSearch"
                             >
-                            <button 
+                            <button
                                 @click="performSearch"
                                 class="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-100"
                             >
@@ -42,7 +42,7 @@
 
                     <!-- Правая часть -->
                     <div class="order-3 flex w-[calc(50%_-_4px)] items-center justify-end gap-2 flex-shrink-0 min-[340px]:w-[92px] md:order-none md:w-auto md:gap-4">
-                        <Link 
+                        <Link
                             href="/user/listings/create"
                             class="w-full px-3 py-1.5 md:w-auto md:px-4 md:py-2 rounded-xl text-white font-medium text-xs md:text-sm transition-all hover:shadow-lg confirm-action action-green"
                             style="background-color: #315C47;"
@@ -67,15 +67,15 @@
 
                 <div class="md:hidden pb-4">
                     <div class="relative w-full">
-                        <input 
+                        <input
                             v-model="searchQuery"
-                            type="text" 
+                            type="text"
                             placeholder="Поиск объявлений..."
                             class="w-full px-4 py-2 rounded-xl border-2 focus:outline-none text-sm"
                             style="border-color: #E8E3DA;"
                             @keyup.enter="performSearch"
                         >
-                        <button 
+                        <button
                             @click="performSearch"
                             class="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-100"
                         >
@@ -94,40 +94,40 @@
 
         <!-- Мобильная нижняя панель навигации (5 иконок) -->
         <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[9999]">
-            <div class="flex items-center justify-around h-16">
+            <div class="flex items-center justify-around h-14">
                 <Link href="/" class="flex flex-col items-center justify-center flex-1 h-full" :class="isActive('/') ? 'text-[#315C47]' : 'text-gray-600'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>
-                    <span class="text-[10px] mt-1">Главная</span>
+
                 </Link>
 
                 <Link href="/user/listings" class="flex flex-col items-center justify-center flex-1 h-full" :class="isActive('/user/listings') ? 'text-[#315C47]' : 'text-gray-600'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
-                    <span class="text-[10px] mt-1">Объявления</span>
+
                 </Link>
 
                 <Link href="/user/favorites" class="flex flex-col items-center justify-center flex-1 h-full" :class="isActive('/user/favorites') ? 'text-[#315C47]' : 'text-gray-600'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                     </svg>
-                    <span class="text-[10px] mt-1">Избранное</span>
+
                 </Link>
 
                 <Link href="/dashboard/messages" class="flex flex-col items-center justify-center flex-1 h-full" :class="isActive('/dashboard/messages') ? 'text-[#315C47]' : 'text-gray-600'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                     </svg>
-                    <span class="text-[10px] mt-1">Сообщения</span>
+
                 </Link>
 
                 <Link href="/dashboard" class="flex flex-col items-center justify-center flex-1 h-full" :class="isActive('/dashboard') ? 'text-[#315C47]' : 'text-gray-600'">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
-                    <span class="text-[10px] mt-1">Кабинет</span>
+
                 </Link>
             </div>
         </nav>
