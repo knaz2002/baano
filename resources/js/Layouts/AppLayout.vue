@@ -6,7 +6,7 @@
                 <div class="flex flex-wrap items-center justify-between gap-2 py-3 min-[340px]:flex-nowrap md:h-24 md:gap-4 md:py-0">
                     <!-- Логотип -->
                     <Link href="/" class="order-1 flex w-full items-center justify-center gap-0 flex-shrink-0 min-[340px]:w-auto min-[340px]:justify-start md:order-none">
-                        <img src="/images/logo.png" alt="Baano" class="site-logo">
+                        <img src="/images/logo.png?v=9bc9afe" alt="Baano" class="site-logo">
                     </Link>
 
                     <!-- Каталог -->
@@ -135,7 +135,7 @@
         <footer class="bg-white border-t mt-12">
             <div class="max-w-7xl mx-auto px-4 py-6">
                 <div class="flex items-center justify-center gap-2">
-                    <img src="/images/logo.png" alt="Baano" class="w-auto" style="height: 31px;">
+                    <img src="/images/logo.png?v=9bc9afe" alt="Baano" class="w-auto" style="height: 31px;">
                     <span class="text-sm" style="color: #68736B;">© 2026 Baano. Все права защищены.</span>
                 </div>
             </div>

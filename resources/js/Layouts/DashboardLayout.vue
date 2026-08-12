@@ -8,7 +8,7 @@
                 <aside class="hidden md:flex md:flex-col w-64 bg-white border-r flex-shrink-0" style="border-color: #E8E3DA;">
                     <div class="p-6 border-b" style="border-color: #E8E3DA;">
                         <Link href="/" class="flex items-center justify-center w-full h-20 p-0 overflow-hidden">
-                            <img src="/images/logo.png" alt="Baano" class="site-logo">
+                            <img src="/images/logo.png?v=9bc9afe" alt="Baano" class="site-logo">
                         </Link>
                     </div>
                     
