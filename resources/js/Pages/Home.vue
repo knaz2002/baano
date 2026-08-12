@@ -56,8 +56,8 @@
                                             >
                                                 <div class="vip-mobile-track">
                                                     <Link
-                                                        v-for="listing in vipListings"
-                                                        :key="`mobile-vip-${listing.id}`"
+                                                        v-for="(listing, index) in vipLoopListings"
+                                                        :key="`mobile-vip-${listing.id}-${index}`"
                                                         :href="`/listings/${listing.id}`"
                                                         class="vip-mobile-card"
                                                     >
@@ -296,11 +296,31 @@ const props = defineProps({
 
 const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price || 0);
 
+/*
+ * Для бесконечного мобильного VIP-слайдера в конец добавляем
+ * копию первого объявления. После перехода на неё незаметно
+ * возвращаем scrollLeft к настоящему первому слайду.
+ */
+const vipLoopListings = computed(() => {
+    if (props.vipListings.length < 2) {
+        return props.vipListings;
+    }
+
+    return [...props.vipListings, props.vipListings[0]];
+});
+
 const vipSlider = ref(null);
 let vipAutoplayTimer = null;
+let vipLoopResetTimer = null;
 
 const scrollToNextVip = () => {
     if (!vipSlider.value || !window.matchMedia('(max-width: 480px)').matches) {
+        return;
+    }
+
+    const realCardCount = props.vipListings.length;
+
+    if (realCardCount < 2) {
         return;
     }
 
@@ -308,12 +328,14 @@ const scrollToNextVip = () => {
         vipSlider.value.querySelectorAll('.vip-mobile-card')
     );
 
-    if (cards.length < 2) {
+    // Реальные карточки + последняя копия первой.
+    if (cards.length < realCardCount + 1) {
         return;
     }
 
+    const slider = vipSlider.value;
     const firstOffset = cards[0].offsetLeft;
-    const currentScroll = vipSlider.value.scrollLeft;
+    const currentScroll = slider.scrollLeft;
 
     let currentIndex = 0;
     let smallestDistance = Infinity;
@@ -328,12 +350,52 @@ const scrollToNextVip = () => {
         }
     });
 
-    const nextIndex = (currentIndex + 1) % cards.length;
+    /*
+     * Если пользователь вручную оказался на клоне первого слайда,
+     * незаметно переводим его на настоящий первый.
+     */
+    if (currentIndex >= realCardCount) {
+        slider.scrollTo({
+            left: 0,
+            behavior: 'auto',
+        });
 
-    vipSlider.value.scrollTo({
-        left: cards[nextIndex].offsetLeft - firstOffset,
+        currentIndex = 0;
+    }
+
+    const nextIndex = currentIndex + 1;
+    const targetLeft = cards[nextIndex].offsetLeft - firstOffset;
+
+    slider.scrollTo({
+        left: targetLeft,
         behavior: 'smooth',
     });
+
+    /*
+     * Последний реальный слайд -> копия первого.
+     * После завершения анимации копия визуально идентична первому,
+     * поэтому мгновенный перенос к настоящему первому незаметен.
+     */
+    if (nextIndex === realCardCount) {
+        if (vipLoopResetTimer) {
+            window.clearTimeout(vipLoopResetTimer);
+        }
+
+        vipLoopResetTimer = window.setTimeout(() => {
+            if (!vipSlider.value) {
+                return;
+            }
+
+            const cloneLeft = cards[realCardCount].offsetLeft - firstOffset;
+
+            if (Math.abs(vipSlider.value.scrollLeft - cloneLeft) < 12) {
+                vipSlider.value.scrollTo({
+                    left: 0,
+                    behavior: 'auto',
+                });
+            }
+        }, 700);
+    }
 };
 
 onMounted(() => {
@@ -343,6 +405,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
     if (vipAutoplayTimer) {
         window.clearInterval(vipAutoplayTimer);
+    }
+
+    if (vipLoopResetTimer) {
+        window.clearTimeout(vipLoopResetTimer);
     }
 });
 
