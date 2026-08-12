@@ -115,7 +115,10 @@ class HomeController extends Controller
                 'description' => $l->description ?? '',
                 'price' => $l->price,
                 'location' => $l->location ?? '',
-                'image' => $l->getFirstMediaUrl('images', 'thumb'),
+                'city' => $l->city ?: ($l->location ?? ''),
+                // Для широкого мобильного баннера используем исходное изображение,
+                // чтобы оно не растягивалось из миниатюры 300x200.
+                'image' => $l->getFirstMediaUrl('images'),
                 'category' => $l->category ? ['name' => $l->category->name] : null,
                 'rating' => 4.9,
                 'reviews_count' => rand(100, 500),
