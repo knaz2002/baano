@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Favorite;
 use App\Models\User;
 use App\Models\Review;
+use App\Jobs\ModerateListing;
 use App\Http\Controllers\MessageController;
 
 Route::post('/message-user/{user}', [MessageController::class, 'messageUser'])
@@ -330,6 +331,8 @@ Route::middleware(['auth'])->group(function () {
                 }
             }
 
+            ModerateListing::dispatch($listing->id);
+
             return redirect('/user/listings')->with('success', 'Объявление создано');
         })->name('user.listings.store');
 
@@ -446,6 +449,8 @@ Route::middleware(['auth'])->group(function () {
                 }
             }
 
+            ModerateListing::dispatch($listing->id);
+
             return redirect('/user/listings')->with('success', 'Объявление обновлено');
         })->name('user.listings.update');
 
@@ -468,6 +473,8 @@ Route::middleware(['auth'])->group(function () {
                 'is_active' => false,
                 'requested_is_active' => $publish,
             ]);
+
+            ModerateListing::dispatch($listing->id);
 
             return back()->with(
                 'success',
