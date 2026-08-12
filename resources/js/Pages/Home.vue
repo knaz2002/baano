@@ -237,11 +237,58 @@
                         class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group h-full flex flex-col listing-card"
                     >
                         <div class="relative overflow-hidden">
+
+                            <!-- Пока галерея тестируется только на объявлении 770 -->
+                            <div
+                                v-if="listing.id === 770 && getListingImages(listing).length > 1"
+                                class="listing-mobile-gallery"
+                                @click.prevent.stop
+                                @dragstart.prevent
+                            >
+                                <div
+                                    class="listing-mobile-gallery-track"
+                                    @scroll.passive="handleListingGalleryScroll(listing, $event)"
+                                >
+                                    <div
+                                        v-for="(image, imageIndex) in getListingImages(listing)"
+                                        :key="`${listing.id}-image-${imageIndex}`"
+                                        class="listing-mobile-gallery-slide"
+                                    >
+                                        <img
+                                            :src="image"
+                                            :alt="`${listing.title} — фото ${imageIndex + 1}`"
+                                            class="listing-mobile-gallery-image"
+                                            draggable="false"
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="listing-mobile-gallery-dots">
+                                    <span
+                                        v-for="(_, dotIndex) in getListingImages(listing)"
+                                        :key="`${listing.id}-dot-${dotIndex}`"
+                                        class="listing-mobile-gallery-dot"
+                                        :class="{
+                                            'is-active':
+                                                (mobileGalleryIndexes[listing.id] || 0) === dotIndex
+                                        }"
+                                    ></span>
+                                </div>
+                            </div>
+
+                            <!-- Обычное изображение для остальных карточек
+                                 и для desktop -->
                             <img
+                                :class="{
+                                    'listing-test-gallery-fallback':
+                                        listing.id === 770 &&
+                                        getListingImages(listing).length > 1
+                                }"
                                 :src="listing.image || '/images/placeholder.jpg'"
                                 :alt="listing.title"
                                 class="w-full h-32 md:h-40 object-cover group-hover:scale-105 transition-transform duration-300"
                             >
+
                             <button
                                 @click.prevent="toggleFavorite(listing.id)"
                                 class="absolute top-2 left-2 bg-white p-1.5 rounded-full shadow-lg hover:scale-110 transition-transform"
@@ -295,6 +342,36 @@ const props = defineProps({
 });
 
 const formatPrice = (price) => new Intl.NumberFormat('ru-RU').format(price || 0);
+
+const mobileGalleryIndexes = ref({});
+
+const getListingImages = (listing) => {
+    if (Array.isArray(listing.images) && listing.images.length) {
+        return listing.images;
+    }
+
+    return [listing.image || '/images/placeholder.jpg'];
+};
+
+const handleListingGalleryScroll = (listing, event) => {
+    const slider = event.currentTarget;
+
+    if (!slider || !slider.clientWidth) {
+        return;
+    }
+
+    const images = getListingImages(listing);
+
+    const index = Math.max(
+        0,
+        Math.min(
+            images.length - 1,
+            Math.round(slider.scrollLeft / slider.clientWidth)
+        )
+    );
+
+    mobileGalleryIndexes.value[listing.id] = index;
+};
 
 /*
  * Для бесконечного мобильного VIP-слайдера в конец добавляем
@@ -488,7 +565,88 @@ const toggleFavorite = (listingId) => {
     display: none;
 }
 
+/* Touch-галерея объявлений существует только на мобильных <=480px */
+.listing-mobile-gallery {
+    display: none;
+}
+
 @media (max-width: 480px) {
+
+    /* Touch-галерея карточки объявления */
+    .listing-mobile-gallery {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 8rem;
+        overflow: hidden;
+    }
+
+    /* Для ID 770 мобильный slider заменяет обычную картинку */
+    .listing-test-gallery-fallback {
+        display: none !important;
+    }
+
+    .listing-mobile-gallery-track {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y;
+    }
+
+    .listing-mobile-gallery-track::-webkit-scrollbar {
+        display: none;
+    }
+
+    .listing-mobile-gallery-slide {
+        flex: 0 0 100%;
+        width: 100%;
+        height: 100%;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+    }
+
+    .listing-mobile-gallery-image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .listing-mobile-gallery-dots {
+        position: absolute;
+        left: 50%;
+        bottom: 6px;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transform: translateX(-50%);
+        pointer-events: none;
+    }
+
+    .listing-mobile-gallery-dot {
+        width: 5px;
+        height: 5px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.75);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    }
+
+    .listing-mobile-gallery-dot.is-active {
+        width: 7px;
+        height: 7px;
+        background: #315C47;
+    }
 
     /* Мобильная главная: заголовок -> VIP -> категории */
     .home-hero-grid {
