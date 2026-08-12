@@ -96,13 +96,10 @@ class HomeController extends Controller
             'location' => $l->location ?? '',
             'image' => $l->getFirstMediaUrl('images', 'thumb'),
 
-            // Временно тестируем мобильную галерею только на объявлении 770.
-            'images' => $l->id === 770
-                ? $l->getMedia('images')
-                    ->map(fn($media) => $media->getUrl('thumb'))
-                    ->values()
-                    ->all()
-                : [],
+            'images' => $l->getMedia('images')
+                ->map(fn($media) => $media->getUrl('thumb'))
+                ->values()
+                ->all(),
 
             'category' => $l->category ? ['name' => $l->category->name] : null,
             'rating' => 4.8,
