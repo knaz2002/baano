@@ -12,7 +12,7 @@
                 <aside class="hidden md:flex md:flex-col w-64 bg-white border-r flex-shrink-0" style="border-color: #E8E3DA;">
                     <div class="p-6 border-b" style="border-color: #E8E3DA;">
                         <Link href="/" class="flex items-center justify-center w-full h-20 p-0 overflow-hidden">
-                            <img src="/images/logo.png?v=20260813" alt="Baano" class="site-logo">
+                            <img src="/images/logo.png?v=20260813" alt="Baano" class="site-logo md:!h-10 md:!w-auto md:!max-h-10">
                         </Link>
                     </div>
                     
