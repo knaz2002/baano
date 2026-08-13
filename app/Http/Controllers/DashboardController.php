@@ -111,6 +111,9 @@ class DashboardController extends Controller
                     'listing' => $conversation->listing ? [
                         'id' => $conversation->listing->id,
                         'title' => $conversation->listing->title,
+                        'image' => $this->getListingPreviewImage(
+                            $conversation->listing
+                        ),
                     ] : null,
                     'last_message' => $visibleLastMessage ? [
                         'body' => $visibleLastMessage->body,
@@ -175,6 +178,9 @@ class DashboardController extends Controller
                 'listing' => $conversation->listing ? [
                     'id' => $conversation->listing->id,
                     'title' => $conversation->listing->title,
+                    'image' => $this->getListingPreviewImage(
+                        $conversation->listing
+                    ),
                 ] : null,
             ];
         }
@@ -255,6 +261,9 @@ class DashboardController extends Controller
                 'listing' => $conversation->listing ? [
                     'id' => $conversation->listing->id,
                     'title' => $conversation->listing->title,
+                    'image' => $this->getListingPreviewImage(
+                        $conversation->listing
+                    ),
                 ] : null,
                 'can_request_review' => $canRequestReview,
             ],
@@ -314,6 +323,25 @@ class DashboardController extends Controller
         return response()->json([
             'success' => true,
         ]);
+    }
+
+    private function getListingPreviewImage(?Listing $listing): ?string
+    {
+        if ($listing === null) {
+            return null;
+        }
+
+        $media = $listing->getFirstMedia('images');
+
+        if ($media === null) {
+            return null;
+        }
+
+        $url = $media->hasGeneratedConversion('thumb')
+            ? $media->getUrl('thumb')
+            : $media->getUrl();
+
+        return parse_url($url, PHP_URL_PATH) ?: $url;
     }
 
     public function reviews()

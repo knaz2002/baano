@@ -1,5 +1,9 @@
 <template>
-    <div class="min-h-screen pb-20 md:pb-0" style="background-color: #F7F3EC;">
+    <div
+        class="min-h-screen md:pb-0"
+        :class="hideMobileNav ? 'pb-0' : 'pb-20'"
+        style="background-color: #F7F3EC;"
+    >
         <!-- Ограниченный контейнер для всего ЛК -->
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col md:flex-row min-h-screen">
@@ -8,7 +12,7 @@
                 <aside class="hidden md:flex md:flex-col w-64 bg-white border-r flex-shrink-0" style="border-color: #E8E3DA;">
                     <div class="p-6 border-b" style="border-color: #E8E3DA;">
                         <Link href="/" class="flex items-center justify-center w-full h-20 p-0 overflow-hidden">
-                            <img src="/images/logo.png?v=9bc9afe" alt="Baano" class="site-logo">
+                            <img src="/images/logo.png?v=20260813" alt="Baano" class="site-logo">
                         </Link>
                     </div>
                     
@@ -76,58 +80,133 @@
                 <!-- Основной контент -->
                 <main class="flex-1 flex flex-col">
                     <!-- Мобильная шапка -->
-                    <header class="md:hidden bg-white border-b p-4 flex items-center justify-between sticky top-0 z-20" style="border-color: #E8E3DA;">
-                        <Link href="/" class="text-xl font-bold" style="color: #315C47;">Baano</Link>
+                    <header v-if="!hideMobileHeader" class="md:hidden bg-white border-b p-4 flex items-center justify-between sticky top-0 z-20" style="border-color: #E8E3DA;">
+                        <Link href="/" class="flex items-center">
+                            <img
+                                src="/images/logo.png?v=20260813"
+                                alt="Baano"
+                                class="site-logo"
+                            >
+                        </Link>
                         <Link href="/logout" method="post" as="button" class="text-sm font-medium" style="color: #B3261E;">Выйти</Link>
                     </header>
 
                     <!-- Контент страницы -->
-                    <div class="flex-1 p-4 md:p-6 lg:p-8">
+                    <div
+                        class="flex-1 md:p-6 lg:p-8"
+                        :class="flushMobileContent ? 'p-0' : 'p-4'"
+                    >
                         <slot />
                     </div>
                 </main>
             </div>
         </div>
 
-        <!-- === МОБИЛЬНАЯ НИЖНЯЯ НАВИГАЦИЯ (всегда видна) === -->
-        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50 dashboard-menu" style="border-color: #E8E3DA;">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex justify-around items-center py-2">
-                    <Link href="/" class="flex flex-col items-center gap-1 p-2 rounded-lg transition-colors dashboard-menu-link" :class="isActive('/') ? 'text-[#315C47]' : 'text-gray-600'" style="--menu-accent: #fe0000;">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                        </svg>
-                        <span class="text-xs">Главная</span>
-                    </Link>
+        <!-- === МОБИЛЬНАЯ НИЖНЯЯ НАВИГАЦИЯ === -->
+        <nav
+            v-if="!hideMobileNav"
+            class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-[9999]"
+        >
+            <div class="flex items-center justify-around h-14">
+                <Link
+                    href="/"
+                    class="flex flex-col items-center justify-center flex-1 h-full"
+                    :class="isActive('/') ? 'text-[#315C47]' : 'text-gray-600'"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                        />
+                    </svg>
+                </Link>
 
-                    <Link href="/user/listings" class="flex flex-col items-center gap-1 p-2 rounded-lg transition-colors dashboard-menu-link" :class="isActive('/user/listings') ? 'text-[#315C47]' : 'text-gray-600'" style="--menu-accent: #315C47;">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                        </svg>
-                        <span class="text-xs">Объявления</span>
-                    </Link>
+                <Link
+                    href="/user/listings"
+                    class="flex flex-col items-center justify-center flex-1 h-full"
+                    :class="isActive('/user/listings') ? 'text-[#315C47]' : 'text-gray-600'"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                    </svg>
+                </Link>
 
-                    <Link href="/user/favorites" class="flex flex-col items-center gap-1 p-2 rounded-lg transition-colors dashboard-menu-link" :class="isActive('/user/favorites') ? 'text-[#315C47]' : 'text-gray-600'" style="--menu-accent: #fe0000;">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                        </svg>
-                        <span class="text-xs">Избранное</span>
-                    </Link>
+                <Link
+                    href="/user/favorites"
+                    class="flex flex-col items-center justify-center flex-1 h-full"
+                    :class="isActive('/user/favorites') ? 'text-[#315C47]' : 'text-gray-600'"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                    </svg>
+                </Link>
 
-                    <Link href="/dashboard/messages" class="flex flex-col items-center gap-1 p-2 rounded-lg transition-colors dashboard-menu-link" :class="isActive('/dashboard/messages') ? 'text-[#315C47]' : 'text-gray-600'" style="--menu-accent: #315C47;">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-                        </svg>
-                        <span class="text-xs">Сообщения</span>
-                    </Link>
+                <Link
+                    href="/dashboard/messages"
+                    class="flex flex-col items-center justify-center flex-1 h-full"
+                    :class="isActive('/dashboard/messages') ? 'text-[#315C47]' : 'text-gray-600'"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                        />
+                    </svg>
+                </Link>
 
-                    <Link href="/dashboard" class="flex flex-col items-center gap-1 p-2 rounded-lg transition-colors dashboard-menu-link" :class="isActive('/dashboard') || isActive('/profile') ? 'text-[#315C47]' : 'text-gray-600'" style="--menu-accent: #fe0000;">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                        <span class="text-xs">Кабинет</span>
-                    </Link>
-                </div>
+                <Link
+                    href="/dashboard"
+                    class="flex flex-col items-center justify-center flex-1 h-full"
+                    :class="isActive('/dashboard') ? 'text-[#315C47]' : 'text-gray-600'"
+                >
+                    <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                    </svg>
+                </Link>
             </div>
         </nav>
         <!-- === КОНЕЦ МОБИЛЬНОЙ НАВИГАЦИИ === -->
@@ -136,6 +215,21 @@
 
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
+
+defineProps({
+    hideMobileHeader: {
+        type: Boolean,
+        default: false,
+    },
+    hideMobileNav: {
+        type: Boolean,
+        default: false,
+    },
+    flushMobileContent: {
+        type: Boolean,
+        default: false,
+    },
+});
 
 const page = usePage();
 
