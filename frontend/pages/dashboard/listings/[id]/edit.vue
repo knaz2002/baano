@@ -36,6 +36,7 @@ const { apiFetch } = useApi()
 const auth = useAuthStore()
 
 const categories = ref<CategoryNode[]>([])
+const attributes = ref<Record<string, unknown>>({})
 const existingImages = ref<ListingImage[]>([])
 const removedMediaIds = ref<number[]>([])
 const imageFiles = ref<File[]>([])
@@ -53,6 +54,17 @@ const form = reactive({
   location: '',
   city: '',
 })
+
+const locationRef = toRef(form, 'location')
+const cityRef = toRef(form, 'city')
+const {
+  locationQuery,
+  suggestions,
+  showSuggestions,
+  onLocationInput,
+  selectSuggestion,
+  closeSuggestions,
+} = useDadataAddress({ location: locationRef, city: cityRef })
 
 function hasChildren(cat: CategoryNode) {
   return Array.isArray(cat.children) && cat.children.length > 0
@@ -97,6 +109,8 @@ async function load() {
     form.price_type = listing.price_type
     form.location = listing.location || ''
     form.city = listing.city || ''
+    locationQuery.value = form.location
+    attributes.value = { ...(listing.attributes || {}) }
     existingImages.value = listing.images || []
   } catch (e) {
     console.error(e)
@@ -126,7 +140,7 @@ async function submit() {
     body.append('price_type', form.price_type)
     body.append('location', form.location)
     body.append('city', form.city)
-    body.append('attributes', JSON.stringify({}))
+    body.append('attributes', JSON.stringify(attributes.value || {}))
     body.append('removed_media_ids', JSON.stringify(removedMediaIds.value))
     imageFiles.value.forEach((file) => {
       body.append('images[]', file)
@@ -251,23 +265,44 @@ onMounted(() => {
           </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-baano-muted mb-2">Адрес / локация</label>
+        <div class="relative z-20">
+          <label class="block text-sm font-medium text-baano-muted mb-2">Локация (адрес)</label>
           <input
-            v-model="form.location"
+            v-model="locationQuery"
             type="text"
+            autocomplete="off"
+            placeholder="Начните вводить адрес..."
             class="w-full px-4 py-3 rounded-xl border-2 border-baano-border focus:outline-none"
+            @input="onLocationInput"
+            @focus="showSuggestions = suggestions.length > 0"
+            @blur="closeSuggestions"
           >
+          <div
+            v-if="showSuggestions && suggestions.length"
+            class="absolute z-50 w-full mt-1 bg-white rounded-xl shadow-2xl border border-baano-border max-h-60 overflow-y-auto"
+          >
+            <button
+              v-for="(suggestion, index) in suggestions"
+              :key="index"
+              type="button"
+              class="w-full text-left px-4 py-3 hover:bg-gray-50 border-b last:border-0 border-baano-border"
+              @mousedown.prevent="selectSuggestion(suggestion)"
+            >
+              <p class="text-sm font-medium text-baano-ink">
+                {{ suggestion.value }}
+              </p>
+            </button>
+          </div>
+          <p v-if="form.city" class="text-xs text-baano-muted mt-1">
+            Город: {{ form.city }}
+          </p>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-baano-muted mb-2">Город</label>
-          <input
-            v-model="form.city"
-            type="text"
-            class="w-full px-4 py-3 rounded-xl border-2 border-baano-border focus:outline-none"
-          >
-        </div>
+        <ListingAttributesFields
+          v-model="attributes"
+          :category-id="form.category_id"
+          :categories="categories"
+        />
 
         <div>
           <label class="block text-sm font-medium text-baano-muted mb-2">Текущие фото</label>

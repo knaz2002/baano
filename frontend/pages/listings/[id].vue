@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ListingDetail, ListingShowPayload, SimilarListing } from '~/types/listing'
+import type { ListingDetail, ListingReview, ListingShowPayload, SimilarListing, UserReview } from '~/types/listing'
 
 const route = useRoute()
 const { apiFetch } = useApi()
@@ -8,10 +8,12 @@ const { toggleFavorite: toggleFavoriteApi } = useFavorites()
 
 const listing = ref<ListingDetail | null>(null)
 const similarListings = ref<SimilarListing[]>([])
+const reviews = ref<ListingReview[]>([])
+const userReview = ref<UserReview | null>(null)
 const isFavorited = ref(false)
 const loading = ref(true)
 const error = ref('')
-const activeTab = ref<'description' | 'specs' | 'similar'>('description')
+const activeTab = ref<'description' | 'specs' | 'reviews' | 'similar'>('description')
 const currentImageIndex = ref(0)
 const thumbnailStart = ref(0)
 
@@ -114,6 +116,8 @@ async function loadListing() {
     const res = await apiFetch<{ data: ListingShowPayload }>(`/api/listings/${id}`)
     listing.value = res.data.listing
     similarListings.value = res.data.similar_listings
+    reviews.value = res.data.reviews || []
+    userReview.value = res.data.user_review || null
     isFavorited.value = res.data.is_favorited
   } catch (e) {
     console.error(e)
@@ -390,6 +394,15 @@ onMounted(() => {
               <button
                 type="button"
                 class="py-3 md:py-4 px-1 md:px-4 font-medium text-xs md:text-sm whitespace-nowrap border-b-2"
+                :class="activeTab === 'reviews' ? 'font-bold border-baano-green text-baano-green' : 'border-transparent text-baano-red opacity-75'"
+                @click="activeTab = 'reviews'"
+              >
+                Отзывы
+                <span class="ml-1 text-xs text-baano-muted">({{ reviews.length }})</span>
+              </button>
+              <button
+                type="button"
+                class="py-3 md:py-4 px-1 md:px-4 font-medium text-xs md:text-sm whitespace-nowrap border-b-2"
                 :class="activeTab === 'similar' ? 'font-bold border-baano-red text-baano-red' : 'border-transparent text-baano-green opacity-75'"
                 @click="activeTab = 'similar'"
               >
@@ -495,6 +508,51 @@ onMounted(() => {
                     <span class="text-baano-muted">Зона обслуживания</span>
                     <span class="font-medium text-baano-ink">{{ attrs.service_area }}</span>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="activeTab === 'reviews'">
+              <div
+                v-if="userReview && !userReview.is_active"
+                class="mb-4 rounded-xl px-4 py-3 text-sm bg-amber-50 text-amber-800"
+              >
+                Ваш отзыв отправлен и ждёт модерации.
+              </div>
+
+              <div
+                v-if="reviews.length === 0"
+                class="py-8 text-center text-baano-muted"
+              >
+                Пока нет отзывов
+              </div>
+
+              <div v-else class="space-y-4">
+                <div
+                  v-for="review in reviews"
+                  :key="review.id"
+                  class="border-b border-baano-border pb-4 last:border-0"
+                >
+                  <div class="flex items-start justify-between gap-3 mb-2">
+                    <div>
+                      <p class="font-semibold text-baano-ink">
+                        {{ review.user?.name || 'Пользователь' }}
+                      </p>
+                      <p class="text-xs text-baano-muted">
+                        {{ review.created_at ? new Date(review.created_at).toLocaleDateString('ru-RU') : '' }}
+                      </p>
+                    </div>
+                    <div class="flex text-yellow-400">
+                      <span
+                        v-for="n in 5"
+                        :key="n"
+                        :class="n <= review.rating ? 'text-yellow-400' : 'text-gray-300'"
+                      >★</span>
+                    </div>
+                  </div>
+                  <p class="text-sm text-baano-muted whitespace-pre-line">
+                    {{ review.comment }}
+                  </p>
                 </div>
               </div>
             </div>

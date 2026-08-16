@@ -14,6 +14,7 @@ type ConversationItem = {
     created_at: string
   } | null
   unread_count: number
+  can_request_review?: boolean
 }
 
 type ChatMessage = {
@@ -39,10 +40,12 @@ const sending = ref(false)
 const error = ref('')
 const conversationToDelete = ref<ConversationItem | null>(null)
 const deletingConversation = ref(false)
+const requestingReview = ref(false)
 const messagesContainer = ref<HTMLElement | null>(null)
 
 const currentUserId = computed(() => auth.user?.id ?? 0)
 const selectedConversationId = computed(() => selectedConversation.value?.id ?? null)
+const canRequestReview = computed(() => !!selectedConversation.value?.can_request_review)
 
 function formatDate(iso: string) {
   try {
@@ -53,6 +56,17 @@ function formatDate(iso: string) {
   } catch {
     return ''
   }
+}
+
+function linkifyMessage(body: string): string {
+  const escaped = body
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+  return escaped.replace(
+    /(https?:\/\/[^\s]+)/g,
+    '<a href="$1" class="underline break-all" target="_blank" rel="noopener noreferrer">$1</a>',
+  )
 }
 
 async function ensureVerified() {
@@ -161,6 +175,34 @@ async function sendMessage() {
     console.error(e)
   } finally {
     sending.value = false
+  }
+}
+
+async function requestReview() {
+  if (!selectedConversationId.value || requestingReview.value || !canRequestReview.value) {
+    return
+  }
+  requestingReview.value = true
+  try {
+    const res = await apiFetch<{
+      data: { message: ChatMessage }
+      message: string
+    }>(`/api/conversations/${selectedConversationId.value}/review-invite`, {
+      method: 'POST',
+    })
+    messages.value.push(res.data.message)
+    if (selectedConversation.value) {
+      selectedConversation.value = {
+        ...selectedConversation.value,
+        can_request_review: false,
+      }
+    }
+    await scrollToBottom()
+  } catch (e: any) {
+    console.error(e)
+    alert(e?.data?.message || 'Не удалось отправить запрос на отзыв')
+  } finally {
+    requestingReview.value = false
   }
 }
 
@@ -314,23 +356,32 @@ onMounted(() => {
         </div>
 
         <div v-else class="flex-1 flex flex-col min-h-[400px]">
-          <div class="bg-white border-b p-4 flex items-center gap-3 border-baano-border">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-baano-green">
-              {{ selectedConversation.other_user.name.charAt(0).toUpperCase() }}
-            </div>
-            <div class="flex-1 min-w-0">
-              <h2 class="font-semibold text-base text-baano-ink">
-                {{ selectedConversation.other_user.name }}
-              </h2>
-              <NuxtLink
-                v-if="selectedConversation.listing"
-                :to="`/listings/${selectedConversation.listing.id}`"
-                class="block text-xs font-medium truncate text-baano-green hover:underline mt-1"
+            <div class="bg-white border-b p-4 flex items-center gap-3 border-baano-border">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold bg-baano-green">
+                {{ selectedConversation.other_user.name.charAt(0).toUpperCase() }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <h2 class="font-semibold text-base text-baano-ink">
+                  {{ selectedConversation.other_user.name }}
+                </h2>
+                <NuxtLink
+                  v-if="selectedConversation.listing"
+                  :to="`/listings/${selectedConversation.listing.id}`"
+                  class="block text-xs font-medium truncate text-baano-green hover:underline mt-1"
+                >
+                  {{ selectedConversation.listing.title }}
+                </NuxtLink>
+              </div>
+              <button
+                v-if="canRequestReview"
+                type="button"
+                class="px-3 py-2 rounded-xl text-xs md:text-sm font-medium text-white bg-baano-green disabled:opacity-50 whitespace-nowrap"
+                :disabled="requestingReview"
+                @click="requestReview"
               >
-                {{ selectedConversation.listing.title }}
-              </NuxtLink>
+                {{ requestingReview ? '…' : 'Запросить отзыв' }}
+              </button>
             </div>
-          </div>
 
           <div
             ref="messagesContainer"
@@ -353,9 +404,10 @@ onMounted(() => {
                     ? 'text-white rounded-br-sm bg-baano-green'
                     : 'bg-white text-gray-900 rounded-bl-sm shadow-sm'"
                 >
-                  <p class="text-sm whitespace-pre-wrap break-words">
-                    {{ msg.body }}
-                  </p>
+                  <p
+                    class="text-sm whitespace-pre-wrap break-words"
+                    v-html="linkifyMessage(msg.body)"
+                  />
                   <p class="text-xs mt-1 opacity-75 text-right">
                     {{ msg.created_at }}
                   </p>

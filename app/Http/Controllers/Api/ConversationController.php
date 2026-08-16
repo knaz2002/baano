@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Listing;
 use App\Models\Message;
+use App\Models\Review;
+use App\Models\ReviewInvite;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +40,7 @@ class ConversationController extends Controller
             ->with([
                 'userOne:id,name',
                 'userTwo:id,name',
-                'listing:id,title',
+                'listing:id,title,user_id,status,is_active',
             ])
             ->findOrFail($conversation);
 
@@ -64,9 +66,12 @@ class ConversationController extends Controller
                 'created_at' => $message->created_at->format('H:i'),
             ]);
 
+        $summary = $this->mapConversationSummary($model, $userId);
+        $summary['can_request_review'] = $this->canRequestReview($model, $userId);
+
         return response()->json([
             'data' => [
-                'conversation' => $this->mapConversationSummary($model, $userId),
+                'conversation' => $summary,
                 'messages' => $messages,
             ],
         ]);
@@ -214,5 +219,41 @@ class ConversationController extends Controller
                 'title' => $conversation->listing->title,
             ] : null,
         ];
+    }
+
+    private function canRequestReview(Conversation $conversation, int $userId): bool
+    {
+        $listing = $conversation->listing;
+
+        if (
+            ! $listing
+            || $listing->user_id !== $userId
+            || $listing->status !== 'active'
+            || ! $listing->is_active
+        ) {
+            return false;
+        }
+
+        $otherUserId = $conversation->user_one_id === $userId
+            ? $conversation->user_two_id
+            : $conversation->user_one_id;
+
+        $reviewExists = Review::query()
+            ->where('listing_id', $listing->id)
+            ->where('user_id', $otherUserId)
+            ->exists();
+
+        if ($reviewExists) {
+            return false;
+        }
+
+        $activeInviteExists = ReviewInvite::query()
+            ->where('listing_id', $listing->id)
+            ->where('recipient_id', $otherUserId)
+            ->whereNull('used_at')
+            ->where('expires_at', '>', now())
+            ->exists();
+
+        return ! $activeInviteExists;
     }
 }

@@ -2,6 +2,8 @@
 const route = useRoute()
 const auth = useAuthStore()
 
+const showShell = computed(() => auth.loaded && auth.isAuthenticated)
+
 const isActive = (path: string) => {
   if (path === '/') {
     return route.path === '/'
@@ -17,10 +19,28 @@ async function logout() {
   }
   await navigateTo('/login')
 }
+
+onMounted(async () => {
+  if (!auth.loaded) {
+    await auth.fetchUser()
+  }
+})
 </script>
 
 <template>
-  <div class="min-h-screen pb-20 md:pb-0 bg-baano-cream">
+  <div
+    v-if="!showShell"
+    class="min-h-screen flex items-center justify-center bg-baano-cream"
+  >
+    <p class="text-baano-muted">
+      Загрузка…
+    </p>
+  </div>
+
+  <div
+    v-else
+    class="min-h-screen pb-20 md:pb-0 bg-baano-cream"
+  >
     <div class="max-w-7xl mx-auto">
       <div class="flex flex-col md:flex-row min-h-screen">
         <aside class="hidden md:flex md:flex-col w-64 bg-white border-r flex-shrink-0 border-baano-border">

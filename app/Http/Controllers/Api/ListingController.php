@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Favorite;
 use App\Models\Listing;
+use App\Models\Review;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +29,12 @@ class ListingController extends Controller
         if ($request->filled('city')) {
             $baseQuery->where('city', trim((string) $request->city));
         }
+
+        $filterType = $this->resolveFilterType(
+            $request->filled('category') ? (int) $request->category : null
+        );
+
+        $filterOptions = $this->getFilterOptions($baseQuery, $filterType);
 
         $priceStats = (clone $baseQuery)
             ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
@@ -58,6 +66,8 @@ class ListingController extends Controller
         if ($request->filled('search')) {
             $query->where('title', 'like', '%'.$request->search.'%');
         }
+
+        $this->applyAttributeFilters($query, $request, $filterType);
 
         $sortBy = $request->get('sort', 'latest');
         switch ($sortBy) {
@@ -143,6 +153,10 @@ class ListingController extends Controller
                     'min' => $priceMinGlobal,
                     'max' => $priceMaxGlobal,
                 ],
+                'filter_config' => [
+                    'type' => $filterType,
+                    'options' => $filterOptions,
+                ],
                 'filters' => [
                     'category' => $request->category,
                     'city' => $request->city,
@@ -150,6 +164,17 @@ class ListingController extends Controller
                     'sort' => $sortBy,
                     'price_min' => $request->price_min,
                     'price_max' => $request->price_max,
+                    'area_min' => $request->area_min,
+                    'area_max' => $request->area_max,
+                    'rooms' => collect($request->input('rooms', []))
+                        ->map(fn ($room) => (string) $room)
+                        ->filter()
+                        ->values()
+                        ->all(),
+                    'floor' => $request->floor,
+                    'brand' => $request->brand,
+                    'model' => $request->model,
+                    'year' => $request->year,
                 ],
             ],
             'meta' => [
@@ -197,6 +222,41 @@ class ListingController extends Controller
             ])
             ->values();
 
+        $reviews = Review::query()
+            ->where('listing_id', $listing->id)
+            ->where('is_active', true)
+            ->with('user:id,name')
+            ->latest()
+            ->get()
+            ->map(fn (Review $review) => [
+                'id' => $review->id,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'created_at' => optional($review->created_at)?->toIso8601String(),
+                'user' => $review->user
+                    ? ['id' => $review->user->id, 'name' => $review->user->name]
+                    : null,
+            ])
+            ->values();
+
+        $userReview = null;
+        if (Auth::check()) {
+            $own = Review::query()
+                ->where('listing_id', $listing->id)
+                ->where('user_id', Auth::id())
+                ->first();
+
+            if ($own) {
+                $userReview = [
+                    'id' => $own->id,
+                    'rating' => $own->rating,
+                    'comment' => $own->comment,
+                    'is_active' => (bool) $own->is_active,
+                    'moderation_status' => $own->moderation_status,
+                ];
+            }
+        }
+
         return response()->json([
             'data' => [
                 'listing' => [
@@ -231,8 +291,176 @@ class ListingController extends Controller
                 ],
                 'is_favorited' => $isFavorited,
                 'similar_listings' => $similarListings,
+                'reviews' => $reviews,
+                'reviews_count' => $reviews->count(),
+                'user_review' => $userReview,
             ],
         ]);
+    }
+
+    private function resolveFilterType(?int $categoryId): ?string
+    {
+        if ($categoryId === null) {
+            return null;
+        }
+
+        return match (true) {
+            in_array($categoryId, [6, 7, 8, 9, 10, 11, 12, 13], true) => 'commercial',
+            in_array($categoryId, [2, 3], true) => 'apartments',
+            in_array($categoryId, [14, 15, 16, 17, 18], true) => 'transport',
+            in_array($categoryId, [19, 20, 21, 22, 23], true) => 'equipment',
+            default => null,
+        };
+    }
+
+    private function getFilterOptions(Builder $query, ?string $filterType): array
+    {
+        if ($filterType === 'commercial') {
+            $areas = (clone $query)
+                ->select(['id', 'listing_attributes'])
+                ->whereNotNull('listing_attributes')
+                ->get()
+                ->map(function (Listing $listing): float {
+                    $attributes = $listing->listing_attributes;
+                    if (! is_array($attributes)) {
+                        $attributes = json_decode((string) $attributes, true) ?: [];
+                    }
+
+                    return (float) ($attributes['area'] ?? 0);
+                })
+                ->filter(fn (float $area): bool => $area > 0);
+
+            return [
+                'area' => [
+                    'min' => (float) ($areas->min() ?? 0),
+                    'max' => (float) ($areas->max() ?? 0),
+                ],
+            ];
+        }
+
+        if ($filterType === 'apartments') {
+            return [
+                'rooms' => range(1, 5),
+                'floors' => range(1, 30),
+            ];
+        }
+
+        if (! in_array($filterType, ['transport', 'equipment'], true)) {
+            return [];
+        }
+
+        $pairs = (clone $query)
+            ->select(['id', 'listing_attributes'])
+            ->whereNotNull('listing_attributes')
+            ->get()
+            ->map(function (Listing $listing): array {
+                $attributes = $listing->listing_attributes;
+                if (! is_array($attributes)) {
+                    $attributes = json_decode((string) $attributes, true) ?: [];
+                }
+
+                return [
+                    'brand' => trim((string) ($attributes['brand'] ?? '')),
+                    'model' => trim((string) ($attributes['model'] ?? '')),
+                ];
+            });
+
+        $brands = $pairs
+            ->pluck('brand')
+            ->filter(fn ($value) => is_string($value) && $value !== '')
+            ->unique()
+            ->sort(SORT_NATURAL | SORT_FLAG_CASE)
+            ->values();
+
+        $modelsByBrand = [];
+        foreach ($brands as $brand) {
+            $modelsByBrand[$brand] = $pairs
+                ->where('brand', $brand)
+                ->pluck('model')
+                ->filter(fn ($value) => is_string($value) && $value !== '')
+                ->unique()
+                ->sort(SORT_NATURAL | SORT_FLAG_CASE)
+                ->values()
+                ->all();
+        }
+
+        $options = [
+            'brands' => $brands->all(),
+            'modelsByBrand' => $modelsByBrand,
+        ];
+
+        if ($filterType === 'transport') {
+            $options['years'] = range(2026, 1980);
+        }
+
+        return $options;
+    }
+
+    private function applyAttributeFilters(Builder $query, Request $request, ?string $filterType): void
+    {
+        if ($filterType === 'commercial') {
+            if ($request->filled('area_min')) {
+                $areaMin = (float) $request->input('area_min');
+                if ($areaMin >= 0) {
+                    $query->where('listing_attributes->area', '>=', $areaMin);
+                }
+            }
+
+            if ($request->filled('area_max')) {
+                $areaMax = (float) $request->input('area_max');
+                if ($areaMax > 0) {
+                    $query->where('listing_attributes->area', '<=', $areaMax);
+                }
+            }
+
+            return;
+        }
+
+        if ($filterType === 'apartments') {
+            $rooms = collect($request->input('rooms', []))
+                ->map(fn ($room) => (int) $room)
+                ->filter(fn ($room) => $room >= 1 && $room <= 5)
+                ->unique()
+                ->values();
+
+            if ($rooms->isNotEmpty()) {
+                $query->where(function (Builder $roomsQuery) use ($rooms): void {
+                    foreach ($rooms as $room) {
+                        $roomsQuery->orWhere('listing_attributes->rooms', $room);
+                    }
+                });
+            }
+
+            $floor = (int) $request->input('floor', 0);
+            if ($floor >= 1 && $floor <= 30) {
+                $query->where('listing_attributes->floor', $floor);
+            }
+
+            return;
+        }
+
+        if (! in_array($filterType, ['transport', 'equipment'], true)) {
+            return;
+        }
+
+        $brand = trim((string) $request->input('brand', ''));
+        if ($brand !== '') {
+            $query->where('listing_attributes->brand', $brand);
+        }
+
+        $model = trim((string) $request->input('model', ''));
+        if ($model !== '') {
+            $query->where('listing_attributes->model', $model);
+        }
+
+        if ($filterType !== 'transport') {
+            return;
+        }
+
+        $year = (int) $request->input('year', 0);
+        if ($year >= 1980 && $year <= 2026) {
+            $query->where('listing_attributes->year', $year);
+        }
     }
 
     private function getCategoryIdsWithChildren(int $categoryId): array

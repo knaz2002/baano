@@ -5,6 +5,7 @@ import type {
   CatalogListing,
   CatalogMeta,
   CatalogPayload,
+  FilterConfig,
 } from '~/types/catalog'
 
 const route = useRoute()
@@ -18,6 +19,7 @@ const categories = ref<CatalogCategory[]>([])
 const cities = ref<string[]>([])
 const currentCategory = ref<{ id: number; name: string } | null>(null)
 const priceRange = ref({ min: 0, max: 0 })
+const filterConfig = ref<FilterConfig>({ type: null, options: {} })
 const meta = ref<CatalogMeta>({
   current_page: 1,
   last_page: 1,
@@ -32,6 +34,13 @@ const filters = reactive<CatalogFilters>({
   sort: 'latest',
   price_min: '',
   price_max: '',
+  area_min: '',
+  area_max: '',
+  rooms: [],
+  floor: '',
+  brand: '',
+  model: '',
+  year: '',
 })
 
 const showFilters = ref(false)
@@ -41,9 +50,33 @@ const error = ref('')
 const formatPrice = (price: number | string) =>
   new Intl.NumberFormat('ru-RU').format(Number(price) || 0)
 
+const areaRange = computed(() => ({
+  min: filterConfig.value.options.area?.min ?? 0,
+  max: filterConfig.value.options.area?.max ?? 0,
+}))
+
+const availableModels = computed(() => {
+  const brand = filters.brand
+  if (!brand || !filterConfig.value.options.modelsByBrand) {
+    return []
+  }
+  return filterConfig.value.options.modelsByBrand[brand] || []
+})
+
 function queryValue(key: string): string {
   const value = route.query[key]
   return Array.isArray(value) ? String(value[0] ?? '') : String(value ?? '')
+}
+
+function queryRooms(): string[] {
+  const value = route.query.rooms ?? route.query['rooms[]']
+  if (!value) {
+    return []
+  }
+  if (Array.isArray(value)) {
+    return value.map(v => String(v)).filter(Boolean)
+  }
+  return [String(value)].filter(Boolean)
 }
 
 function syncFiltersFromRoute() {
@@ -53,10 +86,17 @@ function syncFiltersFromRoute() {
   filters.sort = queryValue('sort') || 'latest'
   filters.price_min = queryValue('price_min')
   filters.price_max = queryValue('price_max')
+  filters.area_min = queryValue('area_min')
+  filters.area_max = queryValue('area_max')
+  filters.rooms = queryRooms()
+  filters.floor = queryValue('floor')
+  filters.brand = queryValue('brand')
+  filters.model = queryValue('model')
+  filters.year = queryValue('year')
 }
 
-function buildQuery(page = 1): Record<string, string> {
-  const query: Record<string, string> = {}
+function buildQuery(page = 1): Record<string, string | string[]> {
+  const query: Record<string, string | string[]> = {}
   if (filters.category) query.category = String(filters.category)
   if (filters.city) query.city = String(filters.city)
   if (filters.search) query.search = String(filters.search)
@@ -67,8 +107,31 @@ function buildQuery(page = 1): Record<string, string> {
   if (filters.price_max !== '' && filters.price_max != null) {
     query.price_max = String(filters.price_max)
   }
+  if (filters.area_min !== '' && filters.area_min != null) {
+    query.area_min = String(filters.area_min)
+  }
+  if (filters.area_max !== '' && filters.area_max != null) {
+    query.area_max = String(filters.area_max)
+  }
+  if (filters.rooms?.length) {
+    query.rooms = filters.rooms.map(String)
+  }
+  if (filters.floor) query.floor = String(filters.floor)
+  if (filters.brand) query.brand = String(filters.brand)
+  if (filters.model) query.model = String(filters.model)
+  if (filters.year) query.year = String(filters.year)
   if (page > 1) query.page = String(page)
   return query
+}
+
+function clearAttributeFilters() {
+  filters.area_min = ''
+  filters.area_max = ''
+  filters.rooms = []
+  filters.floor = ''
+  filters.brand = ''
+  filters.model = ''
+  filters.year = ''
 }
 
 async function loadListings(page = Number(queryValue('page') || 1)) {
@@ -91,10 +154,19 @@ async function loadListings(page = Number(queryValue('page') || 1)) {
     cities.value = res.data.cities
     currentCategory.value = res.data.current_category
     priceRange.value = res.data.price_range
+    filterConfig.value = res.data.filter_config || { type: null, options: {} }
     meta.value = res.meta
 
     if (filters.price_max === '' || filters.price_max == null) {
       filters.price_max = res.data.price_range.max || ''
+    }
+
+    if (
+      filterConfig.value.type === 'commercial'
+      && (filters.area_max === '' || filters.area_max == null)
+      && areaRange.value.max
+    ) {
+      filters.area_max = areaRange.value.max
     }
   } catch (e) {
     console.error(e)
@@ -107,6 +179,16 @@ async function loadListings(page = Number(queryValue('page') || 1)) {
 async function applyFilters() {
   showFilters.value = false
   await router.push({ path: '/listings', query: buildQuery(1) })
+}
+
+async function onCategoryChange() {
+  clearAttributeFilters()
+  await applyFilters()
+}
+
+async function onBrandChange() {
+  filters.model = ''
+  await applyFilters()
 }
 
 async function goToPage(page: number) {
@@ -204,7 +286,7 @@ onMounted(async () => {
               <select
                 v-model="filters.category"
                 class="w-full px-3 py-2 rounded-lg border-2 border-baano-border focus:outline-none text-sm bg-white text-baano-ink"
-                @change="applyFilters"
+                @change="onCategoryChange"
               >
                 <option value="">Все категории</option>
                 <optgroup
@@ -258,6 +340,135 @@ onMounted(async () => {
                   class="w-full px-3 py-2 rounded-lg border-2 border-baano-border focus:outline-none text-sm text-baano-ink"
                   @change="applyFilters"
                 >
+              </div>
+            </div>
+
+            <!-- Коммерческая: площадь -->
+            <div
+              v-if="filterConfig.type === 'commercial'"
+              class="mb-4 md:mb-6"
+            >
+              <label class="block text-sm font-medium mb-2 text-baano-muted">Площадь, м²</label>
+              <div class="flex gap-2">
+                <input
+                  v-model="filters.area_min"
+                  type="number"
+                  :min="areaRange.min"
+                  placeholder="от"
+                  class="w-full px-3 py-2 rounded-lg border-2 border-baano-border focus:outline-none text-sm text-baano-ink"
+                  @change="applyFilters"
+                >
+                <input
+                  v-model="filters.area_max"
+                  type="number"
+                  :max="areaRange.max"
+                  placeholder="до"
+                  class="w-full px-3 py-2 rounded-lg border-2 border-baano-border focus:outline-none text-sm text-baano-ink"
+                  @change="applyFilters"
+                >
+              </div>
+            </div>
+
+            <!-- Квартиры: комнаты + этаж -->
+            <div
+              v-if="filterConfig.type === 'apartments'"
+              class="mb-4 md:mb-6 space-y-4"
+            >
+              <div>
+                <label class="block text-sm font-medium mb-2 text-baano-muted">Количество комнат</label>
+                <div class="grid grid-cols-5 gap-1">
+                  <label
+                    v-for="room in (filterConfig.options.rooms || [])"
+                    :key="room"
+                    class="flex flex-col items-center gap-1 px-1 py-2 rounded-lg border border-baano-border cursor-pointer hover:bg-[#F1F6F2]"
+                  >
+                    <input
+                      v-model="filters.rooms"
+                      type="checkbox"
+                      :value="String(room)"
+                      @change="applyFilters"
+                    >
+                    <span class="text-xs">{{ room }}</span>
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2 text-baano-muted">Этаж</label>
+                <select
+                  v-model="filters.floor"
+                  class="w-full px-3 py-2 rounded-lg border-2 border-baano-border focus:outline-none text-sm bg-white text-baano-ink"
+                  @change="applyFilters"
+                >
+                  <option value="">Любой этаж</option>
+                  <option
+                    v-for="floor in (filterConfig.options.floors || [])"
+                    :key="floor"
+                    :value="String(floor)"
+                  >
+                    {{ floor }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Транспорт / техника -->
+            <div
+              v-if="filterConfig.type === 'transport' || filterConfig.type === 'equipment'"
+              class="mb-4 md:mb-6 space-y-4"
+            >
+              <div>
+                <label class="block text-sm font-medium mb-2 text-baano-muted">
+                  {{ filterConfig.type === 'equipment' ? 'Производитель / марка' : 'Марка' }}
+                </label>
+                <select
+                  v-model="filters.brand"
+                  class="w-full px-3 py-2 rounded-lg border-2 border-baano-border focus:outline-none text-sm bg-white text-baano-ink"
+                  @change="onBrandChange"
+                >
+                  <option value="">Все марки</option>
+                  <option
+                    v-for="brand in (filterConfig.options.brands || [])"
+                    :key="brand"
+                    :value="brand"
+                  >
+                    {{ brand }}
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-2 text-baano-muted">Модель</label>
+                <select
+                  v-model="filters.model"
+                  :disabled="!filters.brand"
+                  class="w-full px-3 py-2 rounded-lg border-2 border-baano-border focus:outline-none text-sm bg-white text-baano-ink disabled:opacity-50"
+                  @change="applyFilters"
+                >
+                  <option value="">Все модели</option>
+                  <option
+                    v-for="model in availableModels"
+                    :key="model"
+                    :value="model"
+                  >
+                    {{ model }}
+                  </option>
+                </select>
+              </div>
+              <div v-if="filterConfig.type === 'transport'">
+                <label class="block text-sm font-medium mb-2 text-baano-muted">Год выпуска</label>
+                <select
+                  v-model="filters.year"
+                  class="w-full px-3 py-2 rounded-lg border-2 border-baano-border focus:outline-none text-sm bg-white text-baano-ink"
+                  @change="applyFilters"
+                >
+                  <option value="">Любой год</option>
+                  <option
+                    v-for="year in (filterConfig.options.years || [])"
+                    :key="year"
+                    :value="String(year)"
+                  >
+                    {{ year }}
+                  </option>
+                </select>
               </div>
             </div>
 

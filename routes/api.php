@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\MyListingController;
 use App\Http\Controllers\Api\MyReviewController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ReviewInviteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -60,6 +61,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/conversations/{conversation}/messages', [ConversationController::class, 'messages']);
         Route::post('/conversations/{conversation}/messages', [ConversationController::class, 'send']);
         Route::delete('/conversations/{conversation}', [ConversationController::class, 'hide']);
+        Route::post('/conversations/{conversation}/review-invite', [ReviewInviteController::class, 'store']);
+
+        Route::get('/review-invites/{token}', [ReviewInviteController::class, 'show']);
+        Route::post('/review-invites/{token}', [ReviewInviteController::class, 'submit']);
 
         Route::get('/my/reviews', [MyReviewController::class, 'index']);
     });

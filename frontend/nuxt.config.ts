@@ -19,6 +19,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: 'http://127.0.0.1:8000',
+      // frontend/.env: NUXT_PUBLIC_DADATA_TOKEN=... (можно скопировать из VITE_DADATA_TOKEN)
+      dadataToken: process.env.NUXT_PUBLIC_DADATA_TOKEN || process.env.VITE_DADATA_TOKEN || '',
     },
   },
 })

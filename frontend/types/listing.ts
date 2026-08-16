@@ -31,8 +31,27 @@ export type SimilarListing = {
   category: { id: number; name: string } | null
 }
 
+export type ListingReview = {
+  id: number
+  rating: number
+  comment: string | null
+  created_at: string | null
+  user: { id: number; name: string } | null
+}
+
+export type UserReview = {
+  id: number
+  rating: number
+  comment: string | null
+  is_active: boolean
+  moderation_status?: string | null
+}
+
 export type ListingShowPayload = {
   listing: ListingDetail
   is_favorited: boolean
   similar_listings: SimilarListing[]
+  reviews: ListingReview[]
+  reviews_count: number
+  user_review: UserReview | null
 }
