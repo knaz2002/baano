@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Auth\PasswordResetController;
+use App\Http\Controllers\Api\Auth\PhoneVerificationController;
 use App\Http\Controllers\Api\ConversationController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\HomeController;
@@ -34,11 +36,21 @@ Route::get('/categories', [MyListingController::class, 'categories']);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/forgot-password', [PasswordResetController::class, 'forgot'])
+    ->middleware('throttle:6,1');
+Route::post('/reset-password', [PasswordResetController::class, 'reset'])
+    ->middleware('throttle:6,1');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::put('/profile', [ProfileController::class, 'update']);
+
+    Route::get('/phone/verification-status', [PhoneVerificationController::class, 'status']);
+    Route::post('/phone/verification-notification', [PhoneVerificationController::class, 'resend'])
+        ->middleware('throttle:6,1');
+    Route::post('/phone/verify', [PhoneVerificationController::class, 'verify'])
+        ->middleware('throttle:10,1');
 
     Route::get('/email/verification-status', [\App\Http\Controllers\Api\Auth\EmailVerificationController::class, 'notice']);
     Route::post('/email/verification-notification', [\App\Http\Controllers\Api\Auth\EmailVerificationController::class, 'resend'])

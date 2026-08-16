@@ -54,62 +54,72 @@ async function submit() {
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto">
-    <div class="bg-white rounded-xl shadow-sm p-6">
-      <h1 class="font-heading text-2xl font-bold text-baano-ink mb-6">
-        Редактировать профиль
-      </h1>
+  <div class="max-w-3xl">
+    <h1 class="text-3xl font-bold mb-8" style="color: #1F4234;">
+      Личная информация
+    </h1>
 
-      <form class="space-y-6" @submit.prevent="submit">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Имя</label>
-          <input
-            v-model="form.name"
-            type="text"
-            required
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-baano-green"
-          >
-          <p v-if="errors.name" class="text-red-500 text-sm mt-1">{{ errors.name }}</p>
-        </div>
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+      <form @submit.prevent="submit">
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Имя</label>
+            <input
+              v-model="form.name"
+              type="text"
+              required
+              class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none transition-colors"
+              style="border-color: #E8E3DA; color: #1F4234;"
+            >
+            <p v-if="errors.name" class="text-red-500 text-sm mt-1">
+              {{ errors.name }}
+            </p>
+          </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-          <input
-            v-model="form.email"
-            type="email"
-            required
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-baano-green"
-          >
-          <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
-        </div>
+          <div>
+            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Email</label>
+            <input
+              v-model="form.email"
+              type="email"
+              required
+              class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none transition-colors"
+              style="border-color: #E8E3DA; color: #1F4234;"
+            >
+            <p v-if="errors.email" class="text-red-500 text-sm mt-1">
+              {{ errors.email }}
+            </p>
+          </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Телефон</label>
-          <input
-            v-model="form.phone"
-            type="tel"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-baano-green"
-          >
-          <p v-if="errors.phone" class="text-red-500 text-sm mt-1">{{ errors.phone }}</p>
-        </div>
+          <div>
+            <label class="block text-sm font-medium mb-2" style="color: #68736B;">Телефон</label>
+            <input
+              v-model="form.phone"
+              type="tel"
+              class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none transition-colors"
+              style="border-color: #E8E3DA; color: #1F4234;"
+            >
+            <p v-if="errors.phone" class="text-red-500 text-sm mt-1">
+              {{ errors.phone }}
+            </p>
+          </div>
 
-        <p v-if="errors.form" class="text-red-500 text-sm">{{ errors.form }}</p>
-        <p v-if="success" class="text-baano-green text-sm">{{ success }}</p>
+          <p v-if="errors.form" class="text-red-500 text-sm">
+            {{ errors.form }}
+          </p>
+          <p v-if="success" class="text-sm" style="color: #315C47;">
+            {{ success }}
+          </p>
 
-        <div class="pt-4 flex gap-3">
-          <button
-            type="submit"
-            class="px-6 py-2 rounded-lg text-white bg-baano-green disabled:opacity-50"
-            :disabled="saving"
-          >
-            {{ saving ? 'Сохранение…' : 'Сохранить' }}
-          </button>
-          <NuxtLink
-            to="/dashboard"
-            class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-          >
-            Отмена
-          </NuxtLink>
+          <div class="pt-4">
+            <button
+              type="submit"
+              class="px-8 py-3 rounded-xl text-white font-medium transition-all hover:shadow-lg disabled:opacity-50"
+              style="background-color: #315C47;"
+              :disabled="saving"
+            >
+              {{ saving ? 'Сохранение…' : 'Редактировать профиль' }}
+            </button>
+          </div>
         </div>
       </form>
     </div>

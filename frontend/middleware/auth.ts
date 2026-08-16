@@ -1,4 +1,4 @@
-export default defineNuxtRouteMiddleware(async () => {
+export default defineNuxtRouteMiddleware(async (to) => {
   // Cookie-сессия Sanctum есть только в браузере — на SSR не редиректим
   if (import.meta.server) {
     return
@@ -10,5 +10,14 @@ export default defineNuxtRouteMiddleware(async () => {
   }
   if (!auth.isAuthenticated) {
     return navigateTo('/login')
+  }
+
+  // Phone verify пока опционален (SMTP/SMS нестабильны локально)
+  if (to.path === '/verify-email' || to.path === '/verify-phone') {
+    return
+  }
+
+  if (!auth.isEmailVerified) {
+    return navigateTo('/verify-email')
   }
 })

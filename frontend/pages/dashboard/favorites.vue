@@ -66,63 +66,92 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-7xl mx-auto px-4 py-8 md:py-10">
-    <h1 class="font-heading text-2xl md:text-3xl font-bold text-baano-ink mb-2">
+  <div class="bg-white rounded-2xl shadow-lg p-6">
+    <h1 class="text-2xl font-bold mb-6" style="color: #1F4234;">
       Избранное
     </h1>
-    <p class="text-baano-muted mb-6">
-      {{ favorites.length }} объявлений
-    </p>
 
-    <div v-if="loading" class="py-16 text-center text-baano-muted">
+    <div v-if="loading" class="py-16 text-center" style="color: #68736B;">
       Загрузка…
     </div>
     <div v-else-if="error" class="py-16 text-center text-red-600">
       {{ error }}
     </div>
-    <div
-      v-else-if="favorites.length === 0"
-      class="py-16 text-center text-baano-muted bg-white rounded-2xl shadow"
-    >
-      Пока пусто. Добавляйте объявления сердечком на главной или в каталоге.
-    </div>
 
-    <div v-else class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
-      <div
-        v-for="item in favorites"
-        :key="item.id"
-        class="bg-white rounded-2xl shadow-lg overflow-hidden listing-card flex flex-col"
-      >
-        <NuxtLink :to="`/listings/${item.listing.id}`" class="block relative overflow-hidden">
-          <img
-            :src="item.listing.image || '/images/placeholder.jpg'"
-            :alt="item.listing.title"
-            class="w-full h-32 md:h-40 object-cover"
-          >
-        </NuxtLink>
-        <div class="p-3 md:p-4 flex flex-col flex-1">
-          <NuxtLink
-            :to="`/listings/${item.listing.id}`"
-            class="font-bold text-sm md:text-base mb-2 line-clamp-2 listing-card-title"
-          >
-            {{ item.listing.title }}
+    <template v-else>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div
+          v-for="favorite in favorites"
+          :key="favorite.id"
+          class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group border-2 relative"
+          style="border-color: #E8E3DA;"
+        >
+          <NuxtLink :to="`/listings/${favorite.listing.id}`" class="block">
+            <div class="relative overflow-hidden">
+              <img
+                :src="favorite.listing.image || '/images/placeholder.jpg'"
+                :alt="favorite.listing.title"
+                class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+              >
+            </div>
+
+            <div class="p-5 price-accent">
+              <h3
+                class="font-bold text-lg text-gray-900 mb-2 line-clamp-1"
+                :title="favorite.listing.title"
+              >
+                {{ favorite.listing.title }}
+              </h3>
+              <p class="text-sm mb-2" style="color: #68736B;">
+                {{ favorite.listing.category?.name }}
+              </p>
+              <p
+                class="text-2xl font-bold mb-2 price-red"
+                style="background-color: #315C47;"
+              >
+                {{ formatPrice(favorite.listing.price) }} ₽
+              </p>
+            </div>
           </NuxtLink>
-          <p class="text-sm md:text-lg font-bold price-red mb-2">
-            {{ formatPrice(item.listing.price) }} ₽
-          </p>
-          <p class="text-xs text-baano-muted mb-3 line-clamp-1">
-            {{ item.listing.category?.name || 'Без категории' }}
-          </p>
+
           <button
             type="button"
-            class="mt-auto text-sm text-red-600 hover:underline disabled:opacity-50"
-            :disabled="removingId === item.id"
-            @click="removeFavorite(item.id)"
+            class="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-all z-10 disabled:opacity-50"
+            :disabled="removingId === favorite.id"
+            @click="removeFavorite(favorite.id)"
           >
-            {{ removingId === item.id ? '…' : 'Убрать' }}
+            <svg
+              class="w-6 h-6 text-red-500"
+              fill="currentColor"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
           </button>
         </div>
       </div>
-    </div>
+
+      <div v-if="favorites.length === 0" class="text-center py-16">
+        <svg class="w-24 h-24 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+        <p class="text-xl font-medium" style="color: #68736B;">
+          У вас пока нет избранных объявлений
+        </p>
+        <NuxtLink
+          to="/listings"
+          class="inline-block mt-4 px-6 py-3 rounded-xl text-white font-medium transition-all hover:shadow-lg"
+          style="background-color: #315C47;"
+        >
+          Смотреть объявления
+        </NuxtLink>
+      </div>
+    </template>
   </div>
 </template>

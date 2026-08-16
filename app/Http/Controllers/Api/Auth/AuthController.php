@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
-{
-    public function login(Request $request): JsonResponse
+{    public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -62,10 +61,15 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
-        $user->sendEmailVerificationNotification();
+
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return response()->json([
-            'data' => $this->userPayload($user),
+            'data' => $this->userPayload($user->fresh()),
         ], 201);
     }
 

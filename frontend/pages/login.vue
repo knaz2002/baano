@@ -60,6 +60,11 @@ async function onSubmit() {
             autocomplete="current-password"
             class="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-baano-green"
           >
+          <p class="mt-2 text-right">
+            <NuxtLink to="/forgot-password" class="text-sm text-baano-green hover:underline">
+              Забыли пароль?
+            </NuxtLink>
+          </p>
         </div>
 
         <label class="flex items-center gap-2 text-sm text-baano-ink">

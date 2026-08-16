@@ -82,16 +82,48 @@ body {
 }
 
 .site-logo {
-  width: 130px;
-  height: auto;
-  max-width: none;
+  width: 130px !important;
+  height: auto !important;
+  max-width: none !important;
   object-fit: contain;
+}
+
+@media (max-width: 767px) {
+  .site-logo {
+    width: 90px !important;
+  }
 }
 
 @media (min-width: 768px) {
   .site-logo {
-    width: 210px;
+    width: 210px !important;
   }
+}
+
+.dashboard-menu-link {
+  color: var(--menu-accent) !important;
+  border-color: var(--menu-accent) !important;
+}
+
+.dashboard-menu-link svg,
+.dashboard-menu-link span {
+  color: inherit !important;
+}
+
+.dashboard-menu > *:nth-child(odd),
+.dashboard-menu > *:nth-child(odd) * {
+  color: #fe0000 !important;
+}
+
+.dashboard-menu > *:nth-child(even),
+.dashboard-menu > *:nth-child(even) * {
+  color: #315C47 !important;
+}
+
+.dashboard-menu .dashboard-menu-link,
+.dashboard-menu .dashboard-menu-link * {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
 }
 
 header.app-header {
@@ -104,6 +136,36 @@ header.app-header {
 
 .price-red {
   color: #fe0000 !important;
+}
+
+.price-accent {
+  background: none !important;
+  background-image: none !important;
+  color: #fe0000 !important;
+  -webkit-text-fill-color: #fe0000 !important;
+}
+
+.my-listings-text,
+.my-listings-text :where(
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  span,
+  td,
+  th,
+  a,
+  button
+) {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+.my-listings-text .action-green,
+.my-listings-text .confirm-action {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 .listing-card .listing-card-title {

@@ -217,6 +217,7 @@ class ConversationController extends Controller
             'listing' => $conversation->listing ? [
                 'id' => $conversation->listing->id,
                 'title' => $conversation->listing->title,
+                'image' => $this->listingPreviewImage($conversation->listing),
             ] : null,
         ];
     }
@@ -255,5 +256,24 @@ class ConversationController extends Controller
             ->exists();
 
         return ! $activeInviteExists;
+    }
+
+    private function listingPreviewImage(Listing $listing): ?string
+    {
+        $media = $listing->getFirstMedia('images');
+
+        if ($media === null) {
+            return null;
+        }
+
+        $url = $media->hasGeneratedConversion('thumb')
+            ? $media->getUrl('thumb')
+            : $media->getUrl();
+
+        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+            return $url;
+        }
+
+        return rtrim((string) config('app.url'), '/').'/'.ltrim($url, '/');
     }
 }
