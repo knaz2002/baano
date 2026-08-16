@@ -1,16 +1,39 @@
 <template>
-    <DashboardLayout>
-        <div class="min-h-screen pb-20 md:pb-0" style="background-color: #F7F3EC;">
-            <div class="max-w-6xl mx-auto px-3 md:px-4 py-4 md:py-8">
-                <div class="flex items-center justify-between mb-4 md:mb-6">
+    <DashboardLayout
+        :hide-mobile-header="Boolean(selectedConversation)"
+        :hide-mobile-nav="Boolean(selectedConversation)"
+        :flush-mobile-content="Boolean(selectedConversation)"
+    >
+        <div
+            class="min-h-screen md:pb-0"
+            :class="selectedConversation ? 'pb-0' : 'pb-20'"
+            style="background-color: #F7F3EC;"
+        >
+            <div
+                class="max-w-6xl mx-auto md:px-4 md:py-8"
+                :class="selectedConversation ? 'px-0 py-0' : 'px-3 py-4'"
+            >
+                <div
+                    class="items-center justify-between mb-4 md:mb-6"
+                    :class="selectedConversation ? 'hidden md:flex' : 'flex'"
+                >
                     <h1 class="text-xl md:text-2xl font-bold" style="color: #1F4234;">Сообщения</h1>
                     <Link href="/" class="text-sm font-medium hover:underline" style="color: #315C47;">На главную</Link>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col md:flex-row" style="min-height: 600px;">
+                <div
+                    class="bg-white md:rounded-2xl md:shadow-lg overflow-hidden flex flex-col md:flex-row"
+                    :class="selectedConversation
+                        ? 'min-h-[100dvh] md:min-h-[600px]'
+                        : 'min-h-[600px]'"
+                >
                     
                     <!-- ЛЕВАЯ ПАНЕЛЬ: Список диалогов (ВСЕГДА видна) -->
-                    <div class="w-full md:w-80 border-r" style="border-color: #E8E3DA;">
+                    <div
+                        class="w-full md:w-80 border-r"
+                        :class="selectedConversation ? 'hidden md:block' : 'block'"
+                        style="border-color: #E8E3DA;"
+                    >
                         <div v-if="!conversations || conversations.length === 0" class="p-8 text-center text-gray-500">
                             <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
@@ -69,7 +92,10 @@
                     </div>
 
                     <!-- ПРАВАЯ ПАНЕЛЬ: Чат -->
-                    <div class="flex-1 flex flex-col">
+                    <div
+                        class="flex-1 flex-col min-w-0"
+                        :class="selectedConversation ? 'flex' : 'hidden md:flex'"
+                    >
                         <div v-if="!selectedConversation" class="flex-1 flex items-center justify-center text-gray-500">
                             <div class="text-center">
                                 <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,23 +106,122 @@
                         </div>
 
                         <div v-else class="flex-1 flex flex-col">
-                            <div class="bg-white border-b p-4 flex items-center gap-3 sticky top-0 z-10" style="border-color: #E8E3DA;">
-                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style="background-color: #315C47;">
+                            <!-- Собеседник -->
+                            <div
+                                class="bg-white border-b px-3 py-3 md:p-4 flex items-center gap-3 sticky top-0 z-20"
+                                style="border-color: #E8E3DA;"
+                            >
+                                <Link
+                                    href="/dashboard/messages"
+                                    class="md:hidden flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 flex-shrink-0"
+                                    aria-label="Назад к диалогам"
+                                >
+                                    <svg
+                                        class="w-6 h-6"
+                                        style="color: #1F4234;"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M15 19l-7-7 7-7"
+                                        />
+                                    </svg>
+                                </Link>
+
+                                <div
+                                    class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0"
+                                    style="background-color: #315C47;"
+                                >
                                     {{ selectedConversation.other_user.name.charAt(0).toUpperCase() }}
                                 </div>
-                                <div class="flex-1">
-                                    <h2 class="font-semibold text-base" style="color: #1F4234;">{{ selectedConversation.other_user.name }}</h2>
-                                    <p class="text-xs text-green-500">в сети</p>
-                                    <Link
-                                        v-if="selectedConversation.listing"
-                                        :href="`/listings/${selectedConversation.listing.id}`"
-                                        class="block text-xs font-medium truncate hover:underline mt-1"
-                                        style="color: #315C47;"
-                                    >
-                                        {{ selectedConversation.listing.title }}
-                                    </Link>
+
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <h2
+                                            class="font-bold text-base md:text-lg truncate"
+                                            style="color: #1F4234;"
+                                        >
+                                            {{ selectedConversation.other_user.name }}
+                                        </h2>
+
+                                        <span
+                                            class="flex-shrink-0 text-sm font-bold"
+                                            style="color: #315C47;"
+                                        >
+                                            <span style="color: #F4B400;">★</span>
+                                            {{ formatRating(selectedConversation.other_user.rating) }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- Объявление, по которому идёт переписка -->
+                            <Link
+                                v-if="selectedConversation.listing"
+                                :href="`/listings/${selectedConversation.listing.id}`"
+                                class="flex items-center gap-3 px-3 py-2.5 md:px-4 bg-white border-b hover:bg-gray-50 transition-colors"
+                                style="border-color: #E8E3DA;"
+                            >
+                                <img
+                                    v-if="selectedConversation.listing.image"
+                                    :src="selectedConversation.listing.image"
+                                    :alt="selectedConversation.listing.title"
+                                    class="w-14 h-12 md:w-16 md:h-14 rounded-lg object-cover flex-shrink-0"
+                                >
+
+                                <div
+                                    v-else
+                                    class="w-14 h-12 md:w-16 md:h-14 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0"
+                                >
+                                    <svg
+                                        class="w-6 h-6 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2 1.586-1.586a2 2 0 012.828 0L20 14M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                        />
+                                    </svg>
+                                </div>
+
+                                <div class="min-w-0 flex-1">
+                                    <p
+                                        class="text-sm md:text-base font-semibold truncate"
+                                        style="color: #1F4234;"
+                                    >
+                                        {{ selectedConversation.listing.title }}
+                                    </p>
+                                    <p
+                                        class="text-xs mt-0.5"
+                                        style="color: #68736B;"
+                                    >
+                                        Перейти к объявлению
+                                    </p>
+                                </div>
+
+                                <svg
+                                    class="w-5 h-5 flex-shrink-0"
+                                    style="color: #68736B;"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M9 5l7 7-7 7"
+                                    />
+                                </svg>
+                            </Link>
 
                             <div ref="messagesContainer" class="flex-1 p-4 space-y-3 overflow-y-auto" style="background-color: #F7F3EC;">
                                 <div v-if="loadingMessages" class="text-center text-gray-500 py-8">Загрузка...</div>
@@ -129,7 +254,11 @@
                                 </div>
                             </div>
 
-                            <form @submit.prevent="sendMessage" class="bg-white p-4 flex gap-2 border-t" style="border-color: #E8E3DA;">
+                            <form
+                                @submit.prevent="sendMessage"
+                                class="bg-white p-3 md:p-4 flex gap-2 border-t sticky bottom-0 z-20"
+                                style="border-color: #E8E3DA;"
+                            >
                                 <input v-model="newMessage" type="text" placeholder="Напишите сообщение..." class="flex-1 px-4 py-2 border-2 rounded-full focus:outline-none text-sm" style="border-color: #E8E3DA;" required maxlength="2000">
                                 <button type="submit" class="px-6 py-2 rounded-full text-white font-medium transition-all hover:shadow-lg flex-shrink-0" :disabled="sending || !newMessage.trim()" style="background-color: #315C47;">
                                     <svg v-if="!sending" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,7 +319,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed, nextTick, onMounted } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 
@@ -224,6 +353,17 @@ const splitMessageBody = (body = '') => {
         }));
 };
 
+const formatRating = (rating) => {
+    if (rating === null || rating === undefined) {
+        return '—';
+    }
+
+    return Number(rating).toLocaleString('ru-RU', {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+    });
+};
+
 const formatDate = (dateString) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -237,37 +377,51 @@ const scrollToBottom = () => {
     });
 };
 
-const selectConversation = async (convId) => {
+const loadConversation = async (convId) => {
     selectedConversationId.value = convId;
     loadingMessages.value = true;
     messages.value = [];
-    
+
     try {
-        // ИСПРАВЛЕНО: добавлен префикс /dashboard
         const response = await fetch(`/dashboard/messages/api/${convId}`, {
             headers: {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
-            }
+            },
         });
-        
-        if (!response.ok) throw new Error('Network error');
-        
+
+        if (!response.ok) {
+            throw new Error('Network error');
+        }
+
         const data = await response.json();
+
         selectedConversation.value = data.conversation;
         messages.value = data.messages;
-        
-        const convIndex = props.conversations.findIndex(c => c.id === convId);
+
+        const convIndex = props.conversations.findIndex(
+            conversation => conversation.id === convId
+        );
+
         if (convIndex !== -1) {
             props.conversations[convIndex].unread_count = 0;
         }
-        
+
         scrollToBottom();
     } catch (error) {
         console.error('Error loading messages:', error);
     } finally {
         loadingMessages.value = false;
     }
+};
+
+const selectConversation = async (convId) => {
+    if (window.matchMedia('(max-width: 767px)').matches) {
+        window.location.href = `/dashboard/messages/${convId}`;
+        return;
+    }
+
+    await loadConversation(convId);
 };
 
 const openDeleteModal = (conversation) => {
@@ -344,7 +498,7 @@ const sendMessage = async () => {
         
         if (!response.ok) throw new Error('Send error');
         
-        await selectConversation(selectedConversationId.value);
+        await loadConversation(selectedConversationId.value);
     } catch (error) {
         console.error('Error sending message:', error);
         newMessage.value = body;
@@ -352,4 +506,10 @@ const sendMessage = async () => {
         sending.value = false;
     }
 };
+
+onMounted(() => {
+    if (selectedConversation.value) {
+        scrollToBottom();
+    }
+});
 </script>

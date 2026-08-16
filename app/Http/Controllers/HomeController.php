@@ -76,7 +76,7 @@ class HomeController extends Controller
 
         // === СЕТКА ОБЪЯВЛЕНИЙ (все объявления в СЛУЧАЙНОМ порядке) ===
         $gridListings = Listing::where('is_active', true)
-                ->with(['category', 'user'])
+                ->with(['category', 'user', 'media'])
                 ->inRandomOrder()
                 ->get()
                 ->shuffle(); // Дополнительная рандомизация на уровне PHP
@@ -95,6 +95,16 @@ class HomeController extends Controller
             'price' => $l->price,
             'location' => $l->location ?? '',
             'image' => $l->getFirstMediaUrl('images', 'thumb'),
+
+            'images' => $l->getMedia('images')
+                ->map(fn($media) =>
+                    $media->hasGeneratedConversion('thumb')
+                        ? $media->getUrl('thumb')
+                        : $media->getUrl()
+                )
+                ->values()
+                ->all(),
+
             'category' => $l->category ? ['name' => $l->category->name] : null,
             'rating' => 4.8,
             'reviews_count' => rand(50, 300),
@@ -115,7 +125,9 @@ class HomeController extends Controller
                 'description' => $l->description ?? '',
                 'price' => $l->price,
                 'location' => $l->location ?? '',
+                'city' => $l->city ?? '',
                 'image' => $l->getFirstMediaUrl('images', 'thumb'),
+                'mobile_image' => $l->getFirstMediaUrl('images'),
                 'category' => $l->category ? ['name' => $l->category->name] : null,
                 'rating' => 4.9,
                 'reviews_count' => rand(100, 500),

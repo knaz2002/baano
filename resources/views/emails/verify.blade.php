@@ -79,7 +79,7 @@
     <div class="container">
         <!-- Шапка с логотипом -->
         <div class="header">
-            <img src="{{ asset('images/logo.png') }}" alt="Baano" class="logo">
+            <img src="{{ asset('images/logo.png') }}?v=9bc9afe" alt="Baano" class="logo">
         </div>
 
         <!-- Основной контент -->

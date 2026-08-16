@@ -17,7 +17,7 @@
 <body class="font-sans antialiased" style="background-color: #F7F3EC;">
 <div>
     <a href="/" class="flex items-center justify-center">
-     <img src="{{ asset('images/logo.png') }}" alt="Baano" class="w-auto" style="height: 62px;">    
+     <img src="{{ asset('images/logo.png') }}?v=9bc9afe" alt="Baano" class="w-auto" style="height: 62px;">    
    </a>
 </div>
     <div id="app">
