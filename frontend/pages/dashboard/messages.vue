@@ -42,10 +42,18 @@ const conversationToDelete = ref<ConversationItem | null>(null)
 const deletingConversation = ref(false)
 const requestingReview = ref(false)
 const messagesContainer = ref<HTMLElement | null>(null)
+const pollTimer = ref<ReturnType<typeof setInterval> | null>(null)
+const polling = ref(false)
+
+const POLL_INTERVAL_MS = 4000
 
 const currentUserId = computed(() => auth.user?.id ?? 0)
 const selectedConversationId = computed(() => selectedConversation.value?.id ?? null)
 const canRequestReview = computed(() => !!selectedConversation.value?.can_request_review)
+
+function isNearBottom(el: HTMLElement, threshold = 80) {
+  return el.scrollHeight - el.scrollTop - el.clientHeight <= threshold
+}
 
 function formatDate(iso: string) {
   try {
@@ -87,25 +95,96 @@ async function scrollToBottom() {
   }
 }
 
-async function loadConversations() {
-  loading.value = true
-  error.value = ''
+async function loadConversations(options: { silent?: boolean; selectFromQuery?: boolean } = {}) {
+  const silent = options.silent === true
+  if (!silent) {
+    loading.value = true
+    error.value = ''
+  }
   try {
     if (!(await ensureVerified())) {
       return
     }
     const res = await apiFetch<{ data: ConversationItem[] }>('/api/conversations')
-    conversations.value = res.data
+    const selectedId = selectedConversationId.value
+    conversations.value = res.data.map((conv) => {
+      if (selectedId && conv.id === selectedId) {
+        return { ...conv, unread_count: 0 }
+      }
+      return conv
+    })
 
-    const q = route.query.conversation
-    if (q) {
-      await selectConversation(Number(q))
+    if (selectedId) {
+      const updated = conversations.value.find(c => c.id === selectedId)
+      if (updated && selectedConversation.value) {
+        selectedConversation.value = {
+          ...selectedConversation.value,
+          ...updated,
+          unread_count: 0,
+          can_request_review: selectedConversation.value.can_request_review,
+        }
+      }
+    }
+
+    if (options.selectFromQuery !== false && !silent) {
+      const q = route.query.conversation
+      if (q) {
+        await selectConversation(Number(q))
+      }
     }
   } catch (e) {
     console.error(e)
-    error.value = 'Не удалось загрузить сообщения'
+    if (!silent) {
+      error.value = 'Не удалось загрузить сообщения'
+    }
   } finally {
-    loading.value = false
+    if (!silent) {
+      loading.value = false
+    }
+  }
+}
+
+async function fetchConversationMessages(id: number, options: { silent?: boolean } = {}) {
+  const silent = options.silent === true
+  const res = await apiFetch<{
+    data: {
+      conversation: ConversationItem
+      messages: ChatMessage[]
+    }
+  }>(`/api/conversations/${id}/messages`)
+
+  if (selectedConversationId.value !== id) {
+    return
+  }
+
+  selectedConversation.value = {
+    ...(selectedConversation.value || res.data.conversation),
+    ...res.data.conversation,
+    unread_count: 0,
+  }
+
+  const prevLastId = messages.value.at(-1)?.id ?? null
+  const nextLastId = res.data.messages.at(-1)?.id ?? null
+  const changed =
+    messages.value.length !== res.data.messages.length
+    || prevLastId !== nextLastId
+
+  const container = messagesContainer.value
+  const shouldStick = !silent || !container || isNearBottom(container)
+
+  messages.value = res.data.messages
+
+  const idx = conversations.value.findIndex(c => c.id === id)
+  if (idx !== -1) {
+    conversations.value[idx] = {
+      ...conversations.value[idx],
+      unread_count: 0,
+      can_request_review: res.data.conversation.can_request_review,
+    }
+  }
+
+  if (changed && shouldStick) {
+    await scrollToBottom()
   }
 }
 
@@ -114,31 +193,61 @@ async function selectConversation(id: number) {
   loadingMessages.value = true
   messages.value = []
   try {
-    const res = await apiFetch<{
-      data: {
-        conversation: ConversationItem
-        messages: ChatMessage[]
-      }
-    }>(`/api/conversations/${id}/messages`)
-    selectedConversation.value = {
-      ...(selectedConversation.value || res.data.conversation),
-      ...res.data.conversation,
-      unread_count: 0,
-    }
-    messages.value = res.data.messages
-    const idx = conversations.value.findIndex(c => c.id === id)
-    if (idx !== -1) {
-      conversations.value[idx] = {
-        ...conversations.value[idx],
-        unread_count: 0,
-      }
-    }
-    await scrollToBottom()
+    await fetchConversationMessages(id)
   } catch (e) {
     console.error(e)
   } finally {
     loadingMessages.value = false
   }
+}
+
+async function pollUpdates() {
+  if (
+    polling.value
+    || loading.value
+    || loadingMessages.value
+    || sending.value
+    || requestingReview.value
+    || deletingConversation.value
+    || (typeof document !== 'undefined' && document.hidden)
+  ) {
+    return
+  }
+
+  polling.value = true
+  try {
+    await loadConversations({ silent: true, selectFromQuery: false })
+    if (selectedConversationId.value) {
+      await fetchConversationMessages(selectedConversationId.value, { silent: true })
+    }
+  } catch (e) {
+    console.error(e)
+  } finally {
+    polling.value = false
+  }
+}
+
+function startPolling() {
+  stopPolling()
+  pollTimer.value = setInterval(() => {
+    void pollUpdates()
+  }, POLL_INTERVAL_MS)
+}
+
+function stopPolling() {
+  if (pollTimer.value) {
+    clearInterval(pollTimer.value)
+    pollTimer.value = null
+  }
+}
+
+function onVisibilityChange() {
+  if (document.hidden) {
+    stopPolling()
+    return
+  }
+  void pollUpdates()
+  startPolling()
 }
 
 async function sendMessage() {
@@ -239,7 +348,14 @@ async function deleteConversation() {
 }
 
 onMounted(() => {
-  loadConversations()
+  void loadConversations()
+  startPolling()
+  document.addEventListener('visibilitychange', onVisibilityChange)
+})
+
+onBeforeUnmount(() => {
+  stopPolling()
+  document.removeEventListener('visibilitychange', onVisibilityChange)
 })
 </script>
 

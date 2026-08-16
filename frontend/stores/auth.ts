@@ -49,6 +49,7 @@ export const useAuthStore = defineStore('auth', {
       phone: string
       password: string
       password_confirmation: string
+      personal_data_consent: boolean
     }) {
       const { apiFetch } = useApi()
       const res = await apiFetch<UserResponse>('/api/register', {

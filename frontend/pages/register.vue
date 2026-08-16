@@ -11,6 +11,7 @@ const form = reactive({
   email: '',
   password: '',
   password_confirmation: '',
+  personal_data_consent: false,
 })
 const processing = ref(false)
 const errors = ref<Record<string, string>>({})
@@ -21,6 +22,10 @@ function onPhoneInput(e: Event) {
 
 async function onSubmit() {
   errors.value = {}
+  if (!form.personal_data_consent) {
+    errors.value.personal_data_consent = 'Необходимо согласие на обработку персональных данных.'
+    return
+  }
   processing.value = true
   try {
     await auth.register({ ...form })
@@ -109,7 +114,37 @@ async function onSubmit() {
           >
         </div>
 
-        <button type="submit" class="btn-gradient w-full" :disabled="processing">
+        <div>
+          <label class="flex items-start gap-3 cursor-pointer">
+            <input
+              v-model="form.personal_data_consent"
+              type="checkbox"
+              required
+              class="mt-1 h-5 w-5 shrink-0 rounded border-gray-300 accent-baano-green"
+            >
+            <span class="text-sm leading-5 text-baano-ink">
+              Я даю согласие на обработку персональных данных и ознакомлен(а) с
+              <a
+                href="https://codeseven.ru/opd.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-medium text-baano-green underline hover:text-red-600"
+                @click.stop
+              >
+                Политикой обработки персональных данных
+              </a>
+            </span>
+          </label>
+          <p v-if="errors.personal_data_consent" class="mt-2 text-sm text-red-600 font-semibold">
+            {{ errors.personal_data_consent }}
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          class="btn-gradient w-full disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="processing || !form.personal_data_consent"
+        >
           {{ processing ? '…' : 'Зарегистрироваться' }}
         </button>
 

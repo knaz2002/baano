@@ -47,6 +47,10 @@ class AuthController extends Controller
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['required', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'personal_data_consent' => ['required', 'accepted'],
+        ], [
+            'personal_data_consent.required' => 'Необходимо согласие на обработку персональных данных.',
+            'personal_data_consent.accepted' => 'Необходимо согласие на обработку персональных данных.',
         ]);
 
         $user = User::create([
